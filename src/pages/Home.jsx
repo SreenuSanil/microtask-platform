@@ -1,8 +1,21 @@
 import "./Home.css";
 import logo from "../assets/tasknest.png";
 import Home_bg from "../assets/Home-bg.png";
+import { useEffect, useState } from "react";
+
 
 const Home = () => {
+
+const [stats, setStats] = useState({ workers: 0, providers: 0 });
+
+useEffect(() => {
+  fetch("http://localhost:5000/api/stats/counts")
+    .then(res => res.json())
+    .then(data => setStats(data))
+    .catch(err => console.error(err));
+}, []);
+
+
   return (
     <div className="home-root">
 
@@ -43,6 +56,20 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* STATS */}
+    <section className="stats-section">
+      <div className="stat-card">
+      <h3 className="gradient-text">{stats.workers}+</h3>
+      <p>Active Workers</p>
+     </div>
+
+     <div className="stat-card">
+       <h3 className="gradient-text">{stats.providers}+</h3>
+       <p>Task Providers</p>
+      </div>
+    </section>
+
 
       {/* ABOUT */}
       <section id="about" className="section">

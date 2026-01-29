@@ -12,6 +12,8 @@ app.use(express.json());
 
 // Routes
 app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/stats", require("./routes/statsRoutes"));
+app.use("/api/protected", require("./routes/protectedRoutes"));
 
 // 🔥 Connect DB FIRST
 connectDB();

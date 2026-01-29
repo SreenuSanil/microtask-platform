@@ -248,3 +248,32 @@ body {
     font-size: 32px;
   }
 }
+
+/* STATS SECTION */
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  padding: 60px 40px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 14px;
+  padding: 30px 20px;
+  text-align: center;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+}
+
+.gradient-text {
+  font-size: 38px;
+  font-weight: 800;
+  background: linear-gradient(90deg, #0f766e, #14b8a6);
+
+  background-clip: text;           /* standard */
+  -webkit-background-clip: text;   /* Chrome, Edge, Safari */
+
+  color: transparent;
+}

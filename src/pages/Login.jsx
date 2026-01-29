@@ -1,9 +1,14 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import logo from "../assets/tasknest.png";
 import Home_bg from "../assets/Home-bg.png";
 
+
+
+
 const Login = () => {
+  const navigate = useNavigate();
   // ✅ State MUST be inside component (WHY: React hook rule)
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,11 +34,16 @@ const Login = () => {
         return;
       }
 
+      localStorage.setItem("token", data.token);
+
+
       // ✅ Correct login → redirect by role
       if (data.role === "worker") {
-        window.location.href = "/worker-dashboard";
-      } else {
-        window.location.href = "/provider-dashboard";
+         navigate("/worker-dashboard");
+      } else if(data.role === "provider"){
+         navigate("/provider-dashboard");
+      }else if (data.role === "admin") {
+         navigate("/admin-dashboard");
       }
     } catch (error) {
       alert("Server error");
