@@ -6,7 +6,13 @@ import WorkerDashboard from "./pages/WorkerDashboard";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ForgotPassword from "./pages/ForgotPassword";
+import VerifyOtp from "./pages/VerifyOtp";
+import ResetPassword from "./pages/ResetPassword";
+import PendingApproval from "./pages/PendingApproval";
+import VerifyEmail from "./pages/VerifyEmail";
 
+ 
 const App = () => {
   return (
     <>
@@ -14,6 +20,13 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-otp" element={<VerifyOtp />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/pending-approval" element={<PendingApproval />} />
+
+
 
         <Route
   path="/worker-dashboard"

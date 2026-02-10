@@ -5,15 +5,22 @@ require("dotenv").config();
 const connectDB = require("./config/db");
 
 const app = express();
-
+const adminRoutes = require("./routes/adminRoutes");
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+
+app.use("/uploads", express.static("uploads"));
+
 
 // Routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/stats", require("./routes/statsRoutes"));
 app.use("/api/protected", require("./routes/protectedRoutes"));
+app.use("/api/admin", require("./routes/adminRoutes"));
+app.use("/api/worker", require("./routes/workerRoutes"));
+app.use("/api/payment", require("./routes/paymentRoutes"));
 
 // 🔥 Connect DB FIRST
 connectDB();

@@ -18,6 +18,7 @@ useEffect(() => {
 
   return (
     <div className="home-root">
+      
 
       {/* NAVBAR */}
       <header className="navbar">
@@ -37,20 +38,11 @@ useEffect(() => {
 
       {/* HERO */}
       <section className="hero">
-        <div className="hero-bg">
-          <img
-            src={Home_bg}
-            alt=""
-          />
-        </div>
-
         <div className="hero-overlay">
           <div className="hero-content">
-            <h1>Turn Your Skills Into Flexible Income</h1>
+            <h1>Get Work Done. Earn with Skills.</h1>
             <p>
-              Connecting individuals seeking flexible income with short-duration,
-              skill-based tasks through intelligent task matching and structured
-              work management.
+              Connecting task providers with verified skilled workers for quick, real-world jobs.
             </p>
             <a href="/register" className="primary-btn">Get Started</a>
           </div>
@@ -73,71 +65,85 @@ useEffect(() => {
 
       {/* ABOUT */}
       <section id="about" className="section">
+        <div className="section-box">
         <h2>About the Platform</h2>
         <p>
-          Unemployment and underemployment remain major challenges for students,
-          homemakers, and individuals seeking flexible or part-time income.
-          Existing job portals primarily focus on full-time employment and often
-          require prior experience.
+          Many skilled and daily-wage workers face difficulty finding consistent short-term work. Most existing platforms are designed for long-term jobs and do not support quick, location-based tasks.
+
+          TaskNest bridges this gap by connecting task providers with verified workers for short-duration, skill-based tasks.
+          Providers can post real-world jobs such as cleaning, repairs, delivery, or maintenance, and workers can earn income by accepting tasks that match their skills, location, and availability.
         </p>
         <p>
           TaskNest addresses this gap by enabling skill-based microtasks that can
           be completed within hours or days, benefiting both workers and task
           providers.
         </p>
+         </div>
       </section>
 
       {/* FEATURES */}
-      <section id="features" className="section light-bg">
+      <section id="features" className="section">
+        <div className="section-box">
         <h2>Core Features</h2>
 
         <div className="feature-grid">
           <div className="feature-card">
-            <h3>AI-Based Task Matching</h3>
+            <h3>Smart Task Matching</h3>
             <p>
-              Rule-based intelligence matches tasks with users based on skills,
-              availability, and performance history.
+              TaskNest connects local workers and service providers by showing tasks based on skills, location, and availability.
+              Workers see nearby tasks they can complete within hours or days, while providers quickly find reliable workers.
+            </p>
+            
+          </div>
+
+          <div className="feature-card">
+            <h3>Trust & Verification</h3>
+            <p>
+              All workers are verified and approved by the admin before becoming active.
+              Tasks are tracked from posting to completion, ensuring transparency and quality for both workers and providers.
             </p>
           </div>
 
           <div className="feature-card">
-            <h3>Trust & Reputation System</h3>
+            <h3>Earnings & Payments</h3>
             <p>
-              Ratings, feedback, and task verification ensure platform reliability
-              and quality work.
+              Workers can track completed tasks and earnings, and providers can view task expenses and payments.
+              All transactions are clearly recorded to maintain trust and accountability on the platform.
             </p>
-          </div>
-
-          <div className="feature-card">
-            <h3>Digital Wallet</h3>
-            <p>
-              Transparent tracking of earnings, transactions, and platform
-              commissions for all users.
-            </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* WORKFLOW */}
       <section id="workflow" className="section">
-        <h2>How It Works</h2>
+        <div className="section-box">
+        <h2>How TaskNest Works</h2>
 
         <div className="workflow">
           <div className="step">
             <span>1</span>
-            <p>User registers and defines skills and availability</p>
+            <p>Users register as Workers or Providers and complete basic profile details.
+               Workers are reviewed and approved by the admin before becoming active.</p>
           </div>
           <div className="step">
             <span>2</span>
-            <p>Task providers post short-duration tasks</p>
+            <p>Providers post a task by entering required skills, location (pin/city), duration, and payment details.</p>
           </div>
           <div className="step">
             <span>3</span>
-            <p>System recommends tasks using intelligent matching</p>
+            <p>The system automatically matches the task with available and approved workers based on:
+
+               Skills
+
+               Location
+
+               Availability window</p>
           </div>
           <div className="step">
             <span>4</span>
-            <p>Task completion, verification, and earnings credit</p>
+            <p>Matched workers are notified, and the provider proceeds with task execution and completion.</p>
+          </div>
           </div>
         </div>
       </section>

@@ -2,21 +2,33 @@ import { useState } from "react";
 import "./Register.css";
 import logo from "../assets/tasknest.png";
 import Home_bg from "../assets/Home-bg.png";
+import { useNavigate } from "react-router-dom";
+
+
 
 const Register = () => {
+  const navigate = useNavigate();
   const [role, setRole] = useState("");
+  const [paymentInfo, setPaymentInfo] = useState(null);
 
   const [formData, setFormData] = useState({
   name: "",
   email: "",
   password: "",
+  phone: "",
+  pincode: "",
+  city: "",
   skills: "",
   availability: "",
   organization: "",
-  taskType: ""
+  taskType: "",
+  profileImage: null
 });
 
+
 const [errors, setErrors] = useState({});
+const [paymentDone, setPaymentDone] = useState(false);
+
 
 const handleChange = (e) => {
   setFormData({
@@ -24,6 +36,89 @@ const handleChange = (e) => {
     [e.target.name]: e.target.value
   });
 };
+
+const handleImageChange = (e) => {
+  const file = e.target.files[0];
+
+  if (!file) return;
+
+  // ✅ 2MB check
+  if (file.size > 2 * 1024 * 1024) {
+    alert("File is more than 2MB");
+    e.target.value = ""; // reset input
+    return;
+  }
+
+  setFormData({
+    ...formData,
+    profileImage: file,
+  });
+};
+
+
+const handleWorkerPayment = async () => {
+  try {
+    // 1️⃣ create order from backend
+    const res = await fetch(
+      "http://localhost:5000/api/payment/create-order",
+      { method: "POST" }
+    );
+
+    const order = await res.json();
+
+    // 2️⃣ Razorpay options
+    const options = {
+      key: "rzp_test_RS7N4gK5yMwA9E", 
+      amount: order.amount,
+      currency: "INR",
+      name: "TaskNest",
+      description: "Worker Registration Fee",
+      order_id: order.id,
+
+      handler: async function (response) {
+        // 3️⃣ verify payment
+        const verifyRes = await fetch(
+          "http://localhost:5000/api/payment/verify-payment",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(response),
+          }
+        );
+
+        const verifyData = await verifyRes.json();
+
+        if (verifyData.success) {
+          // ✅ PAYMENT SUCCESS
+          
+          setPaymentInfo({
+  orderId: verifyData.payment.orderId,
+  paymentId: verifyData.payment.paymentId,
+  signature: verifyData.payment.signature,
+});
+setPaymentDone(true);
+
+          alert("Payment successful (Test Mode)");
+        } else {
+          alert("Payment verification failed");
+        }
+      },
+
+      theme: { color: "#2f80ed" },
+    };
+
+    // 4️⃣ open Razorpay checkout
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+
+  } catch (error) {
+    console.error(error);
+    alert("Payment failed");
+  }
+};
+
+
+
 
 const validateForm = () => {
   let newErrors = {};
@@ -43,13 +138,26 @@ const validateForm = () => {
   } else if (formData.password.length < 6) {
     newErrors.password = "Password must be at least 6 characters";
   }
+  if (!formData.phone) {
+  newErrors.phone = "Phone number is required";
+} else if (!/^[6-9]\d{9}$/.test(formData.phone)) {
+  newErrors.phone = "Enter a valid 10-digit phone number";
+}
+
+if (!formData.pincode) {
+  newErrors.pincode = "Pincode is required";
+} else if (!/^\d{6}$/.test(formData.pincode)) {
+  newErrors.pincode = "Enter a valid 6-digit pincode";
+}
+
+if (!formData.city.trim()) {
+  newErrors.city = "City is required";
+}
+
 
   if (role === "worker") {
     if (!formData.skills.trim()) {
       newErrors.skills = "Skills are required";
-    }
-    if (!formData.availability) {
-      newErrors.availability = "Availability is required";
     }
   }
 
@@ -77,54 +185,76 @@ const scrollToFirstError = (errors) => {
 };
 
 
- const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
 
-  const isValid = validateForm();
+  // worker payment check
+  if (role === "worker" && !paymentDone) {
+    alert("Please complete payment before registering");
+    return;
+  }
 
+  const isValid = validateForm();
   if (!isValid) {
     scrollToFirstError(errors);
     return;
   }
 
   try {
-    const response = await fetch("http://localhost:5000/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...formData,
-        role,
-      }),
+    const formPayload = new FormData();
+
+    Object.keys(formData).forEach((key) => {
+      formPayload.append(key, formData[key]);
     });
+
+    formPayload.append("role", role);
+
+    // 🔐 BACKEND PAYMENT ENFORCEMENT (IMPORTANT)
+if (role === "worker") {
+  if (!paymentInfo) {
+    alert("Payment not verified");
+    return;
+  }
+
+  formPayload.append(
+    "payment",
+    JSON.stringify(paymentInfo)
+  );
+}
+
+
+
+    const response = await fetch(
+      "http://localhost:5000/api/auth/register",
+      {
+        method: "POST",
+        body: formPayload, // ✅ no headers
+      }
+    );
 
     const data = await response.json();
 
-    if (response.ok) {
-      alert("Account created successfully");
-      window.location.href = "/login";
-    } else {
+if (response.ok) {
+  localStorage.setItem("verifyEmail", formData.email);
+  navigate("/verify-email", {
+    state: { email: formData.email },
+  });
+}
+ else {
       alert(data.error || "Registration failed");
     }
   } catch (error) {
     console.error(error);
     alert("Server error");
   }
- 
 };
+
 
 
 
   return (
     <div className="register-root">
 
-      {/* Background */}
-      <div className="register-bg">
-        <img src={Home_bg} alt="" />
-      </div>
-
-      <div className="register-overlay">
         <div className="register-card">
  
          <div className="back-home">
@@ -142,7 +272,7 @@ const scrollToFirstError = (errors) => {
           >
          ←
          </button>
-        </div>
+        
 
           {/* Logo */}
           <div className="register-logo">
@@ -213,6 +343,56 @@ const scrollToFirstError = (errors) => {
 
               </div>
 
+              <div className="input-group">
+  <label>Phone Number</label>
+  <input
+    type="tel"
+    id="phone"
+    name="phone"
+    value={formData.phone}
+    onChange={handleChange}
+    placeholder="Enter 10-digit phone number"
+  />
+  {errors.phone && <span className="error">{errors.phone}</span>}
+</div>
+
+<div className="input-group">
+  <label>Pincode</label>
+  <input
+    type="text"
+    id="pincode"
+    name="pincode"
+    value={formData.pincode}
+    onChange={handleChange}
+    placeholder="Enter your area pincode"
+  />
+  {errors.pincode && <span className="error">{errors.pincode}</span>}
+</div>
+
+<div className="input-group">
+  <label>City</label>
+  <input
+    type="text"
+    id="city"
+    name="city"
+    value={formData.city}
+    onChange={handleChange}
+    placeholder="Enter your city"
+  />
+  {errors.city && <span className="error">{errors.city}</span>}
+</div>
+<div className="input-group">
+  <label>Profile Photo</label>
+  <input
+    type="file"
+    id="profileImage"
+    accept="image/*"
+    onChange={handleImageChange}
+  />
+</div>
+
+
+
               {/* WORKER-SPECIFIC FIELDS */}
               {role === "worker" && (
                 <>
@@ -224,31 +404,27 @@ const scrollToFirstError = (errors) => {
                       name="skills"
                       value={formData.skills}
                       onChange={handleChange}
-                      placeholder="Eg: Data entry, Design, Tutoring"
+                      placeholder="Eg: Plumbing, Local Service, Tutoring"
                     />
                     {errors.skills && <span className="error">{errors.skills}</span>}
                   </div>
 
-                  <div className="input-group">
-                    <label>Availability</label>
-                    <select
-                      id="availability"
-                      name="availability"
-                      value={formData.availability}
-                      onChange={handleChange}
->
-                      <option value="">Select availability</option>
-                      <option value="Part-time">Part-time</option>
-                      <option value="Flexible">Flexible</option>
-                      <option value="Weekends">Weekends</option>
-                    </select>
-
-                     {errors.availability && (
-                       <span className="error">{errors.availability}</span>
-                     )}
-                  </div>
                 </>
               )}
+
+{role === "worker" && (
+  <div className="input-group worker-payment">
+    {!paymentDone ? (
+      <button type="button" onClick={handleWorkerPayment}>
+        Pay Registration Fee
+      </button>
+    ) : (
+      <p className="payment-success">✅ Payment Completed</p>
+    )}
+  </div>
+)}
+
+
 
               {/* PROVIDER-SPECIFIC FIELDS */}
               {role === "provider" && (
@@ -274,7 +450,7 @@ const scrollToFirstError = (errors) => {
                       name="taskType"
                       value={formData.taskType}
                       onChange={handleChange}
-                      placeholder="Eg: Content, Data entry, Local services"
+                      placeholder="Eg: Driving, Plumbing, Local services"
                     />
                     {errors.taskType && <span className="error">{errors.taskType}</span>}
                   </div>
@@ -287,7 +463,7 @@ const scrollToFirstError = (errors) => {
 
               <div className="register-footer">
                 <p>
-                  Already have an account?
+                  Already have an account?{"  "}
                   <a href="/login"> Login</a>
                 </p>
               </div>

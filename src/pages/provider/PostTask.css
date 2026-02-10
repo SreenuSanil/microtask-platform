@@ -1,0 +1,175 @@
+/* =========================
+   ROOT CONTAINER
+========================= */
+.post-task-container {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #eef2ff, #f8fafc);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* =========================
+   HEADER
+========================= */
+.post-task-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.post-task-header h2 {
+  font-size: 30px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.post-task-header p {
+  color: #475569;
+  font-size: 15px;
+  margin-top: 6px;
+}
+
+/* =========================
+   CARD
+========================= */
+.post-task-card {
+  width: 100%;
+  max-width: 880px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 32px;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.08),
+    0 5px 15px rgba(99, 102, 241, 0.15);
+  animation: fadeInUp 0.6s ease;
+}
+
+/* =========================
+   FORM GRID
+========================= */
+.post-task-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group.full-width {
+  grid-column: span 2;
+}
+
+/* =========================
+   LABELS
+========================= */
+.input-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 6px;
+}
+
+/* =========================
+   INPUTS
+========================= */
+.post-task-form input,
+.post-task-form textarea,
+.post-task-form select {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #c7d2fe;
+  font-size: 14px;
+  background: #f8fafc;
+  transition: all 0.25s ease;
+}
+
+.post-task-form textarea {
+  resize: none;
+  min-height: 100px;
+}
+
+.post-task-form input:focus,
+.post-task-form textarea:focus,
+.post-task-form select:focus {
+  outline: none;
+  border-color: #6366f1;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* =========================
+   SELECT DROPDOWN
+========================= */
+.post-task-form select {
+  cursor: pointer;
+}
+
+/* =========================
+   ACTIONS
+========================= */
+.post-task-actions {
+  grid-column: span 2;
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+/* =========================
+   BUTTON
+========================= */
+.post-task-btn {
+  padding: 14px 38px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 20px rgba(79, 70, 229, 0.4);
+}
+
+.post-task-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(79, 70, 229, 0.5);
+}
+
+.post-task-btn:active {
+  transform: scale(0.97);
+}
+
+/* =========================
+   SMALL SCREENS
+========================= */
+@media (max-width: 768px) {
+  .post-task-form {
+    grid-template-columns: 1fr;
+  }
+
+  .input-group.full-width {
+    grid-column: span 1;
+  }
+
+  .post-task-card {
+    padding: 24px;
+  }
+}
+
+/* =========================
+   ANIMATION
+========================= */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

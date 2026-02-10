@@ -1,3 +1,9 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .back-home {
   margin-bottom: 14px;
 }
@@ -22,29 +28,23 @@
 
 /* ROOT */
 .register-root {
-  position: relative;
-  height: 100vh;
-  overflow-y: auto;
-  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
-}
+  min-height: 100vh;
 
-/* BACKGROUND */
-.register-bg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+  /* 🔥 FIXED BACKGROUND */
+  background-image: url("../assets/Home-bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 
-/* OVERLAY */
-.register-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 40px; 
+
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
 }
+
+
 
 /* CARD */
 .register-card {
@@ -174,7 +174,66 @@
   color: #0f766e;
   font-weight: 500;
   text-decoration: none;
+  font-size: 14px;
 }
+
+/* Profile image upload */
+.input-group input[type="file"] {
+  padding: 10px;
+  border: 1px dashed #cfd8dc;
+  border-radius: 8px;
+  background-color: #fafafa;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.input-group input[type="file"]::-webkit-file-upload-button {
+  background-color: #2f80ed;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 10px;
+  font-weight: 500;
+}
+
+.input-group input[type="file"]::-webkit-file-upload-button:hover {
+  background-color: #1c6dd0;
+}
+
+
+/* Worker payment section */
+.worker-payment {
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* Payment button */
+.worker-payment button {
+  width: 100%;
+  padding: 12px;
+  background-color: #27ae60;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.worker-payment button:hover {
+  background-color: #1e874b;
+}
+
+/* Payment success text */
+.payment-success {
+  color: #219653;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
 
 /* RESPONSIVE */
 @media (max-width: 480px) {

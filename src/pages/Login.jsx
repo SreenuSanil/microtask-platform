@@ -28,23 +28,76 @@ const Login = () => {
 
       const data = await response.json();
 
-      // ❌ Wrong credentials
-      if (!response.ok) {
-        alert(data.error || "Invalid email or password");
-        return;
-      }
+// ❌ LOGIN FAILED
+if (!response.ok) {
 
-      localStorage.setItem("token", data.token);
+  // 🔐 EMAIL NOT VERIFIED
+  if (data.error === "Email not verified. Please verify your email first.") {
+    localStorage.setItem("verifyEmail", email);
+    navigate("/verify-email");
+    return;
+  }
+
+  // 🚫 BLOCKED ACCOUNT
+  if (data.error === "Account blocked") {
+    let message = `❌ Account Blocked\n\nReason: ${data.reason}`;
+
+    if (data.daysLeft !== null) {
+      if (data.daysLeft > 0) {
+        message += `\nUnblocks in: ${data.daysLeft} day(s)`;
+      } else {
+        message += `\nUnblock pending (check again later)`;
+      }
+    } else {
+      message += `\nBlocked for: Permanent`;
+    }
+
+    alert(message);
+    return;
+  }
+
+  // 🚫 REMOVED ACCOUNT
+  if (data.error === "Account removed") {
+    alert(
+      `❌ Account Removed\n\nReason: ${
+        data.reason || "Violated Company Policy"
+      }`
+    );
+    return;
+  }
+
+  // ❌ OTHER ERRORS
+  alert(data.error || "Invalid email or password");
+  return;
+}
+
+
+// ✅ ONLY SUCCESS REACHES HERE
+localStorage.setItem("token", data.token);
+
 
 
       // ✅ Correct login → redirect by role
-      if (data.role === "worker") {
-         navigate("/worker-dashboard");
-      } else if(data.role === "provider"){
-         navigate("/provider-dashboard");
-      }else if (data.role === "admin") {
-         navigate("/admin-dashboard");
-      }
+      // save auth data
+localStorage.setItem("token", data.token);
+localStorage.setItem("user", JSON.stringify(data.user));
+
+// ROLE + APPROVAL BASED REDIRECT
+if (data.user.role === "worker") {
+  if (data.user.approvalStatus === "approved") {
+    navigate("/worker-dashboard");
+  } else {
+    // pending or rejected
+    navigate("/pending-approval");
+  }
+} 
+else if (data.user.role === "provider") {
+  navigate("/provider-dashboard");
+} 
+else if (data.user.role === "admin") {
+  navigate("/admin-dashboard");
+}
+
     } catch (error) {
       alert("Server error");
     }
@@ -53,11 +106,7 @@ const Login = () => {
   return (
     <div className="login-root">
       {/* Background */}
-      <div className="login-bg">
-        <img src={Home_bg} alt="" />
-      </div>
-
-      <div className="login-overlay">
+      
         <div className="login-card">
           <div className="back-home">
             <a href="/" title="Back to Home">←</a>
@@ -114,7 +163,6 @@ const Login = () => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

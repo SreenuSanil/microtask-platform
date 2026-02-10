@@ -4,8 +4,16 @@ const User = require("../models/User");
 
 router.get("/counts", async (req, res) => {
   try {
-    const workers = await User.countDocuments({ role: "worker" });
-    const providers = await User.countDocuments({ role: "provider" });
+    // ✅ Only approved workers are active
+    const workers = await User.countDocuments({
+      role: "worker",
+      approvalStatus: "approved",
+    });
+
+    // Providers are always active
+    const providers = await User.countDocuments({
+      role: "provider",
+    });
 
     res.json({ workers, providers });
   } catch (err) {

@@ -1,36 +1,47 @@
-/* GLOBAL RESET */
+/* =========================
+   GLOBAL RESET
+========================= */
 * {
   box-sizing: border-box;
-}
-
-body {
   margin: 0;
-  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f8fafc;
+  padding: 0;
 }
 
-/* ROOT */
+/* =========================
+   ROOT BACKGROUND
+========================= */
 .home-root {
-  color: #1e293b;
+  min-height: 100vh;
+
+  background-image: url("../assets/Home-bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  color: #ffffff;
+  overflow-x: hidden;
 }
 
-/* NAVBAR */
+/* =========================
+   NAVBAR
+========================= */
 .navbar {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 10;
+
   background: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   padding: 16px 40px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .logo-area img {
   height: 32px;
-  max-width: 140px;
-  object-fit: contain;
 }
 
 .nav-links a {
@@ -38,59 +49,28 @@ body {
   text-decoration: none;
   color: #334155;
   font-weight: 500;
-  font-size: 15px;
-  letter-spacing: 0.3px;
 }
 
-.nav-links a:hover {
-  color: #0f766e;
-}
-
-/* LOGIN BUTTON (OUTLINE) */
 .login-btn {
   padding: 6px 16px;
   border-radius: 6px;
   border: 1.5px solid #0f766e;
-  background: transparent;
   color: #0f766e !important;
-  transition: all 0.2s ease;
 }
 
-.login-btn:hover {
-  background: #ecfdf5;
-}
-
-/* SIGNUP BUTTON (PRIMARY) */
 .signup-btn {
   margin-left: 10px;
   padding: 6px 18px;
   border-radius: 6px;
   background: #0f766e;
   color: white !important;
-  transition: all 0.2s ease;
 }
 
-.signup-btn:hover {
-  background: #115e59;
-}
-
-/* HERO */
+/* =========================
+   HERO
+========================= */
 .hero {
-  position: relative;
-  height: 90vh;
-  overflow: hidden;
-}
-
-.hero-bg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.65);
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -99,23 +79,26 @@ body {
 .hero-content {
   max-width: 800px;
   text-align: center;
-  color: white;
   padding: 20px;
 }
 
 .hero-content h1 {
   font-size: 46px;
   font-weight: 700;
-  letter-spacing: -0.8px;
   margin-bottom: 18px;
+  color: #ffffff;
+
+  /* readability */
+  text-shadow: 0 4px 12px rgba(0,0,0,0.6);
 }
 
 .hero-content p {
   font-size: 18px;
   line-height: 1.8;
-  color: #e2e8f0;
-  max-width: 650px;
-  margin: 0 auto 30px auto;
+  margin-bottom: 30px;
+  color: #f8fafc;
+
+  text-shadow: 0 3px 10px rgba(0,0,0,0.6);
 }
 
 .primary-btn {
@@ -123,43 +106,99 @@ body {
   color: white;
   padding: 14px 30px;
   border-radius: 999px;
-  font-size: 15px;
-  font-weight: 600;
   text-decoration: none;
 }
 
-.primary-btn:hover {
-  background: #115e59;
+/* =========================
+   STATS SECTION (PLAIN TEXT)
+========================= */
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+
+  padding: 60px 40px;
+  max-width: 900px;
+  margin: auto;
+  text-align: center;
 }
 
-/* SECTIONS */
+.stat-card {
+  background: transparent;
+}
+
+.stat-card p {
+  color: #ffffff;
+  text-shadow: 0 3px 10px rgba(0,0,0,0.6);
+}
+
+.gradient-text {
+  font-size: 38px;
+  font-weight: 800;
+  background: linear-gradient(90deg, #0f766e, #14b8a6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* =========================
+   FULL SECTION DARK BOX
+========================= */
+.section-box {
+  background: rgba(0, 0, 0, 0.35); /* light black */
+  border-radius: 20px;
+
+  padding: 60px 50px;
+  width: 100%;
+
+  /* keeps image visible around sections */
+  box-sizing: border-box;
+}
+
+.section-box h2 {
+  color: #ffffff;
+  font-weight: 800;
+  margin-bottom: 22px;
+}
+
+.section-box p,
+.section-box h3 {
+  color: #f1f5f9;
+  font-weight: 500;
+  line-height: 1.9;
+}
+
+
+/* =========================
+   SECTIONS (PLAIN TEXT)
+========================= */
 .section {
-  padding: 70px 40px;
+  padding: 0 40px;
   max-width: 1100px;
-  margin: auto;
+  margin: 80px auto;
 }
 
 .section h2 {
   font-size: 32px;
   font-weight: 700;
   margin-bottom: 22px;
-  letter-spacing: -0.4px;
-  color: #0f172a;
+  color: #ffffff;
+
+  text-shadow: 0 4px 12px rgba(0,0,0,0.7);
 }
 
 .section p {
   font-size: 16px;
   line-height: 1.9;
-  color: #475569;
   margin-bottom: 16px;
-  max-width: 900px;
+  color: #f8fafc;
+
+  text-shadow: 0 3px 10px rgba(0,0,0,0.7);
 }
 
-.light-bg {
-  background: #f1f5f9;
-}
-
-/* FEATURES */
+/* =========================
+   FEATURES (PLAIN TEXT)
+========================= */
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -168,25 +207,23 @@ body {
 }
 
 .feature-card {
-  background: white;
-  padding: 26px;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  background: transparent;
 }
 
 .feature-card h3 {
-  font-size: 18px;
-  font-weight: 600;
   margin-bottom: 10px;
+  color: #ffffff;
+  text-shadow: 0 3px 10px rgba(0,0,0,0.7);
 }
 
 .feature-card p {
-  font-size: 15px;
-  line-height: 1.8;
-  color: #475569;
+  color: #f8fafc;
+  text-shadow: 0 3px 10px rgba(0,0,0,0.7);
 }
 
-/* WORKFLOW */
+/* =========================
+   WORKFLOW (PLAIN TEXT)
+========================= */
 .workflow {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -195,9 +232,7 @@ body {
 }
 
 .step {
-  background: white;
-  padding: 22px;
-  border-radius: 12px;
+  background: transparent;
   text-align: center;
 }
 
@@ -210,70 +245,37 @@ body {
   background: #0f766e;
   color: white;
   margin-bottom: 10px;
-  font-size: 14px;
-  font-weight: 600;
 }
 
 .step p {
-  font-size: 14.5px;
-  line-height: 1.6;
-  color: #334155;
+  color: #f8fafc;
+  text-shadow: 0 3px 10px rgba(0,0,0,0.7);
 }
 
-/* FOOTER */
+/* =========================
+   FOOTER
+========================= */
 .footer {
   text-align: center;
   padding: 18px;
-  background: #0f172a;
 }
 
 .footer p {
-  font-size: 13px;
-  letter-spacing: 0.4px;
-  color: #cbd5f5;
+  color: #e5e7eb;
+  text-shadow: 0 3px 10px rgba(0,0,0,0.7);
 }
 
-/* RESPONSIVE */
+
+/* =========================
+   RESPONSIVE
+========================= */
 @media (max-width: 900px) {
   .feature-grid,
   .workflow {
     grid-template-columns: 1fr;
   }
 
-  .navbar {
-    padding: 16px 20px;
-  }
-
   .hero-content h1 {
     font-size: 32px;
   }
-}
-
-/* STATS SECTION */
-.stats-section {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  padding: 60px 40px;
-  max-width: 900px;
-  margin: auto;
-}
-
-.stat-card {
-  background: white;
-  border-radius: 14px;
-  padding: 30px 20px;
-  text-align: center;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.08);
-}
-
-.gradient-text {
-  font-size: 38px;
-  font-weight: 800;
-  background: linear-gradient(90deg, #0f766e, #14b8a6);
-
-  background-clip: text;           /* standard */
-  -webkit-background-clip: text;   /* Chrome, Edge, Safari */
-
-  color: transparent;
 }
