@@ -1,0 +1,256 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.back-home {
+  margin-bottom: 14px;
+}
+
+.back-arrow {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f766e;
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.back-arrow:hover {
+  transform: translateX(-5px);
+  color: #115e59;
+}
+
+
+
+/* ROOT */
+.register-root {
+  min-height: 100vh;
+
+  /* 🔥 FIXED BACKGROUND */
+  background-image: url("../assets/Home-bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+
+
+/* CARD */
+.register-card {
+  background: white;
+  width: 100%;
+  max-width: 460px;
+  padding: 28px 36px 36px;
+  border-radius: 16px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding-bottom: 40px;
+}
+
+
+/* LOGO */
+.register-logo {
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.register-logo img {
+  height: 36px;
+}
+
+/* TEXT */
+.register-card h2 {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #0f172a;
+}
+
+.register-subtext {
+  text-align: center;
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 26px;
+}
+
+/* ROLE SELECTION */
+.role-selection {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.role-selection button {
+  flex: 1;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1.5px solid #0f766e;
+  background: transparent;
+  color: #0f766e;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.role-selection button:hover {
+  background: #ecfdf5;
+}
+
+/* FORM */
+.register-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group {
+  margin-bottom: 18px;
+}
+
+.input-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  outline: none;
+  border-color: #0f766e;
+}
+
+/* SUBMIT */
+.register-btn-primary {
+  background: #0f766e;
+  color: white;
+  padding: 12px;
+  border-radius: 999px;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.register-btn-primary:hover {
+  background: #115e59;
+}
+
+/* FOOTER */
+.register-footer {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.register-footer p {
+  font-size: 14px;
+  color: #475569;
+}
+
+.register-footer a {
+  color: #0f766e;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+/* Profile image upload */
+.input-group input[type="file"] {
+  padding: 10px;
+  border: 1px dashed #cfd8dc;
+  border-radius: 8px;
+  background-color: #fafafa;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.input-group input[type="file"]::-webkit-file-upload-button {
+  background-color: #2f80ed;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 10px;
+  font-weight: 500;
+}
+
+.input-group input[type="file"]::-webkit-file-upload-button:hover {
+  background-color: #1c6dd0;
+}
+
+
+/* Worker payment section */
+.worker-payment {
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* Payment button */
+.worker-payment button {
+  width: 100%;
+  padding: 12px;
+  background-color: #27ae60;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.worker-payment button:hover {
+  background-color: #1e874b;
+}
+
+/* Payment success text */
+.payment-success {
+  color: #219653;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+
+/* RESPONSIVE */
+@media (max-width: 480px) {
+  .register-card {
+    padding: 32px 24px;
+  }
+
+  .role-selection {
+    flex-direction: column;
+  }
+}
+
+.error {
+  display: block;
+  font-size: 12px;
+  color: #dc2626;
+  margin-top: 4px;
+  min-height: 14px;
+}
+

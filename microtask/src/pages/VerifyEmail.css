@@ -1,0 +1,172 @@
+/* ===== Verify Email Page ===== */
+
+.verify-email-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5f7fa, #e4ebf5);
+  padding: 20px;
+}
+
+.verify-email-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 30px 28px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.verify-email-card h2 {
+  margin-bottom: 10px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #222;
+}
+
+.verify-email-card p {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 18px;
+  word-break: break-all;
+}
+
+.verify-email-card p span {
+  font-weight: 600;
+  color: #2f80ed;
+}
+
+.verify-email-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  outline: none;
+  margin-bottom: 18px;
+  transition: border-color 0.3s ease;
+}
+
+.verify-email-input:focus {
+  border-color: #2f80ed;
+}
+
+.verify-email-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background-color: #2f80ed;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.verify-email-btn:hover {
+  background-color: #1c6dd0;
+}
+
+.verify-email-btn:disabled {
+  background-color: #a9c7f7;
+  cursor: not-allowed;
+}
+
+.verify-email-note {
+  margin-top: 16px;
+  font-size: 13px;
+  color: #777;
+}
+
+.verify-email-error {
+  color: #d32f2f;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* OTP BOXES */
+.otp-box-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.otp-box {
+  width: 42px;
+  height: 50px;
+  text-align: center;
+  font-size: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+}
+
+.otp-box:focus {
+  border-color: #2f80ed;
+}
+
+/* RESEND SECTION */
+.resend-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+/* CIRCULAR TIMER */
+.progress-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: #2f80ed;
+  background: #e0e0e0;
+}
+
+.progress-circle span {
+  background: #fff;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* RESEND BUTTON */
+.resend-btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  background-color: #6c757d;
+  color: white;
+  cursor: pointer;
+}
+
+.resend-btn:disabled {
+  background-color: #b0b7bd;
+  cursor: not-allowed;
+}
+
+/* SHAKE ANIMATION */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+
+.otp-box-container.shake {
+  animation: shake 0.4s ease-in-out;
+}
