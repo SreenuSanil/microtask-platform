@@ -126,3 +126,131 @@
   font-weight: 800;
   color: #0f172a;
 }
+
+/* =========================
+   GLOBAL SAFETY
+========================= */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* =========================
+   HEADER RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .dashboard-header {
+    padding: 14px 18px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .welcome-title {
+    font-size: 18px;
+  }
+
+  .welcome-sub {
+    font-size: 12px;
+  }
+
+  .logout-btn {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+}
+
+/* =========================
+   LAYOUT STACK (TABLET+)
+========================= */
+@media (max-width: 1024px) {
+  .dashboard-content {
+    flex-direction: column;
+  }
+}
+
+/* =========================
+   SIDEBAR → HORIZONTAL MENU
+========================= */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 100%;
+    min-height: auto;
+    display: flex;
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .menu-item {
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 14px;
+    min-width: 110px;
+    text-align: center;
+    font-size: 13px;
+  }
+
+  .menu-icon {
+    font-size: 18px;
+  }
+}
+
+/* =========================
+   MAIN CONTENT
+========================= */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 18px;
+  }
+}
+
+/* =========================
+   DASHBOARD STATS GRID
+========================= */
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    padding: 18px;
+  }
+
+  .stat-value {
+    font-size: 22px;
+  }
+}
+
+/* =========================
+   POST TASK / CONTENT SAFETY
+========================= */
+@media (max-width: 480px) {
+  input,
+  select,
+  textarea,
+  button {
+    font-size: 14px;
+  }
+}
+
+/* =========================
+   VERY SMALL PHONES
+========================= */
+@media (max-width: 360px) {
+  .welcome-title {
+    font-size: 16px;
+  }
+
+  .logout-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .menu-item {
+    min-width: 96px;
+    font-size: 12px;
+  }
+}

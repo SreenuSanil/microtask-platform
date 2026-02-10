@@ -1,4 +1,21 @@
 /* =========================
+   GLOBAL RESET
+========================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* =========================
    ROOT CONTAINER
 ========================= */
 .post-task-container {
@@ -16,6 +33,7 @@
 .post-task-header {
   text-align: center;
   margin-bottom: 24px;
+  max-width: 700px;
 }
 
 .post-task-header h2 {
@@ -28,6 +46,7 @@
   color: #475569;
   font-size: 15px;
   margin-top: 6px;
+  line-height: 1.6;
 }
 
 /* =========================
@@ -89,7 +108,7 @@
 
 .post-task-form textarea {
   resize: none;
-  min-height: 100px;
+  min-height: 110px;
 }
 
 .post-task-form input:focus,
@@ -102,7 +121,7 @@
 }
 
 /* =========================
-   SELECT DROPDOWN
+   SELECT
 ========================= */
 .post-task-form select {
   cursor: pointer;
@@ -115,20 +134,20 @@
   grid-column: span 2;
   display: flex;
   justify-content: center;
-  margin-top: 12px;
+  margin-top: 16px;
 }
 
 /* =========================
    BUTTON
 ========================= */
 .post-task-btn {
-  padding: 14px 38px;
+  padding: 14px 42px;
   font-size: 15px;
   font-weight: 600;
   color: #ffffff;
   background: linear-gradient(135deg, #6366f1, #4f46e5);
   border: none;
-  border-radius: 12px;
+  border-radius: 999px;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 10px 20px rgba(79, 70, 229, 0.4);
@@ -144,7 +163,20 @@
 }
 
 /* =========================
-   SMALL SCREENS
+   TABLET
+========================= */
+@media (max-width: 1024px) {
+  .post-task-card {
+    padding: 28px;
+  }
+
+  .post-task-header h2 {
+    font-size: 26px;
+  }
+}
+
+/* =========================
+   MOBILE
 ========================= */
 @media (max-width: 768px) {
   .post-task-form {
@@ -157,6 +189,39 @@
 
   .post-task-card {
     padding: 24px;
+  }
+
+  .post-task-btn {
+    width: 100%;
+  }
+}
+
+/* =========================
+   SMALL PHONES
+========================= */
+@media (max-width: 480px) {
+  .post-task-container {
+    padding: 30px 14px;
+  }
+
+  .post-task-header h2 {
+    font-size: 22px;
+  }
+
+  .post-task-header p {
+    font-size: 14px;
+  }
+
+  .post-task-card {
+    padding: 20px;
+    border-radius: 14px;
+  }
+
+  .post-task-form input,
+  .post-task-form textarea,
+  .post-task-form select {
+    padding: 14px;
+    font-size: 15px;
   }
 }
 

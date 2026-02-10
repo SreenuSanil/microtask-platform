@@ -1,9 +1,24 @@
-html, body {
+/* =========================
+   GLOBAL RESET
+========================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* =========================
+   BACK BUTTON
+========================= */
 .back-home {
   margin-bottom: 14px;
 }
@@ -24,13 +39,13 @@ html, body {
   color: #115e59;
 }
 
-
-
-/* ROOT */
+/* =========================
+   ROOT
+========================= */
 .register-root {
   min-height: 100vh;
+  padding: 20px;
 
-  /* 🔥 FIXED BACKGROUND */
   background-image: url("../assets/Home-bg.png");
   background-size: cover;
   background-position: center;
@@ -40,15 +55,20 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* Disable fixed background on mobile */
+@media (max-width: 768px) {
+  .register-root {
+    background-attachment: scroll;
+  }
+}
 
-
-/* CARD */
+/* =========================
+   CARD
+========================= */
 .register-card {
-  background: white;
+  background: #ffffff;
   width: 100%;
   max-width: 460px;
   padding: 28px 36px 36px;
@@ -56,11 +76,11 @@ html, body {
   box-shadow: 0 25px 60px rgba(0,0,0,0.25);
   max-height: 90vh;
   overflow-y: auto;
-  padding-bottom: 40px;
 }
 
-
-/* LOGO */
+/* =========================
+   LOGO
+========================= */
 .register-logo {
   text-align: center;
   margin-bottom: 14px;
@@ -70,7 +90,9 @@ html, body {
   height: 36px;
 }
 
-/* TEXT */
+/* =========================
+   TEXT
+========================= */
 .register-card h2 {
   text-align: center;
   font-size: 28px;
@@ -86,7 +108,9 @@ html, body {
   margin-bottom: 26px;
 }
 
-/* ROLE SELECTION */
+/* =========================
+   ROLE SELECTION
+========================= */
 .role-selection {
   display: flex;
   gap: 14px;
@@ -109,7 +133,9 @@ html, body {
   background: #ecfdf5;
 }
 
-/* FORM */
+/* =========================
+   FORM
+========================= */
 .register-form {
   display: flex;
   flex-direction: column;
@@ -142,7 +168,31 @@ html, body {
   border-color: #0f766e;
 }
 
-/* SUBMIT */
+/* =========================
+   FILE INPUT
+========================= */
+.input-group input[type="file"] {
+  padding: 10px;
+  border: 1px dashed #cfd8dc;
+  border-radius: 8px;
+  background-color: #fafafa;
+  cursor: pointer;
+}
+
+.input-group input[type="file"]::-webkit-file-upload-button {
+  background-color: #2f80ed;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 10px;
+  font-weight: 500;
+}
+
+/* =========================
+   SUBMIT BUTTON
+========================= */
 .register-btn-primary {
   background: #0f766e;
   color: white;
@@ -159,7 +209,35 @@ html, body {
   background: #115e59;
 }
 
-/* FOOTER */
+/* =========================
+   WORKER PAYMENT
+========================= */
+.worker-payment {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.worker-payment button {
+  width: 100%;
+  padding: 12px;
+  background-color: #27ae60;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.payment-success {
+  color: #219653;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+/* =========================
+   FOOTER
+========================= */
 .register-footer {
   text-align: center;
   margin-top: 20px;
@@ -174,78 +252,11 @@ html, body {
   color: #0f766e;
   font-weight: 500;
   text-decoration: none;
-  font-size: 14px;
 }
 
-/* Profile image upload */
-.input-group input[type="file"] {
-  padding: 10px;
-  border: 1px dashed #cfd8dc;
-  border-radius: 8px;
-  background-color: #fafafa;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.input-group input[type="file"]::-webkit-file-upload-button {
-  background-color: #2f80ed;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-right: 10px;
-  font-weight: 500;
-}
-
-.input-group input[type="file"]::-webkit-file-upload-button:hover {
-  background-color: #1c6dd0;
-}
-
-
-/* Worker payment section */
-.worker-payment {
-  margin-top: 10px;
-  text-align: center;
-}
-
-/* Payment button */
-.worker-payment button {
-  width: 100%;
-  padding: 12px;
-  background-color: #27ae60;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.worker-payment button:hover {
-  background-color: #1e874b;
-}
-
-/* Payment success text */
-.payment-success {
-  color: #219653;
-  font-weight: 600;
-  margin-top: 6px;
-}
-
-
-/* RESPONSIVE */
-@media (max-width: 480px) {
-  .register-card {
-    padding: 32px 24px;
-  }
-
-  .role-selection {
-    flex-direction: column;
-  }
-}
-
+/* =========================
+   ERROR
+========================= */
 .error {
   display: block;
   font-size: 12px;
@@ -254,3 +265,61 @@ html, body {
   min-height: 14px;
 }
 
+/* =========================
+   TABLET
+========================= */
+@media (max-width: 768px) {
+  .register-card {
+    padding: 28px 24px;
+  }
+
+  .register-card h2 {
+    font-size: 24px;
+  }
+}
+
+/* =========================
+   MOBILE
+========================= */
+@media (max-width: 480px) {
+  .register-card {
+    padding: 24px 20px;
+    max-height: unset;
+  }
+
+  .role-selection {
+    flex-direction: column;
+  }
+
+  .register-card h2 {
+    font-size: 22px;
+  }
+
+  .input-group input,
+  .input-group select {
+    padding: 14px;
+    font-size: 15px;
+  }
+
+  .register-btn-primary {
+    padding: 14px;
+    font-size: 16px;
+  }
+
+  .back-arrow {
+    font-size: 22px;
+  }
+}
+
+/* =========================
+   VERY SMALL PHONES
+========================= */
+@media (max-width: 360px) {
+  .register-card {
+    padding: 20px 16px;
+  }
+
+  .register-card h2 {
+    font-size: 20px;
+  }
+}

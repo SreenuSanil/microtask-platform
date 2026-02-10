@@ -1,6 +1,20 @@
 /* ===============================
    TASKNEST – PENDING APPROVAL PAGE
-   =============================== */
+=============================== */
+
+/* ---------- GLOBAL RESET ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
 
 /* ---------- GLOBAL VARIABLES ---------- */
 :root {
@@ -11,12 +25,15 @@
   --border-light: #e2e8f0;
   --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --card-bg: #ffffff;
+
   --radius-lg: 24px;
   --radius-md: 16px;
   --radius-sm: 12px;
+
   --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.15);
   --shadow-md: 0 8px 25px rgba(15, 118, 110, 0.3);
-  --font-main: "Outfit", sans-serif;
+
+  --font-main: "Outfit", "Segoe UI", sans-serif;
 }
 
 /* ---------- PAGE CONTAINER ---------- */
@@ -28,8 +45,6 @@
   justify-content: center;
   padding: 20px;
   font-family: var(--font-main);
-  position: relative;
-  overflow: hidden;
 }
 
 /* ---------- CARD ---------- */
@@ -41,58 +56,41 @@
   width: 100%;
   padding: 40px;
   position: relative;
-  z-index: 2;
+}
+
+/* ---------- BACK BUTTON ---------- */
+.back-home-btn {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  background: transparent;
+  border: none;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--primary);
+  cursor: pointer;
+}
+
+.back-home-btn:hover {
+  transform: translateX(-4px);
 }
 
 /* ---------- LOGO ---------- */
 .logo-section {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-/* ---------- LOGO (LEFT ALIGNED) ---------- */
-.logo-section {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  justify-content: center;
   margin-bottom: 24px;
 }
 
 .logo-section img {
-  max-height: 50px;     
-  width: auto;
+  max-height: 48px;
   object-fit: contain;
-}
-
-.logo-section p {
-  margin: 0;
-  font-size: 12px;
-  color: var(--text-light);
-  letter-spacing: 0.4px;
-  line-height: 1;
-}
-
-
-
-
-.logo h1 {
-  margin: 0;
-  font-size: 32px;
-  font-weight: 800;
-}
-
-.logo p {
-  margin: 4px 0 0;
-  font-size: 12px;
-  letter-spacing: 1px;
-  opacity: 0.9;
-  text-transform: uppercase;
 }
 
 /* ---------- ANIMATION ---------- */
 .pending-animation {
   text-align: center;
-  margin-bottom: 35px;
+  margin-bottom: 32px;
 }
 
 .hourglass {
@@ -119,9 +117,9 @@
 }
 
 @keyframes sandFlow {
-  0% { height: 15px; opacity: 0.3; }
+  0% { height: 14px; opacity: 0.3; }
   50% { height: 30px; opacity: 1; }
-  100% { height: 15px; opacity: 0.3; }
+  100% { height: 14px; opacity: 0.3; }
 }
 
 /* ---------- CONTENT ---------- */
@@ -133,8 +131,8 @@
   font-size: 32px;
   font-weight: 700;
   background: linear-gradient(90deg, var(--primary), var(--secondary));
-  background-clip: text;
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
   margin-bottom: 8px;
 }
@@ -153,13 +151,13 @@
   );
   border: 2px solid rgba(15, 118, 110, 0.15);
   border-radius: var(--radius-md);
-  padding: 30px;
-  margin-bottom: 40px;
+  padding: 28px;
+  margin-bottom: 36px;
 }
 
 .icon-large {
-  font-size: 46px;
-  margin-bottom: 15px;
+  font-size: 42px;
+  margin-bottom: 12px;
 }
 
 .status-message h2 {
@@ -189,25 +187,24 @@
 
 /* ---------- TIMELINE ---------- */
 .timeline-info {
-  margin-bottom: 40px;
+  margin-bottom: 36px;
 }
 
 .timeline-info h3 {
-  text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 22px;
   color: var(--text-dark);
 }
 
 .timeline {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 14px;
 }
 
 .timeline-item {
-  padding: 15px 20px;
+  padding: 14px 18px;
   border-radius: var(--radius-sm);
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .timeline-item.completed {
@@ -233,18 +230,16 @@
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   color: white;
   border: none;
-  padding: 16px 34px;
+  padding: 14px 32px;
   border-radius: var(--radius-sm);
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   box-shadow: var(--shadow-md);
-  transition: all 0.3s ease;
 }
 
 .check-status-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(15, 118, 110, 0.4);
 }
 
 .note {
@@ -253,10 +248,10 @@
   color: var(--text-light);
 }
 
-/* ---------- RESPONSIVE ---------- */
+/* ---------- TABLET ---------- */
 @media (max-width: 768px) {
   .approval-card {
-    padding: 30px 20px;
+    padding: 30px 22px;
     border-radius: 18px;
   }
 
@@ -264,11 +259,12 @@
     font-size: 26px;
   }
 
-  .logo h1 {
-    font-size: 26px;
+  .status-message {
+    padding: 22px;
   }
 }
 
+/* ---------- MOBILE ---------- */
 @media (max-width: 480px) {
   .approval-card {
     padding: 22px 16px;
@@ -280,5 +276,16 @@
 
   .check-status-btn {
     width: 100%;
+  }
+
+  .back-home-btn {
+    font-size: 22px;
+  }
+}
+
+/* ---------- VERY SMALL PHONES ---------- */
+@media (max-width: 360px) {
+  .approval-content h1 {
+    font-size: 20px;
   }
 }

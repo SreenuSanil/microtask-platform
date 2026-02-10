@@ -560,6 +560,184 @@
   border: 2px solid #e0e0e0;
   margin-bottom: 10px;
 }
+/* =========================
+   GLOBAL SAFETY
+========================= */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* =========================
+   HEADER RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .admin-header {
+    padding: 14px 18px;
+  }
+
+  .admin-header h1 {
+    font-size: 18px;
+  }
+
+  .logout-btn {
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+}
+
+/* =========================
+   LAYOUT RESPONSIVE
+========================= */
+@media (max-width: 1024px) {
+  .admin-body {
+    flex-direction: column;
+  }
+}
+
+/* =========================
+   SIDEBAR RESPONSIVE
+========================= */
+@media (max-width: 1024px) {
+  .admin-sidebar {
+    width: 100%;
+    min-height: auto;
+    display: flex;
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .menu-item {
+    flex-direction: column;
+    padding: 10px 14px;
+    min-width: 120px;
+    text-align: center;
+    font-size: 13px;
+  }
+
+  .menu-icon {
+    font-size: 18px;
+  }
+}
+
+/* =========================
+   CONTENT AREA
+========================= */
+@media (max-width: 768px) {
+  .admin-content {
+    padding: 16px;
+  }
+}
+
+/* =========================
+   TOOLBAR RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .interview-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .skill-search {
+    width: 100%;
+  }
+
+  .bulk-btn,
+  .bulk-primary,
+  .bulk-danger {
+    width: 100%;
+  }
+}
+
+/* =========================
+   GRID FIXES
+========================= */
+@media (max-width: 768px) {
+  .stats-grid,
+  .interview-grid,
+  .approved-grid,
+  .provider-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================
+   CARDS RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .worker-card,
+  .approved-card,
+  .provider-card,
+  .interview-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .worker-actions,
+  .card-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .worker-actions button,
+  .card-actions button {
+    flex: 1;
+  }
+}
+
+/* =========================
+   PROFILE IMAGE
+========================= */
+@media (max-width: 480px) {
+  .profile-img {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+/* =========================
+   INPUTS & BUTTONS
+========================= */
+@media (max-width: 480px) {
+  input,
+  select,
+  button {
+    font-size: 14px;
+  }
+}
+
+/* =========================
+   TEXT SCALING
+========================= */
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 18px;
+  }
+
+  .admin-header h1 {
+    font-size: 16px;
+  }
+}
+
+/* =========================
+   VERY SMALL PHONES
+========================= */
+@media (max-width: 360px) {
+  .menu-item {
+    min-width: 100px;
+    font-size: 12px;
+  }
+
+  .logout-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}
 
 
 
