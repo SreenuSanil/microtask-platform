@@ -3,6 +3,7 @@ import "./Register.css";
 import logo from "../assets/tasknest.png";
 import Home_bg from "../assets/Home-bg.png";
 import { useNavigate } from "react-router-dom";
+import LocationPicker from "../components/LocationPicker";
 
 
 
@@ -10,20 +11,106 @@ const Register = () => {
   const navigate = useNavigate();
   const [role, setRole] = useState("");
   const [paymentInfo, setPaymentInfo] = useState(null);
+  const [skillInput, setSkillInput] = useState("");
+  const [filteredSkills, setFilteredSkills] = useState([]);
+ 
+  const removeSkill = (skillToRemove) => {
+  setFormData((prev) => ({
+    ...prev,
+    skills: prev.skills.filter((skill) => skill !== skillToRemove),
+  }));
+};
+
+  const addSkill = (skill) => {
+  if (formData.skills.length >= 3) {
+    alert("You can select maximum 3 skills only");
+    return;
+  }
+
+  setFormData((prev) => ({
+    ...prev,
+    skills: [...prev.skills, skill],
+  }));
+
+  setSkillInput("");
+  setFilteredSkills({});
+};
 
   const [formData, setFormData] = useState({
   name: "",
   email: "",
   password: "",
   phone: "",
-  pincode: "",
-  city: "",
-  skills: "",
+  latitude: "",
+  longitude: "",
+  address: "",
+  skills: [],
   availability: "",
   organization: "",
-  taskType: "",
   profileImage: null
 });
+
+const SKILL_CATEGORIES = {
+  "Construction & Technical": [
+    "Plumber",
+    "Electrician",
+    "Carpenter",
+    "Mason",
+    "Painter",
+    "Welder",
+    "Tile Worker",
+    "Construction Helper"
+  ],
+
+  "Home & Domestic": [
+    "House Cleaner",
+    "Housekeeper",
+    "Cook",
+    "Gardener"
+  ],
+
+  "Transport & Delivery": [
+    "Car Driver",
+    "Auto Driver",
+    "Delivery Worker"
+  ],
+
+  "General Labor": [
+    "General Helper",
+    "Loading & Unloading Worker",
+    "Security Guard",
+    "Warehouse Worker",
+    "Factory Worker"
+  ],
+
+  "Technical Service": [
+    "AC Technician",
+    "Refrigerator Technician",
+    "Mobile Repair Technician",
+    "CCTV Installer"
+  ],
+
+  "Education": [
+    "Home Tutor",
+    "Math Tutor",
+    "Science Tutor",
+    "English Tutor",
+    "Computer Tutor",
+    "Spoken English Trainer"
+  ]
+};
+
+const CATEGORY_ICONS = {
+  "Construction & Technical": "🛠️",
+  "Home & Domestic": "🏠",
+  "Transport & Delivery": "🚚",
+  "General Labor": "👷",
+  "Technical Service": "⚙️",
+  "Education": "📚"
+};
+
+
+
 
 
 const [errors, setErrors] = useState({});
@@ -54,6 +141,31 @@ const handleImageChange = (e) => {
     profileImage: file,
   });
 };
+
+const handleSkillInput = (e) => {
+  const value = e.target.value.toLowerCase();
+  setSkillInput(value);
+
+  if (!value.trim()) {
+    setFilteredSkills({});
+    return;
+  }
+
+  const newFiltered = {};
+
+  Object.entries(SKILL_CATEGORIES).forEach(([category, skills]) => {
+    const matches = skills.filter(skill =>
+      skill.toLowerCase().includes(value)
+    );
+
+    if (matches.length > 0) {
+      newFiltered[category] = matches;
+    }
+  });
+
+  setFilteredSkills(newFiltered);
+};
+
 
 
 const handleWorkerPayment = async () => {
@@ -132,31 +244,33 @@ const validateForm = () => {
   } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
     newErrors.email = "Enter a valid email";
   }
-
-  if (!formData.password) {
+ if (!formData.password) {
     newErrors.password = "Password is required";
   } else if (formData.password.length < 6) {
     newErrors.password = "Password must be at least 6 characters";
+  } else if (!/\d/.test(formData.password)) {
+    newErrors.password = "Password must contain at least one number";
   }
-  if (!formData.phone) {
-  newErrors.phone = "Phone number is required";
-} else if (!/^[6-9]\d{9}$/.test(formData.phone)) {
-  newErrors.phone = "Enter a valid 10-digit phone number";
+
+  if (!formData.phone.trim()) {
+    newErrors.phone = "Phone number is required";
+  } else if (!/^[6-9]\d{9}$/.test(formData.phone)) {
+    newErrors.phone = "Enter a valid 10-digit phone number";
+  }
+
+if (
+  formData.latitude === "" ||
+  formData.longitude === ""
+) {
+  newErrors.location = "Location is required";
 }
 
-if (!formData.pincode) {
-  newErrors.pincode = "Pincode is required";
-} else if (!/^\d{6}$/.test(formData.pincode)) {
-  newErrors.pincode = "Enter a valid 6-digit pincode";
-}
 
-if (!formData.city.trim()) {
-  newErrors.city = "City is required";
-}
 
 
   if (role === "worker") {
-    if (!formData.skills.trim()) {
+    if (formData.skills.length === 0)
+ {
       newErrors.skills = "Skills are required";
     }
   }
@@ -165,9 +279,7 @@ if (!formData.city.trim()) {
     if (!formData.organization.trim()) {
       newErrors.organization = "Organization name is required";
     }
-    if (!formData.taskType.trim()) {
-      newErrors.taskType = "Task type is required";
-    }
+
   }
 
   setErrors(newErrors);
@@ -203,9 +315,14 @@ const handleSubmit = async (e) => {
   try {
     const formPayload = new FormData();
 
-    Object.keys(formData).forEach((key) => {
-      formPayload.append(key, formData[key]);
-    });
+  Object.keys(formData).forEach((key) => {
+  if (key === "skills") {
+    formPayload.append("skills", JSON.stringify(formData.skills));
+  } else {
+    formPayload.append(key, formData[key]);
+  }
+});
+
 
     formPayload.append("role", role);
 
@@ -356,31 +473,35 @@ if (response.ok) {
   {errors.phone && <span className="error">{errors.phone}</span>}
 </div>
 
-<div className="input-group">
-  <label>Pincode</label>
-  <input
-    type="text"
-    id="pincode"
-    name="pincode"
-    value={formData.pincode}
-    onChange={handleChange}
-    placeholder="Enter your area pincode"
-  />
-  {errors.pincode && <span className="error">{errors.pincode}</span>}
-</div>
 
 <div className="input-group">
-  <label>City</label>
-  <input
-    type="text"
-    id="city"
-    name="city"
-    value={formData.city}
-    onChange={handleChange}
-    placeholder="Enter your city"
-  />
-  {errors.city && <span className="error">{errors.city}</span>}
+  <label>Select Your Location</label>
+
+<LocationPicker
+  setLocationData={(data) =>
+    setFormData((prev) => ({
+      ...prev,
+      ...data,
+    }))
+  }
+/>
+
+  {formData.latitude && (
+    <p className="location-success">
+      📍 Selected: {formData.latitude}, {formData.longitude}
+    </p>
+  )}
+
+  {errors.location && (
+    <span className="error">{errors.location}</span>
+  )}
 </div>
+
+    
+
+
+
+
 <div className="input-group">
   <label>Profile Photo</label>
   <input
@@ -394,23 +515,71 @@ if (response.ok) {
 
 
               {/* WORKER-SPECIFIC FIELDS */}
-              {role === "worker" && (
-                <>
-                  <div className="input-group">
-                    <label>Skills</label>
-                    <input
-                      type="text"
-                      id="skills"
-                      name="skills"
-                      value={formData.skills}
-                      onChange={handleChange}
-                      placeholder="Eg: Plumbing, Local Service, Tutoring"
-                    />
-                    {errors.skills && <span className="error">{errors.skills}</span>}
-                  </div>
+{role === "worker" && (
+  <>
+    <div className="input-group">
+      <label>Skills</label>
 
-                </>
-              )}
+      <div className="skill-selector">
+
+        {/* Selected Skill Chips */}
+        <div className="selected-skills">
+          {formData.skills.map((skill) => (
+            <span key={skill} className="skill-chip">
+              {skill}
+              <button
+                type="button"
+                onClick={() => removeSkill(skill)}
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+
+        {/* Search Input */}
+        <input
+          type="text"
+          value={skillInput}
+          onChange={handleSkillInput}
+          placeholder="Search and select skills"
+        />
+
+        {/* Categorized Dropdown */}
+        {Object.keys(filteredSkills).length > 0 && (
+          <div className="skill-dropdown">
+            {Object.entries(filteredSkills).map(([category, skills]) => (
+              <div key={category} className="skill-category">
+
+                <div className="category-title">
+                  <span className="category-icon">
+                    {CATEGORY_ICONS[category]}
+                  </span>
+                  {category}
+                </div>
+    
+                {skills.map((skill) => (
+                  <div
+                    key={skill}
+                    className="skill-option"
+                    onClick={() => addSkill(skill)}
+                  >
+                    {skill}
+                  </div>
+                ))}
+
+              </div>
+            ))}
+          </div>
+        )}
+
+      </div>
+
+      {errors.skills && <span className="error">{errors.skills}</span>}
+    </div>
+  </>
+)}
+
 
 {role === "worker" && (
   <div className="input-group worker-payment">
@@ -442,18 +611,7 @@ if (response.ok) {
                     {errors.organization && <span className="error">{errors.organization}</span>}
                   </div>
 
-                  <div className="input-group">
-                    <label>Type of Tasks</label>
-                    <input
-                      type="text"
-                      id="taskType"
-                      name="taskType"
-                      value={formData.taskType}
-                      onChange={handleChange}
-                      placeholder="Eg: Driving, Plumbing, Local services"
-                    />
-                    {errors.taskType && <span className="error">{errors.taskType}</span>}
-                  </div>
+
                 </>
               )}
 

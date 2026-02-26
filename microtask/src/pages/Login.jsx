@@ -71,12 +71,6 @@ if (!response.ok) {
   return;
 }
 
-
-// ✅ ONLY SUCCESS REACHES HERE
-localStorage.setItem("token", data.token);
-
-
-
       // ✅ Correct login → redirect by role
       // save auth data
 localStorage.setItem("token", data.token);
@@ -84,13 +78,20 @@ localStorage.setItem("user", JSON.stringify(data.user));
 
 // ROLE + APPROVAL BASED REDIRECT
 if (data.user.role === "worker") {
+
   if (data.user.approvalStatus === "approved") {
     navigate("/worker-dashboard");
-  } else {
-    // pending or rejected
+
+  } else if (data.user.approvalStatus === "pending") {
     navigate("/pending-approval");
+
+  } else if (data.user.approvalStatus === "rejected") {
+    alert("Your profile was rejected. Please contact admin.");
+    return;
   }
-} 
+
+}
+ 
 else if (data.user.role === "provider") {
   navigate("/provider-dashboard");
 } 

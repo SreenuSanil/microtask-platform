@@ -11,6 +11,12 @@ import VerifyOtp from "./pages/VerifyOtp";
 import ResetPassword from "./pages/ResetPassword";
 import PendingApproval from "./pages/PendingApproval";
 import VerifyEmail from "./pages/VerifyEmail";
+import MyTasks from "./pages/provider/MyTasks";
+import PostTask from "./pages/provider/PostTask";
+import TaskWorkers from "./pages/provider/TaskWorkers";
+import WorkerProfile from "./pages/WorkerProfile";
+import Notifications from "./pages/worker/Notifications";
+import ChatPage from "./pages/chat/ChatPage";
 
  
 const App = () => {
@@ -25,6 +31,15 @@ const App = () => {
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/pending-approval" element={<PendingApproval />} />
+        
+        <Route
+  path="/provider/worker/:workerId"
+  element={
+    <ProtectedRoute allowedRole="provider">
+      <WorkerProfile />
+    </ProtectedRoute>
+  }
+/>
 
 
 
@@ -45,8 +60,17 @@ const App = () => {
     </ProtectedRoute>
   }
   />
+  <Route
+  path="/provider/post-task"
+  element={
+    <ProtectedRoute allowedRole="provider">
+      <PostTask />
+    </ProtectedRoute>
+  }
+/>
 
-   /* Admin */
+
+   {/* Admin */}
     <Route
       path="/admin-dashboard"
       element={
@@ -55,7 +79,33 @@ const App = () => {
         </ProtectedRoute>
       }
 />
+<Route
+  path="/provider/my-tasks"
+  element={<ProtectedRoute><MyTasks /></ProtectedRoute>}
+/>
 
+<Route
+  path="/provider/task/:taskId/workers"
+  element={<ProtectedRoute allowedRole="provider"><TaskWorkers /></ProtectedRoute>}
+/>
+
+<Route
+  path="/worker/notifications"
+  element={
+    <ProtectedRoute allowedRole="worker">
+      <Notifications />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/worker/chat/:connectionId"
+  element={<ChatPage />}
+/>
+
+<Route
+  path="/provider/chat/:connectionId"
+  element={<ChatPage />}
+/>
 
       </Routes>
       </>

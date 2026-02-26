@@ -7,7 +7,8 @@ const verifyToken = require("../middleware/authMiddleware"); // ✅ IMPORT ONCE 
 const Otp = require("../models/Otp");
 const sendEmail = require("../utils/sendEmail");
 const upload = require("../middleware/upload");
-
+const { updateProfile } = require("../controllers/authController");
+const authMiddleware = require("../middleware/authMiddleware");
 // ================= REGISTER =================
 router.post(
   "/register",
@@ -36,21 +37,42 @@ router.post(
         email,
         password,
         phone,
-        city,
-        pincode,
         role,
         skills,
         availability,
         organization,
         taskType,
+        latitude,
+        longitude,
+        address,
       } = req.body;
 
       const profileImage = req.file ? req.file.path : null;
 
       // BASIC VALIDATION
-      if (!name || !email || !password || !phone || !city || !pincode || !role) {
+     if (!name || !email || !password || !phone || !role || !latitude === undefined|| !longitude === undefined) {
         return res.status(400).json({ error: "All required fields must be filled" });
       }
+      const emailRegex = /\S+@\S+\.\S+/;
+if (!emailRegex.test(email)) {
+  return res.status(400).json({
+    error: "Invalid email format",
+  });
+}
+
+if (!/^[6-9]\d{9}$/.test(phone)) {
+  return res.status(400).json({
+    error: "Invalid phone number",
+  });
+}
+
+if (password.length < 6) {
+  return res.status(400).json({
+    error: "Password must be at least 6 characters",
+  });
+}
+
+
 
       if (!["worker", "provider"].includes(role)) {
         return res.status(400).json({ error: "Invalid role" });
@@ -88,10 +110,25 @@ router.post(
         email,
         password: hashedPassword,
         phone,
-        city,
-        pincode,
+
         role,
-        skills: role === "worker" ? skills : undefined,
+
+ location: {
+    type: "Point",
+    coordinates: [
+      parseFloat(longitude), 
+      parseFloat(latitude),  
+    ],
+  },
+    address,
+    
+        skills:
+  role === "worker"
+    ? Array.isArray(skills)
+      ? skills
+      : JSON.parse(skills)
+    : undefined,
+
         availability: role === "worker" ? availability : undefined,
         organization: role === "provider" ? organization : undefined,
         taskType: role === "provider" ? taskType : undefined,
@@ -396,7 +433,55 @@ router.post("/resend-email-otp", async (req, res) => {
   }
 });
 
+router.put(
+  "/update-profile",
+  authMiddleware,
+  upload.single("profileImage"),
+  async (req, res) => {
+    try {
+      const userId = req.user.userId;
 
+      const {
+        name,
+        email,
+        phone,
+        organization,
+      } = req.body;
+
+      const user = await User.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Update basic fields
+      user.name = name || user.name;
+      user.email = email || user.email;
+      user.phone = phone || user.phone;
+
+      // Only for provider
+      if (user.role === "provider") {
+        user.organization = organization || user.organization;
+      }
+
+      // If new profile image uploaded
+      if (req.file) {
+        user.profileImage = req.file.path;
+      }
+
+      await user.save();
+
+      res.json({
+        message: "Profile updated successfully",
+        user,
+      });
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
+    }
+  }
+);
 
 
 module.exports = router;

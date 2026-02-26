@@ -323,3 +323,172 @@ body {
     font-size: 20px;
   }
 }
+
+
+/* ================= LOCATION ================= */
+
+.location-btn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background-color: #2f80ed;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.location-btn:disabled {
+  background-color: #4caf50;
+  cursor: default;
+}
+
+.map-preview {
+  margin-top: 12px;
+}
+
+.location-address {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #444;
+}
+
+.change-location-btn {
+  margin-top: 8px;
+  padding: 6px 10px;
+  border: none;
+  background-color: #ff4d4f;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.skill-selector {
+  position: relative;
+}
+
+.selected-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.skill-chip {
+  background: #0f766e;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.skill-chip button {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.skill-dropdown {
+  position: absolute;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 100%;
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.skill-option {
+  padding: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.skill-option:hover {
+  background: #f1f5f9;
+}
+.skill-selector {
+  position: relative;
+}
+
+.selected-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.skill-chip {
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.skill-chip button {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.skill-dropdown {
+  position: absolute;
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 100;
+  margin-top: 6px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  border: 1px solid #e5e7eb;
+}
+
+.skill-category {
+  padding: 8px 0;
+}
+
+.category-title {
+  font-weight: 600;
+  padding: 8px 14px;
+  font-size: 13px;
+  color: #64748b;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.skill-option {
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.skill-option:hover {
+  background: #f1f5f9;
+}
+
+.category-icon {
+  font-size: 16px;
+}
+.map-box {
+  height: 300px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+}

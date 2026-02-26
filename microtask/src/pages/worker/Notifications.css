@@ -1,0 +1,33 @@
+.notif-page {
+  padding: 30px;
+  background: #f3f4f6;
+  min-height: 100vh;
+}
+
+.notif-title {
+  margin-bottom: 25px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.notif-card {
+  background: white;
+  padding: 18px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.notif-card h4 {
+  margin-bottom: 6px;
+  font-size: 15px;
+}
+
+.notif-card p {
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.notif-empty {
+  color: #6b7280;
+}

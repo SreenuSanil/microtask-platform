@@ -8,15 +8,16 @@ const taskSchema = new mongoose.Schema(
       required: true,
     },
 
+    worker: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
     title: {
       type: String,
       required: true,
       trim: true,
-    },
-
-    category: {
-      type: String, // electrician, plumber, etc
-      required: true,
     },
 
     description: {
@@ -24,23 +25,34 @@ const taskSchema = new mongoose.Schema(
       required: true,
     },
 
-    city: {
+    requiredSkill: {
       type: String,
       required: true,
+      lowercase: true,
+      trim: true,
     },
 
-    pincode: {
-      type: String,
-      required: true,
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number], // [lng, lat]
+        required: true,
+      },
+    },
+
+    siteAddress: {
+      houseName: String,
+      area: String,
+      landmark: String,
+      instructions: String,
     },
 
     taskDate: {
       type: Date,
-      required: true,
-    },
-
-    timeSlot: {
-      type: String, // morning / afternoon / evening
       required: true,
     },
 
@@ -51,17 +63,46 @@ const taskSchema = new mongoose.Schema(
 
     urgency: {
       type: String,
-      enum: ["normal", "urgent", "emergency"],
+      enum: ["normal", "urgent"],
       default: "normal",
     },
+    images: [
+  {
+    type: String,
+  },
+],
+
 
     status: {
       type: String,
-      enum: ["open", "assigned", "completed", "cancelled"],
+      enum: [
+        "open",
+        "assigned",
+        "in_progress",
+        "completed",
+        "cancelled",
+      ],
       default: "open",
     },
+
+assignedWorker: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User",
+  default: null,
+},
+
+completedAt: {
+  type: Date,
+},
+
+
+
   },
   { timestamps: true }
 );
+
+taskSchema.index({ location: "2dsphere" });
+
+
 
 module.exports = mongoose.model("Task", taskSchema);

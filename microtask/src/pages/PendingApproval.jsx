@@ -1,57 +1,87 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getProfile } from "../services/authApi";
 import "./PendingApproval.css";
 import logo from "../assets/tasknest.png";
 
 const PendingApproval = () => {
   const navigate = useNavigate();
+  const [checking, setChecking] = useState(false);
 
+  // 🔐 INITIAL CHECK
   useEffect(() => {
-    const checkApprovalStatus = async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    if (user.role !== "worker") {
+      navigate("/login");
+      return;
+    }
+
+    // If already approved (in case localStorage updated)
+    if (user.approvalStatus === "approved") {
+      navigate("/worker-dashboard");
+    }
+
+  }, [navigate]);
+
+  // 🔄 PROFESSIONAL AUTO-CHECK EVERY 10 SECONDS
+  useEffect(() => {
+    const interval = setInterval(async () => {
       try {
-        const res = await getProfile(); // backend call
-        const user = res.data;
+        setChecking(true);
 
-        if (user.role !== "worker") {
-          navigate("/login");
-          return;
-        }
+        const token = localStorage.getItem("token");
 
-        if (user.approvalStatus === "approved") {
+        const res = await fetch(
+          "http://localhost:5000/api/auth/me",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!res.ok) return;
+
+        const updatedUser = await res.json();
+
+        // Update localStorage user
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+
+        if (updatedUser.approvalStatus === "approved") {
           navigate("/worker-dashboard");
         }
 
-        if (user.approvalStatus === "rejected") {
-          navigate("/login");
-        }
       } catch (err) {
-        navigate("/login");
+        console.log("Approval check failed");
+      } finally {
+        setChecking(false);
       }
-    };
+    }, 10000); // every 10 seconds
 
-    checkApprovalStatus();
+    return () => clearInterval(interval);
   }, [navigate]);
 
   return (
     <div className="pending-approval-container">
       <div className="approval-card">
 
-
-        {/* BACK TO HOME */}
-<button
-  className="back-home-btn"
-  onClick={() => navigate("/")}
-  title="Back to Home"
->
-  ←
-</button>
-
+        {/* BACK BUTTON */}
+        <button
+          className="back-home-btn"
+          onClick={() => navigate("/")}
+          title="Back to Home"
+        >
+          ←
+        </button>
 
         {/* LOGO */}
         <div className="logo-section">
-          <img src={logo} alt="TaskNest Logo" /><br />
-          
+          <img src={logo} alt="TaskNest Logo" />
         </div>
 
         {/* ANIMATION */}
@@ -73,7 +103,7 @@ const PendingApproval = () => {
             <h2>Admin Verification in Progress</h2>
 
             <p>
-              Thank you for registering on <strong>TaskNest</strong>.  
+              Thank you for registering on <strong>TaskNest</strong>.
               Your profile is currently being reviewed by our admin team.
             </p>
 
@@ -110,7 +140,7 @@ const PendingApproval = () => {
             className="check-status-btn"
             onClick={() => window.location.reload()}
           >
-            Refresh Status
+            {checking ? "Checking..." : "Refresh Status"}
           </button>
 
           <p className="note">

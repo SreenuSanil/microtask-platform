@@ -1,0 +1,112 @@
+.worker-inv-page {
+  padding: 20px;
+}
+
+.inv-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.inv-provider {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.inv-provider img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.status-tag {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  margin-left: 10px;
+}
+
+.status-tag.pending {
+  background: #facc15;
+  color: black;
+}
+
+.status-tag.accepted {
+  background: #22c55e;
+  color: white;
+}
+
+.task-title {
+  margin-top: 15px;
+}
+
+.task-desc {
+  margin-bottom: 10px;
+}
+
+.task-details p {
+  margin: 4px 0;
+}
+
+.task-images {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.task-images img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.inv-actions {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.accept-btn {
+  background: #22c55e;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.reject-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.accepted-msg {
+  margin-top: 15px;
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.image-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-modal img {
+  max-width: 80%;
+  max-height: 80%;
+  border-radius: 10px;
+}

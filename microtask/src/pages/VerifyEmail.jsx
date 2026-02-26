@@ -155,6 +155,22 @@ setTimeout(() => setShake(false), 500);
     }
   };
 
+    /* HANDLE BACKSPACE + ENTER */
+  const handleKeyDown = (e, index) => {
+
+    // ⬅️ BACKSPACE: move focus to previous box if empty
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      inputRefs.current[index - 1].focus();
+    }
+
+    // ⏎ ENTER: submit OTP
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleVerify();
+    }
+  };
+
+
   const progress = (resendTimer / RESEND_TIME) * 100;
 
   return (

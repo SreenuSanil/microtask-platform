@@ -1,0 +1,94 @@
+.workermy-page {
+  background: #f3f4f6;
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+/* HEADER */
+.workermy-header {
+  background: white;
+  padding: 16px 28px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.workermy-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.workermy-back-btn {
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.workermy-logo {
+  height: 34px;
+}
+
+.workermy-title {
+  margin: 25px 30px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* TABS */
+.workermy-tabs {
+  margin: 0 30px 25px;
+}
+
+.workermy-tabs button {
+  padding: 8px 18px;
+  margin-right: 10px;
+  border: none;
+  background: #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.workermy-tabs button.active {
+  background: #2563eb;
+  color: white;
+}
+
+/* GRID */
+.workermy-grid {
+  padding: 0 30px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.workermy-card {
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.provider-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.provider-section img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.empty-text {
+  text-align: center;
+  margin-top: 40px;
+  color: #6b7280;
+}
+
+@media (max-width: 900px) {
+  .workermy-grid {
+    grid-template-columns: 1fr;
+  }
+}

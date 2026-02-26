@@ -1,0 +1,83 @@
+.worker-profile-container {
+  max-width: 850px;
+  margin: 40px auto;
+  background: #ffffff;
+  padding: 35px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.worker-profile-container h2 {
+  margin-bottom: 25px;
+  font-size: 26px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.worker-profile-container h3 {
+  margin-top: 35px;
+  margin-bottom: 15px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #334155;
+  border-left: 4px solid #10b981;
+  padding-left: 10px;
+}
+
+/* INPUTS */
+.worker-profile-container input,
+.worker-profile-container textarea {
+  width: 100%;
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  font-size: 14px;
+  transition: 0.3s;
+  background: #f8fafc;
+}
+
+.worker-profile-container input:focus,
+.worker-profile-container textarea:focus {
+  border-color: #10b981;
+  outline: none;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.worker-profile-container textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Disabled Skills */
+.worker-profile-container input:disabled {
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+/* Save Button */
+.worker-profile-container button {
+  margin-top: 25px;
+  padding: 12px 25px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.worker-profile-container button:hover {
+  background: #059669;
+}
+
+/* Map container styling */
+.leaflet-container {
+  border-radius: 12px;
+  margin-top: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}

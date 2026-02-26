@@ -1,0 +1,275 @@
+/* ============================= */
+/* PAGE WRAPPER */
+/* ============================= */
+
+.wp-page {
+  min-height: 100vh;
+  background: #f4f7fb;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* NAVBAR */
+.wp-navbar {
+  background: white;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.wp-navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.wp-logo {
+  height: 42px;
+}
+
+/* SMALL BACK ARROW */
+.wp-back-btn {
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #2f80ed;
+  transition: 0.2s ease;
+}
+
+.wp-back-btn:hover {
+  transform: translateX(-4px);
+}
+
+
+.worker-profile-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* ============================= */
+/* PROFILE HEADER */
+/* ============================= */
+
+.profile-header {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  margin-bottom: 30px;
+}
+
+.profile-image {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #2f80ed;
+}
+
+.profile-info h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.profile-info p {
+  margin: 5px 0;
+  color: #555;
+}
+
+/* Rating badge */
+.rating-badge {
+  background: #fff7e6;
+  color: #e6a700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+/* ============================= */
+/* SECTION CARD */
+/* ============================= */
+
+.profile-section {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  margin-bottom: 25px;
+}
+
+.profile-section h3 {
+  margin-bottom: 15px;
+  font-size: 20px;
+  border-left: 4px solid #2f80ed;
+  padding-left: 10px;
+}
+
+/* ============================= */
+/* SKILLS */
+/* ============================= */
+
+.skill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.skill-chip {
+  background: #eaf3ff;
+  color: #2f80ed;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ============================= */
+/* WORK GALLERY */
+/* ============================= */
+
+.work-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 15px;
+}
+
+.work-gallery img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+
+.work-gallery img:hover {
+  transform: scale(1.05);
+}
+
+/* ============================= */
+/* REVIEWS */
+/* ============================= */
+
+.review-card {
+  background: #f9fafc;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+.review-card h4 {
+  margin: 0 0 5px 0;
+  font-size: 15px;
+}
+
+.review-rating {
+  color: #ffb400;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.review-text {
+  color: #555;
+  font-size: 14px;
+}
+
+/* ============================= */
+/* BACK BUTTON */
+/* ============================= */
+
+.back-btn {
+  margin-bottom: 20px;
+  display: inline-block;
+  background: #2f80ed;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 14px;
+  transition: 0.3s ease;
+}
+
+.back-btn:hover {
+  background: #1f66c1;
+}
+
+/* ============================= */
+/* RESPONSIVE */
+/* ============================= */
+
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-image {
+    width: 110px;
+    height: 110px;
+  }
+}
+.skill-rating-list {
+  margin-top: 12px;
+}
+
+.skill-rating-item {
+  font-size: 14px;
+  margin-top: 4px;
+  color: #444;
+}
+.wp-connect-btn {
+  margin-top: 12px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.wp-connect-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+/* ============================
+   HEADER ICON
+============================ */
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-icon {
+  position: relative;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.header-icon:hover {
+  transform: scale(1.1);
+  transition: 0.2s ease;
+}
+
+.icon-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background: #dc2626;
+  color: white;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  font-weight: bold;
+}

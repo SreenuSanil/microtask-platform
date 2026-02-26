@@ -254,3 +254,31 @@ body {
     font-size: 12px;
   }
 }
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-icon {
+  position: relative;
+  cursor: pointer;
+  font-size: 18px;
+}
+.menu-item-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.notification-badge {
+  background: #ff3b30;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 50px;
+  min-width: 20px;
+  text-align: center;
+}

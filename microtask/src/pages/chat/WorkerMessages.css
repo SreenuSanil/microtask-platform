@@ -1,0 +1,113 @@
+.messages-page {
+  padding: 20px;
+}
+
+/* Tabs */
+.msg-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.msg-tabs button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  background: #e5e7eb;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.msg-tabs button:hover {
+  background: #d1d5db;
+}
+
+.msg-tabs button.active {
+  background: #075e54;
+  color: white;
+}
+
+/* Section title */
+.section-title {
+  margin-bottom: 15px;
+  margin-top: 10px;
+}
+
+/* Cards */
+.message-card {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: 0.2s ease;
+}
+
+.message-card:hover {
+  transform: translateY(-2px);
+}
+
+.message-card.completed {
+  opacity: 0.7;
+}
+
+/* Row layout */
+.msg-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.msg-row img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.embedded-chat {
+  margin-top: 20px;
+  border-top: 1px solid #ddd;
+  padding-top: 20px;
+}
+.full-chat-wrapper {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-back-btn {
+  padding: 12px 16px;
+  background: #075e54;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+}
+.full-chat-wrapper {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-back-btn {
+  padding: 12px 16px;
+  background: #075e54;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+}
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-badge {
+  background: #ff3b30;
+  color: white;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}

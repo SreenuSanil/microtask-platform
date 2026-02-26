@@ -1,72 +1,82 @@
-.admin-dashboard {
-  min-height: 100vh;
-  background: #f8fafc;
-  font-family: "Segoe UI", sans-serif;
+/* =====================================================
+   GLOBAL
+===================================================== */
+
+* {
+  box-sizing: border-box;
 }
 
-/* HEADER */
+body {
+  margin: 0;
+  overflow-x: hidden;
+  font-family: "Segoe UI", sans-serif;
+  background: #f8fafc;
+}
+
+.admin-dashboard {
+  min-height: 100vh;
+}
+
+/* =====================================================
+   HEADER
+===================================================== */
+
 .admin-header {
   background: white;
-  padding: 18px 36px;              /* more breathing space */
+  padding: 18px 36px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* LEFT HEADER */
 .header-left {
   display: flex;
   align-items: center;
-  gap: 14px;                       /* space between logo & title */
+  gap: 14px;
 }
 
-/* LOGO */
 .admin-logo {
-  height: 32px;                    /* 🔥 increased from 20px */
-  object-fit: contain;
+  height: 32px;
 }
 
-/* TITLE */
 .admin-header h1 {
-  font-size: 22px;                 /* 🔥 increased */
+  font-size: 22px;
   font-weight: 700;
   color: #0f172a;
   margin: 0;
-  line-height: 1.2;
 }
 
-/* LOGOUT BUTTON */
 .logout-btn {
   background: linear-gradient(135deg, #dc2626, #ef4444);
   color: white;
   border: none;
-  padding: 8px 18px;               /* slightly bigger */
+  padding: 8px 18px;
   border-radius: 8px;
-  cursor: pointer;
   font-weight: 600;
-  font-size: 14px;
+  cursor: pointer;
 }
 
+/* =====================================================
+   LAYOUT
+===================================================== */
 
-/* BODY */
 .admin-body {
   display: flex;
 }
 
-/* SIDEBAR */
 .admin-sidebar {
   width: 240px;
   background: white;
   border-right: 1px solid #e5e7eb;
-  min-height: calc(100vh - 56px);
+  min-height: calc(100vh - 70px);
 }
 
 .menu-item {
-  padding: 12px 18px;
+  padding: 14px 18px;
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
   cursor: pointer;
   font-size: 14px;
   color: #334155;
@@ -79,242 +89,39 @@
   font-weight: 600;
 }
 
-.menu-icon {
-  width: 20px;
-  text-align: center;
-  font-size: 16px;
-}
-
-/* CONTENT */
 .admin-content {
   flex: 1;
-  padding: 24px;
+  padding: 28px;
 }
 
-/* STATS */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-}
-
-.stat-card {
-  background: white;
-  padding: 18px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-.stat-card h3 {
-  font-size: 12px;
-  color: #64748b;
-}
-
-.stat-card p {
-  font-size: 22px;
-  font-weight: 800;
-  color: #0f172a;
-}
-
-/* WORKER CARD */
-.worker-card {
-  background: white;
-  padding: 16px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
-}
-
-.worker-card h4 {
-  margin: 0 0 4px;
-}
-
-.worker-card p {
-  margin: 2px 0;
-  font-size: 13px;
-  color: #475569;
-}
-
-/* BUTTON */
-.approve-btn {
-  background: linear-gradient(135deg, #0f766e, #14b8a6);
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* COMING SOON */
-.coming-soon {
-  background: white;
-  padding: 40px;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-/* TOOLBAR */
-.interview-toolbar {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.interview-toolbar select {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid #cbd5e1;
-}
-
-/* GRID */
-.interview-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 18px;
-}
-
-/* CARD */
-.interview-card {
-  background: white;
-  border-radius: 10px;
-  padding: 14px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.interview-card h4 {
-  margin: 6px 0 2px;
-}
-
-.interview-card p {
-  font-size: 13px;
-  color: #475569;
-}
-
-.full-width {
-  margin-top: auto;
-  width: 100%;
-}
-
-.skill-search {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid #cbd5e1;
-  width: 220px;
-}
-
-/* Buttons */
-.bulk-btn {
-  background: transparent;
-  color: #0f766e;
-  border: 1.5px solid #0f766e;
-  padding: 7px 14px;
-  border-radius: 6px;
-  font-weight: 600;
-}
-
-.bulk-btn:hover {
-  background: #ecfdf5;
-}
-
-.bulk-primary {
-  background: #0f766e;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: 600;
-  border: none;
-}
-
-.bulk-primary:hover {
-  background: #115e59;
-}
-
-/* Card button smaller */
-.interview-card button {
-  padding: 7px;
-  font-size: 13px;
-}
-
-.bulk-danger {
-  background: #0f172a;
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.bulk-danger:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.badge {
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  display: inline-block;
-  margin-bottom: 6px;
-}
-
-.badge.pending {
-  background: #e5e7eb;
-  color: #334155;
-}
-
-.badge.scheduled {
-  background: #fef3c7;
-  color: #92400e;
-}
-.section-title {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: #0f172a;
-}
-
-.selection-count {
-  font-size: 13px;
-  color: #475569;
-  margin-bottom: 10px;
-}
-
-/* ===== Worker Management ===== */
-.worker-management {
-  max-width: 100%;
-}
+/* =====================================================
+   SECTION TITLES
+===================================================== */
 
 .section-title {
   font-size: 22px;
   font-weight: 700;
-  margin: 30px 0 15px;
+  margin: 30px 0 20px;
   color: #0f172a;
 }
 
 .empty-text {
-  font-size: 14px;
   color: #64748b;
-  margin-bottom: 20px;
 }
 
-/* Tabs */
+/* =====================================================
+   TABS
+===================================================== */
+
 .worker-tabs {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 25px;
 }
 
 .worker-tabs button {
-  padding: 8px 16px;
-  border-radius: 20px;
+  padding: 8px 18px;
+  border-radius: 999px;
   border: 1px solid #cbd5e1;
   background: white;
   font-weight: 600;
@@ -327,418 +134,458 @@
   border-color: #0f766e;
 }
 
-/* Worker Card */
-.worker-card {
-  background: white;
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 14px;
+/* =====================================================
+   INTERVIEW SECTION
+===================================================== */
+
+.interview-toolbar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  gap: 12px;
+  margin-bottom: 25px;
 }
 
-.worker-card.pending { border-left: 5px solid #facc15; }
-.worker-card.approved { border-left: 5px solid #22c55e; }
-.worker-card.blocked { border-left: 5px solid #ef4444; }
-.worker-card.removed { border-left: 5px solid #64748b; }
-
-.worker-info h4 {
-  margin: 0 0 6px;
-}
-
-.worker-info p {
-  margin: 2px 0;
-  font-size: 13px;
-  color: #475569;
-}
-
-/* Actions */
-.worker-actions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.worker-actions input {
-  padding: 6px 10px;
-  border-radius: 6px;
+.skill-search {
+  padding: 10px 14px;
+  border-radius: 8px;
   border: 1px solid #cbd5e1;
-  font-size: 13px;
 }
 
-/* Buttons */
-.btn-approve {
-  background: #0f766e;
-  color: white;
-  padding: 7px 14px;
-  border-radius: 6px;
-  border: none;
+.bulk-btn,
+.bulk-primary,
+.bulk-danger {
+  padding: 10px 16px;
+  border-radius: 8px;
   font-weight: 600;
-}
-
-.btn-reject {
-  background: #ef4444;
-  color: white;
-  padding: 7px 14px;
-  border-radius: 6px;
   border: none;
-  font-weight: 600;
+  cursor: pointer;
 }
 
-.btn-block {
-  background: #f59e0b;
+.bulk-btn {
+  background: white;
+  border: 1px solid #0f766e;
+  color: #0f766e;
+}
+
+.bulk-primary {
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
   color: white;
-  padding: 7px 14px;
-  border-radius: 6px;
-  border: none;
-  font-weight: 600;
 }
 
-.btn-unblock {
-  background: #22c55e;
-  color: white;
-  padding: 7px 14px;
-  border-radius: 6px;
-  border: none;
-  font-weight: 600;
-}
-
-.btn-remove {
+.bulk-danger {
   background: #0f172a;
   color: white;
-  padding: 7px 14px;
-  border-radius: 6px;
-  border: none;
-  font-weight: 600;
 }
 
-.removed-text {
-  font-size: 13px;
-  font-weight: 600;
-  color: #64748b;
-}
-.reason-text {
-  margin-top: 8px;
-  font-size: 13px;
-  color: #555;
-}
-
-.reason-text.removed {
-  color: #c62828;
-}
-/* GRID LAYOUT */
-.approved-grid {
+.interview-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
 }
 
-/* CARD */
-.approved-card {
-  background: #ffffff;
-  border-radius: 14px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+/* =====================================================
+   WORKER & APPROVED CARDS
+===================================================== */
+
+.approved-grid,
+.provider-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.approved-card,
+.provider-card {
+  background: linear-gradient(145deg, #ffffff, #f3f4f6);
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  transition: 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.approved-card:hover,
+.provider-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+}
+
+/* STATUS RIBBON */
+
+.status-badge {
+  position: absolute;
+  top: 14px;
+  right: -35px;
+  padding: 6px 45px;
+  font-size: 11px;
+  font-weight: 700;
+  transform: rotate(45deg);
+  color: white;
+}
+
+.status-badge.active {
+  background: #22c55e;
+}
+
+.status-badge.blocked {
+  background: #ef4444;
+}
+
+.status-badge.removed {
+  background: #64748b;
+}
+
+/* CARD TOP */
+
+.card-top {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 18px;
-  border-left: 6px solid #1bb55c;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
 }
 
-/* BODY */
-.approved-card h4 {
+.profile-img {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e2e8f0;
+}
+
+.worker-main h4 {
   margin: 0;
   font-size: 18px;
 }
 
-.approved-card .email {
+.worker-main .email {
   font-size: 13px;
-  color: #666;
-  margin-bottom: 8px;
+  color: #64748b;
 }
 
-.approved-card p {
-  margin: 4px 0;
+/* DETAILS */
+
+.card-details {
   font-size: 14px;
+  margin-bottom: 12px;
 }
 
-/* REASON TEXT */
-.reason-text {
-  margin-top: 8px;
+.rating {
+  font-weight: 700;
+  color: #f59e0b;
+}
+
+/* REASON BOX */
+
+.reason-section {
+  background: #fef2f2;
+  padding: 10px 14px;
+  border-radius: 10px;
   font-size: 13px;
-  color: #c0392b;
+  margin-top: 10px;
 }
 
-.reason-text.removed {
-  color: #8e44ad;
-}
+/* =====================================================
+   BUTTONS
+===================================================== */
 
-/* ACTIONS */
 .card-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 14px;
+  gap: 12px;
+  margin-top: 16px;
 }
 
-/* BUTTONS */
-.btn-block {
+.card-actions button {
   flex: 1;
-  background: #f39c12;
+  padding: 10px;
+  border-radius: 12px;
   border: none;
-  padding: 8px;
-  border-radius: 8px;
-  color: #fff;
+  font-weight: 600;
   cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.btn-block {
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  color: white;
 }
 
 .btn-remove {
-  flex: 1;
-  background: #111827;
-  border: none;
-  padding: 8px;
-  border-radius: 8px;
-  color: #fff;
-  cursor: pointer;
+  background: linear-gradient(135deg, #111827, #374151);
+  color: white;
 }
 
 .btn-unblock {
-  flex: 1;
-  background: #1bb55c;
-  border: none;
-  padding: 8px;
-  border-radius: 8px;
-  color: #fff;
-  cursor: pointer;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
 }
 
-/* HOVER */
-.btn-block:hover { background: #e67e22; }
-.btn-remove:hover { background: #000; }
-.btn-unblock:hover { background: #159947; }
-
-.provider-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
+.card-actions button:hover {
+  transform: scale(1.05);
 }
 
-.provider-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
+/* =====================================================
+   RESPONSIVE
+===================================================== */
 
-.provider-card h4 {
-  margin-bottom: 6px;
-}
-
-.card-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.reason-text {
-  font-size: 13px;
-  margin-top: 8px;
-  color: #c0392b;
-}
-
-.reason-text.removed {
-  color: #7f8c8d;
-}
-
-.profile-img {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #e0e0e0;
-  margin-bottom: 10px;
-}
-/* =========================
-   GLOBAL SAFETY
-========================= */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  overflow-x: hidden;
-}
-
-/* =========================
-   HEADER RESPONSIVE
-========================= */
-@media (max-width: 768px) {
-  .admin-header {
-    padding: 14px 18px;
-  }
-
-  .admin-header h1 {
-    font-size: 18px;
-  }
-
-  .logout-btn {
-    padding: 6px 14px;
-    font-size: 13px;
-  }
-}
-
-/* =========================
-   LAYOUT RESPONSIVE
-========================= */
 @media (max-width: 1024px) {
   .admin-body {
     flex-direction: column;
   }
-}
 
-/* =========================
-   SIDEBAR RESPONSIVE
-========================= */
-@media (max-width: 1024px) {
   .admin-sidebar {
     width: 100%;
-    min-height: auto;
     display: flex;
     overflow-x: auto;
     border-right: none;
     border-bottom: 1px solid #e5e7eb;
   }
-
-  .menu-item {
-    flex-direction: column;
-    padding: 10px 14px;
-    min-width: 120px;
-    text-align: center;
-    font-size: 13px;
-  }
-
-  .menu-icon {
-    font-size: 18px;
-  }
 }
 
-/* =========================
-   CONTENT AREA
-========================= */
 @media (max-width: 768px) {
   .admin-content {
-    padding: 16px;
-  }
-}
-
-/* =========================
-   TOOLBAR RESPONSIVE
-========================= */
-@media (max-width: 768px) {
-  .interview-toolbar {
-    flex-direction: column;
-    align-items: stretch;
+    padding: 18px;
   }
 
-  .skill-search {
-    width: 100%;
-  }
-
-  .bulk-btn,
-  .bulk-primary,
-  .bulk-danger {
-    width: 100%;
-  }
-}
-
-/* =========================
-   GRID FIXES
-========================= */
-@media (max-width: 768px) {
-  .stats-grid,
-  .interview-grid,
   .approved-grid,
-  .provider-grid {
+  .provider-grid,
+  .interview-grid {
     grid-template-columns: 1fr;
   }
-}
 
-/* =========================
-   CARDS RESPONSIVE
-========================= */
-@media (max-width: 768px) {
-  .worker-card,
-  .approved-card,
-  .provider-card,
-  .interview-card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .worker-actions,
   .card-actions {
-    width: 100%;
-    flex-wrap: wrap;
+    flex-direction: column;
   }
+}
+/* =============================
+   MODERN ACTION LAYOUT
+============================= */
+.modern-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 
-  .worker-actions button,
-  .card-actions button {
-    flex: 1;
-  }
+.modern-actions input {
+  width: 100%;
+}
+
+.modern-actions button {
+  width: 100%;
+}
+
+/* Pending Badge */
+.status-badge.pending {
+  background: #f59e0b;
+}
+/* ===============================
+   PENDING APPROVAL – FULL ROW
+================================= */
+
+.worker-card.pending-modern {
+  position: relative;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  border-left: 5px solid #f59e0b;
+}
+
+.worker-left {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.worker-actions-modern {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.worker-actions-modern input {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+}
+
+.btn-approve-modern {
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-reject-modern {
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Ribbon */
+
+.status-ribbon {
+  position: absolute;
+  top: 15px;
+  right: -35px;
+  padding: 6px 40px;
+  font-size: 11px;
+  font-weight: 700;
+  transform: rotate(45deg);
+  text-align: center;
+  color: white;
+}
+
+.status-ribbon.pending {
+  background: #f59e0b;
+}
+
+
+
+
+
+/* ===================================
+   CLEAN PENDING ROW STYLE
+=================================== */
+
+.pending-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 6px solid #f59e0b;
+  transition: 0.3s ease;
+}
+
+.pending-card:hover {
+  transform: translateY(-3px);
+}
+
+.pending-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.pending-info h4 {
+  margin: 0 0 4px;
+  font-size: 17px;
+}
+
+.pending-info .email {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.pending-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.pending-actions input {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  min-width: 130px;
+}
+
+/* APPROVE BUTTON */
+.approve-btn-modern {
+  background: linear-gradient(135deg, #10b981, #14b8a6);
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.approve-btn-modern:hover {
+  opacity: 0.9;
+}
+
+/* REJECT BUTTON */
+.reject-btn-modern {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.reject-btn-modern:hover {
+  opacity: 0.9;
+}
+/* =========================
+   INTERVIEW CARD CLEAN
+========================= */
+
+.interview-card {
+  position: relative;
+  background: white;
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+  transition: 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.interview-card:hover {
+  transform: translateY(-6px);
+}
+
+.interview-card input[type="checkbox"] {
+  position: absolute;
+  top: 18px;
+  right: 18px;
 }
 
 /* =========================
-   PROFILE IMAGE
+   BADGE CLEAN
 ========================= */
-@media (max-width: 480px) {
-  .profile-img {
-    width: 56px;
-    height: 56px;
-  }
+
+.badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  width: fit-content;
 }
 
-/* =========================
-   INPUTS & BUTTONS
-========================= */
-@media (max-width: 480px) {
-  input,
-  select,
-  button {
-    font-size: 14px;
-  }
+.badge.pending {
+  background: #e5e7eb;
+  color: #374151;
 }
 
-/* =========================
-   TEXT SCALING
-========================= */
-@media (max-width: 480px) {
-  .section-title {
-    font-size: 18px;
-  }
-
-  .admin-header h1 {
-    font-size: 16px;
-  }
+.badge.scheduled {
+  background: #fde68a;
+  color: #92400e;
 }
-
-/* =========================
-   VERY SMALL PHONES
-========================= */
-@media (max-width: 360px) {
-  .menu-item {
-    min-width: 100px;
-    font-size: 12px;
-  }
-
-  .logout-btn {
-    padding: 5px 10px;
-    font-size: 12px;
-  }
-}
-
 
 
 

@@ -127,30 +127,51 @@ exports.getWorkersByStatus = async (req, res) => {
 
 // approve worker
 exports.approveWorker = async (req, res) => {
-  const { workerId, rating } = req.body;
+  const { workerId, ratings } = req.body;
 
   try {
-    const worker = await User.findOneAndUpdate(
-      {
-        _id: workerId,
-        "interview.interviewStatus": "completed",
-      },
-      {
-        approvalStatus: "approved",
-        rating,
-      },
-      { new: true }
-    );
+    const worker = await User.findOne({
+      _id: workerId,
+      "interview.interviewStatus": "completed",
+    });
 
     if (!worker) {
-      return res.status(400).json({ error: "Interview not completed" });
+      return res.status(400).json({
+        error: "Interview not completed",
+      });
     }
 
+    if (!ratings || !Array.isArray(ratings) || ratings.length === 0) {
+      return res.status(400).json({
+        error: "Ratings are required",
+      });
+    }
+
+    // ✅ Save skill ratings
+    worker.skillRatings = ratings.map((r) => ({
+      skill: r.skill,
+      rating: r.rating,
+      ratingAverage: r.rating,
+      ratingCount: 1,
+    }));
+
+    // ✅ Calculate overall rating
+    worker.overallRating =
+      ratings.reduce((sum, r) => sum + r.rating, 0) /
+      ratings.length;
+
+    // ✅ Approve worker
+    worker.approvalStatus = "approved";
+
+    await worker.save();
+
     res.json(worker);
-  } catch {
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Approval failed" });
   }
 };
+
 
 // reject worker
 exports.rejectWorker = async (req, res) => {

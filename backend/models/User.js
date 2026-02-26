@@ -26,17 +26,22 @@ const userSchema = new mongoose.Schema(
       match: /^[6-9]\d{9}$/,
     },
 
-    city: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+    location: {
+  type: {
+    type: String,
+    enum: ["Point"],
+    default: "Point",
+  },
+  coordinates: {
+    type: [Number], // [longitude, latitude]
+    required: true,
+  },
+},
 
-    pincode: {
-      type: String,
-      required: true,
-      match: /^\d{6}$/,
-    },
+address: {
+  type: String,
+},
+
 
     profileImage: {
   type: String, 
@@ -50,8 +55,28 @@ const userSchema = new mongoose.Schema(
     },
 
     /* WORKER FIELDS */
-    skills: String,
-    availability: String,
+
+
+skills: [
+  {
+    type: String,
+    lowercase: true,
+    trim: true,
+  }
+],
+
+isAvailable: {
+  type: Boolean,
+  default: false,
+},
+
+availableUntil: {
+  type: Date,
+  default: null,
+},
+
+
+
 
     /* PROVIDER FIELDS */
     organization: String,
@@ -75,10 +100,103 @@ const userSchema = new mongoose.Schema(
       },
     },
 
+/* Interview Evaluation Score */
+skillRatings: [
+  {
+    skill: {
+      type: String,
+      required: true,
+    },
     rating: {
       type: Number,
       default: 0,
     },
+    ratingAverage: {
+      type: Number,
+      default: 0,
+    },
+    ratingCount: {
+      type: Number,
+      default: 0,
+    }
+  }
+],
+
+
+completedTasks: {
+  type: Number,
+  default: 0,
+},
+
+complaintCount: {
+  type: Number,
+  default: 0,
+},
+
+overallRating: {
+  type: Number,
+  default: 0,
+},
+
+ratingCount: {
+  type: Number,
+  default: 0,
+},
+
+/* =========================
+   WORKER PROFILE EXTRA DATA
+========================= */
+
+previousWorks: [
+  {
+    type: String, // image path
+  }
+],
+
+bio: {
+  type: String,
+  default: "",
+},
+
+experienceYears: {
+  type: Number,
+  default: 0,
+},
+
+pastWorkDescription: {
+  type: String,
+  default: "",
+},
+
+certifications: {
+  type: String,
+  default: "",
+},
+
+languages: {
+  type: String,
+  default: "",
+},
+
+reviews: [
+  {
+    user: {
+      type: String, // reviewer name
+    },
+    rating: {
+      type: Number,
+    },
+    comment: {
+      type: String,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    }
+  }
+],
+
+
 
     accountStatus: {
       type: String,
@@ -125,5 +243,7 @@ payment: {
   },
   { timestamps: true }
 );
+userSchema.index({ location: "2dsphere" });
+
 
 module.exports = mongoose.model("User", userSchema);
