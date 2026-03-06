@@ -108,12 +108,10 @@ useEffect(() => {
 
 }, []);
 
-
-
-  const [availability, setAvailability] = useState(() => {
-    const saved = JSON.parse(localStorage.getItem("availability"));
-    return saved || { active: false, time: null };
-  });
+const [availability, setAvailability] = useState({
+  active: false,
+  time: null,
+});
 
   const [ongoingTasks] = useState([]);
   const [taskHistory] = useState([]);
@@ -134,6 +132,34 @@ useEffect(() => {
     const data = await res.json();
     setUnreadCount(data.totalUnread || 0);
   };
+
+  useEffect(() => {
+  const fetchAvailability = async () => {
+    try {
+      const res = await fetch(
+        "http://localhost:5000/api/auth/me",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setAvailability({
+          active: data.isAvailable,
+          time: data.availableUntil,
+        });
+      }
+    } catch (err) {
+      console.error("Failed to fetch availability");
+    }
+  };
+
+  fetchAvailability();
+}, []);
 
 useEffect(() => {
   fetchUnread();
@@ -158,27 +184,31 @@ const storedUser = JSON.parse(localStorage.getItem("user"));
 }, []);
 
 
-  /* AUTO EXPIRE AVAILABILITY */
-  useEffect(() => {
-    if (availability.active && availability.time) {
-      const now = Date.now();
-      if (now - availability.time > AVAILABILITY_LIMIT) {
-        setAvailability({ active: false, time: null });
-        localStorage.removeItem("availability");
+const toggleAvailability = async () => {
+  try {
+    const res = await fetch(
+      "http://localhost:5000/api/users/toggle-availability",
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
-    }
-  }, [availability]);
+    );
 
-  const toggleAvailability = () => {
-    if (!availability.active) {
-      const data = { active: true, time: Date.now() };
-      setAvailability(data);
-      localStorage.setItem("availability", JSON.stringify(data));
-    } else {
-      setAvailability({ active: false, time: null });
-      localStorage.removeItem("availability");
+    const data = await res.json();
+
+    if (res.ok) {
+      setAvailability({
+        active: data.isAvailable,
+        time: data.availableUntil,
+      });
     }
-  };
+
+  } catch (err) {
+    console.error("Failed to toggle availability");
+  }
+};
 
   const formatName = name =>
     name

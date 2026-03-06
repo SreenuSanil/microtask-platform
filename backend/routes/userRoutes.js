@@ -132,7 +132,38 @@ router.get("/find-workers", auth, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+// ================= TOGGLE WORKER AVAILABILITY =================
+router.patch("/toggle-availability", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
 
+    if (!user || user.role !== "worker") {
+      return res.status(403).json({ message: "Only workers can toggle availability" });
+    }
+
+    // If currently available → turn OFF
+    if (user.isAvailable) {
+      user.isAvailable = false;
+      user.availableUntil = null;
+    } 
+    // If currently unavailable → turn ON for 48 hours
+    else {
+      user.isAvailable = true;
+      user.availableUntil = new Date(Date.now() + 48 * 60 * 60 * 1000);
+    }
+
+    await user.save();
+
+    res.json({
+      isAvailable: user.isAvailable,
+      availableUntil: user.availableUntil,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to toggle availability" });
+  }
+});
 router.put("/worker-profile", protect, updateWorkerProfile);
 router.patch("/change-password", protect, changePassword);
 module.exports = router;

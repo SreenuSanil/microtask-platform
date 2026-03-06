@@ -1,0 +1,83 @@
+.provider-overview-container {
+  padding: 25px;
+}
+
+/* ===== MAIN STATS ===== */
+.provider-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.provider-card {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  transition: 0.3s ease;
+}
+
+.provider-card:hover {
+  transform: translateY(-4px);
+}
+
+.provider-card span {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.provider-card h3 {
+  font-size: 26px;
+  margin-top: 8px;
+  color: #1c8c6e;
+}
+
+/* ===== FINANCIAL ===== */
+.provider-financial {
+  margin-bottom: 40px;
+}
+
+.provider-financial h2 {
+  font-size: 18px;
+  margin-bottom: 18px;
+  color: #1f2937;
+}
+
+.financial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.financial-box {
+  background: #f4f7f6;
+  padding: 18px;
+  border-radius: 12px;
+  border-left: 4px solid #1c8c6e;
+}
+
+.financial-box span {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.financial-box h4 {
+  font-size: 20px;
+  margin-top: 6px;
+  color: #1c8c6e;
+}
+
+/* ===== ACTIVITY ===== */
+.provider-activity h2 {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #1f2937;
+}
+
+.activity-box {
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}

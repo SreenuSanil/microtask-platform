@@ -17,7 +17,7 @@ import TaskWorkers from "./pages/provider/TaskWorkers";
 import WorkerProfile from "./pages/WorkerProfile";
 import Notifications from "./pages/worker/Notifications";
 import ChatPage from "./pages/chat/ChatPage";
-
+import ProviderTransactions from "./pages/provider/ProviderTransactions";
  
 const App = () => {
   return (
@@ -31,7 +31,7 @@ const App = () => {
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/pending-approval" element={<PendingApproval />} />
-        
+        <Route path="/provider/transactions" element={<ProviderTransactions />} />
         <Route
   path="/provider/worker/:workerId"
   element={

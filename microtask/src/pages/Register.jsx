@@ -169,6 +169,32 @@ const handleSkillInput = (e) => {
 
 
 const handleWorkerPayment = async () => {
+   const tempErrors = {};
+
+  if (!formData.name.trim())
+    tempErrors.name = "Full name is required";
+
+  if (!formData.email)
+    tempErrors.email = "Email is required";
+
+  if (!formData.password)
+    tempErrors.password = "Password is required";
+
+  if (!formData.phone)
+    tempErrors.phone = "Phone number is required";
+
+  if (!formData.latitude || !formData.longitude)
+    tempErrors.location = "Location is required";
+
+  if (formData.skills.length === 0)
+    tempErrors.skills = "At least one skill is required";
+
+  if (Object.keys(tempErrors).length > 0) {
+    setErrors(tempErrors);
+    scrollToFirstError(tempErrors);
+    alert("Please complete all required fields before payment");
+    return;
+  }
   try {
     // 1️⃣ create order from backend
     const res = await fetch(

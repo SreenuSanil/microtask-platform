@@ -1,0 +1,104 @@
+.txn-container {
+  padding: 30px;
+}
+
+.txn-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.txn-top h2 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.download-btn {
+  background: #0e8f6a;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.wallet-summary {
+  background: white;
+  padding: 18px 20px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.wallet-summary .label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.wallet-summary h3 {
+  font-size: 20px;
+  color: #0e8f6a;
+}
+
+.txn-table {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}
+
+.txn-head {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 2fr;
+  background: #0e8f6a;
+  color: white;
+  font-weight: 500;
+  padding: 12px 15px;
+}
+
+.txn-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 2fr;
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.txn-row:hover {
+  background: #f3faf8;
+}
+
+.txn-type {
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.txn-type.escrow_payment {
+  color: #0e8f6a;
+}
+
+.txn-type.refund {
+  color: #d32f2f;
+}
+
+.txn-type.commission {
+  color: #f57c00;
+}
+
+.txn-amount {
+  font-weight: 600;
+}
+
+.txn-desc {
+  color: #666;
+  font-size: 13px;
+}
+
+.no-data {
+  padding: 20px;
+  text-align: center;
+  color: #777;
+}

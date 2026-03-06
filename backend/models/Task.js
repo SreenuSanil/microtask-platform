@@ -73,15 +73,18 @@ const taskSchema = new mongoose.Schema(
 ],
 
 
-    status: {
-      type: String,
-      enum: [
-        "open",
-        "assigned",
-        "in_progress",
-        "completed",
-        "cancelled",
-      ],
+   status: {
+  type: String,
+  enum: [
+    "open",
+    "assigned",
+    "accepted",
+    "in_progress",
+    "pending_verification",
+    "completed",
+    "cancelled",
+    "dispute"
+  ],
       default: "open",
     },
 
@@ -90,12 +93,67 @@ assignedWorker: {
   ref: "User",
   default: null,
 },
+cancelledBy: {
+  type: String,
+  enum: ["worker", "provider","admin"]
+},
 
 completedAt: {
   type: Date,
 },
 
+completionImage: {
+  type: String,
+},
 
+rejectionReason: {
+  type: String,
+  default: "",
+},
+
+rejectedAt: {
+  type: Date,
+},
+
+dispute: {
+  raisedBy: {
+    type: String,
+    enum: ["worker", "provider"],
+  },
+
+  reason: {
+    type: String,
+  },
+
+  raisedAt: {
+    type: Date,
+  },
+
+  status: {
+    type: String,
+    enum: ["open", "resolved"],
+    default: "open",
+  }
+},
+
+verifiedAt: {
+  type: Date,
+},
+
+  paymentStatus: {
+    type: String,
+    enum: ["pending", "paid"],
+    default: "pending"
+  },
+
+ escrowStatus: {
+  type: String,
+  enum: ["none", "held", "released", "refunded","split"],
+  default: "none"
+},
+
+  razorpayOrderId: String,
+  razorpayPaymentId: String
 
   },
   { timestamps: true }
@@ -103,6 +161,7 @@ completedAt: {
 
 taskSchema.index({ location: "2dsphere" });
 
-
+taskSchema.index({ provider: 1 });
+taskSchema.index({ status: 1 });
 
 module.exports = mongoose.model("Task", taskSchema);

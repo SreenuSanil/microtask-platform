@@ -65,21 +65,18 @@ const ProviderMessages = () => {
   };
 
 
-const negotiationList = [
-
-  ...chats.filter(
-    c =>
-      c.status === "accepted" ||
-      c.status === "provider_confirmed"
-  )
-];
+const negotiationList = chats.filter(
+  c =>
+    c.taskStatus === "open" ||
+    c.taskStatus === "assigned"
+);
 
 const ongoingList = chats.filter(
-  c => c.status === "confirmed"
+  c => c.taskStatus === "in_progress"
 );
 
 const completedList = chats.filter(
-  c => c.status === "closed"
+  c => c.taskStatus === "completed"
 );
 
   const renderList = (list) =>

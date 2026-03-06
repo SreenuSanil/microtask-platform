@@ -46,7 +46,10 @@ router.patch("/confirm/:connectionId", protect, async (req, res) => {
     // 🔒 Lock budget
     connection.status = "provider_confirmed";
     connection.budgetConfirmed = true;
-    connection.finalBudget = connection.task.budget; // default original
+
+    if (!connection.finalBudget) {
+  connection.finalBudget = connection.task.budget;
+}
 
     await connection.save();
 
@@ -90,6 +93,34 @@ router.patch("/worker-confirm/:id", protect, async (req, res) => {
 
   } catch (err) {
     console.error("Worker confirm error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+router.patch("/update-budget/:id", protect, async (req, res) => {
+  try {
+    const { newAmount } = req.body;
+
+    const connection = await Connection.findById(req.params.id)
+      .populate("task");
+
+    if (!connection)
+      return res.status(404).json({ message: "Not found" });
+
+    if (connection.provider.toString() !== req.user.userId.toString())
+      return res.status(403).json({ message: "Only provider can update" });
+
+   if (Number(newAmount) < Number(connection.task.budget)) {
+      return res.status(400).json({
+        message: "Cannot reduce below original budget",
+      });
+    }
+
+    connection.finalBudget = newAmount;
+    await connection.save();
+
+    res.json({ message: "Budget updated", amount: newAmount });
+
+  } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
 });

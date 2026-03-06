@@ -27,6 +27,7 @@ app.use(
 );
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 
 app.use("/uploads", express.static("uploads"));
@@ -45,6 +46,9 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/connections", connectionRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/wallet", require("./routes/walletRoutes"));
+app.use("/api/provider-stats", require("./routes/providerStatsRoutes"));
+
 // 🔥 Connect DB FIRST
 connectDB();
 

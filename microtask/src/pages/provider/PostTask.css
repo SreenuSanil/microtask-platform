@@ -215,3 +215,11 @@ textarea {
 .back-btn:hover {
   background: #2563eb;
 }
+.cancel-btn{
+ background:#ef4444;
+ color:white;
+ padding:8px 14px;
+ border:none;
+ border-radius:6px;
+ cursor:pointer;
+}

@@ -131,10 +131,55 @@ router.post("/search", auth, async (req, res) => {
         }
       },
 
+     {
+  $addFields: {
+    skillJobData: {
+      $arrayElemAt: [
+        {
+          $filter: {
+            input: "$skillCompletedTasks",
+            as: "sc",
+            cond: { $eq: ["$$sc.skill", skill.toLowerCase()] }
+          }
+        },
+        0
+      ]
+    }
+  }
+},
+{
+  $addFields: {
+    skillCompletedJobs: {
+      $ifNull: ["$skillJobData.count", 0]
+    }
+  }
+},
+
+{
+  $addFields: {
+    weightedRating: {
+      $add: [
+        {
+          $multiply: [
+            { $divide: ["$skillCompletedJobs", { $add: ["$skillCompletedJobs", 10] }] },
+            "$overallRating"
+          ]
+        },
+        {
+          $multiply: [
+            { $divide: [10, { $add: ["$skillCompletedJobs", 10] }] },
+            4
+          ]
+        }
+      ]
+    }
+  }
+},
+
       {
         $addFields: {
           experienceWeight: {
-            $ln: { $add: ["$completedTasks", 1] }
+            $ln: { $add: ["$skillCompletedJobs", 1] }
           }
         }
       },
@@ -143,8 +188,8 @@ router.post("/search", auth, async (req, res) => {
         $addFields: {
           newWorkerBoost: {
             $cond: {
-              if: { $lt: ["$completedTasks", 5] },
-              then: { $divide: [1, { $add: ["$completedTasks", 1] }] },
+              if: { $lt: ["$skillCompletedJobs", 5] },
+              then: { $divide: [1, { $add: ["$skillCompletedJobs", 1] }] },
               else: 0
             }
           }
@@ -165,7 +210,7 @@ router.post("/search", auth, async (req, res) => {
             $subtract: [
               {
                 $add: [
-                  { $multiply: ["$qualityScore", 2] },
+                  { $multiply: ["$weightedRating", 2] },
                   "$experienceWeight",
                   "$newWorkerBoost"
                 ]

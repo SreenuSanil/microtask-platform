@@ -38,6 +38,7 @@ messageSchema.index(
   { createdAt: 1 },
   { expireAfterSeconds: 60 * 60 * 24 * 30 }
 );
+messageSchema.index({ connection: 1 });
 
 
 module.exports = mongoose.model("Message", messageSchema);

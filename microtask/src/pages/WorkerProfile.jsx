@@ -1,21 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
 import "./WorkerProfile.css";
-import logo from "../assets/tasknest.png";
 
-
-const WorkerProfile = () => {
-  const { workerId } = useParams();
-  const navigate = useNavigate();
+const WorkerProfile = ({ workerId, goBack, taskId }) => {
 
   const [worker, setWorker] = useState(null);
   const [loading, setLoading] = useState(true);
-  const location = useLocation();
   const [connecting, setConnecting] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
-
-  const queryParams = new URLSearchParams(location.search);
-  const taskId = queryParams.get("task");
   const sendConnection = async () => {
   if (!taskId) {
     alert("Task not selected");
@@ -64,11 +55,13 @@ const WorkerProfile = () => {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   };
+  
 useEffect(() => {
-  if (taskId) {
+  if (taskId && workerId) {
     checkExistingRequest();
   }
-}, [taskId]);
+}, [taskId, workerId]);
+
 const checkExistingRequest = async () => {
   try {
     const res = await fetch(
@@ -114,24 +107,12 @@ const checkExistingRequest = async () => {
   if (!worker) return <p>Worker not found.</p>;
 
  return (
-  <div className="wp-page">
-
-    {/* NAVBAR */}
-    <div className="wp-navbar">
-      <div className="wp-navbar-left">
-        <button
-          className="wp-back-btn"
-          onClick={() => navigate(-1)}
-        >
-          ←
-        </button>
-
-        <img src={logo} alt="TaskNest" className="wp-logo" />
-      </div>
-    </div>
-
+  
+  
     <div className="worker-profile-container">
-
+<button className="wp-back-btn" onClick={goBack}>
+  ← Back to Workers
+</button>
       {/* HEADER */}
       <div className="profile-header">
         <img
@@ -238,7 +219,7 @@ const checkExistingRequest = async () => {
       </div>
 
     </div>
-  </div>
+  
 );
 
 };

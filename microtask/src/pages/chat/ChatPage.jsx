@@ -13,6 +13,11 @@ const ChatPage = ({ connectionId }) => {
  const [budgetConfirmed, setBudgetConfirmed] = useState(false);
    const [previewImage, setPreviewImage] = useState(null);
   const socketRef = useRef(null);
+  const [taskId, setTaskId] = useState(null);
+
+const [taskStatus, setTaskStatus] = useState(null);
+const [paymentStatus, setPaymentStatus] = useState(null);
+const [budget, setBudget] = useState(null);
 
   const [recording, setRecording] = useState(false);
   const mediaRecorderRef = useRef(null);
@@ -65,6 +70,17 @@ setConnectionStatus(data.status);
 setBudgetConfirmed(data.budgetConfirmed);
 setIsProvider(data.isProvider);
 
+setTaskId(data.taskId);
+setTaskStatus(data.taskStatus);
+setPaymentStatus(data.paymentStatus);
+setBudget(data.budget);
+console.log({
+  connectionStatus,
+  taskStatus,
+  paymentStatus,
+  isProvider
+});
+
   } catch (err) {
     console.log("Fetch error:", err);
     setMessages([]);
@@ -74,8 +90,6 @@ setIsProvider(data.isProvider);
 
     fetchHistory();
   }, [connectionId]);
-
-
 
   /* SEND TEXT */
   const sendMessage = () => {
@@ -188,8 +202,7 @@ const confirmJob = async () => {
       return;
     }
 
-    setConnectionStatus("provider_confirmed");
-    setBudgetConfirmed(true);
+   window.location.reload();
 
   } catch (err) {
     console.log("Error confirming job:", err);
@@ -213,7 +226,7 @@ const workerConfirm = async () => {
       return;
     }
 
-    setConnectionStatus("confirmed");
+    window.location.reload();
 
     // 🔥 optional but recommended
     setTimeout(() => {
@@ -224,8 +237,93 @@ const workerConfirm = async () => {
     console.log("Worker confirm error:", err);
   }
 };
-  console.log("STATUS:", connectionStatus);
-  console.log("IS PROVIDER:", isProvider);
+
+const handleIncreaseBudget = async () => {
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/connections/update-budget/${connectionId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ newAmount: budget }),
+      }
+    );
+
+    if (!res.ok) {
+      alert("Budget must be higher than original");
+      return;
+    }
+
+    const resData = await res.json();
+     setBudget(resData.amount);
+     
+      alert("Budget updated successfully");
+
+  } catch (err) {
+    console.error("Budget update error:", err);
+  }
+};
+
+const handleTaskPayment = async () => {
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/payment/task/create-order/${taskId}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    // 🔥 THIS PART IS CRITICAL
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err.message);
+      return;   // STOP if backend failed
+    }
+
+    const order = await res.json();
+
+    console.log("Order received:", order);
+
+    const options = {
+      key: "rzp_test_RS7N4gK5yMwA9E",
+      amount: order.amount,
+      currency: order.currency,
+      order_id: order.id,
+      name: "TaskNest Escrow",
+      description: "Task Escrow Payment",
+
+      handler: async function (response) {
+        console.log("Razorpay response:", response);
+
+        await fetch(
+          `http://localhost:5000/api/payment/task/verify-payment/${taskId}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify(response),
+          }
+        );
+
+        window.location.reload();  // 🔥 VERY IMPORTANT
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+
+  } catch (err) {
+    console.error("Payment error:", err);
+  }
+};
   return (
     <div className="chat-container">
       
@@ -266,6 +364,26 @@ className={`chat-message ${
         ))}
         <div ref={messagesEndRef}></div>
       </div>
+
+{/* ===== BUDGET INCREASE SECTION ===== */}
+
+{connectionStatus === "accepted" && isProvider && (
+  <div className="confirm-job-box provider-box">
+    <p>Increase budget if needed (cannot reduce)</p>
+
+    <input
+      type="number"
+      placeholder="Enter new amount"
+      value={budget || ""}
+      onChange={(e) => setBudget(e.target.value)}
+    />
+
+    <button onClick={handleIncreaseBudget}>
+      Update Budget
+    </button>
+  </div>
+)}
+
 {/* ===== JOB CONFIRMATION SECTION ===== */}
 
 {connectionStatus === "accepted" && isProvider && (
@@ -286,6 +404,27 @@ className={`chat-message ${
   </div>
 )}
 
+{/* ===== PAYMENT SECTION ===== */}
+
+{isProvider &&
+ connectionStatus === "confirmed" &&
+ paymentStatus !== "paid" &&
+ taskId && (
+  <div className="confirm-job-box provider-box">
+    <p>Escrow Amount: ₹{budget}</p>
+    <button onClick={handleTaskPayment}>
+      Pay & Start Work
+    </button>
+  </div>
+)}
+
+  {paymentStatus === "paid" && (
+  <div className="confirm-job-box worker-box">
+    <p>✅ Escrow locked.</p>
+    <p>Escrow Amount: ₹{budget}</p>
+    <p>Work started.</p>
+  </div>
+)}
      
 {connectionStatus !== "closed" && (
   <div className="chat-input-area">

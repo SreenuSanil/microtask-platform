@@ -31,8 +31,8 @@ router.get("/unread-count", auth, async (req, res) => {
 // Get chat history
 router.get("/:connectionId", auth, async (req, res) => {
   try {
-    const connection = await Connection.findById(req.params.connectionId);
-     
+    const connection = await Connection.findById(req.params.connectionId)
+  .populate("task");
     if (!connection) {
       return res.status(404).json({ message: "Connection not found" });
     }
@@ -72,7 +72,12 @@ res.json({
   messages,
   status: connection.status,
   budgetConfirmed: connection.budgetConfirmed,
-   isProvider: connection.provider.toString() === req.user.userId.toString()
+   isProvider: connection.provider.toString() === req.user.userId.toString(),
+
+  taskId: connection.task._id,
+  taskStatus: connection.task.status,
+  paymentStatus: connection.task.paymentStatus,
+  budget: connection.finalBudget || connection.task.budget
 });
 
 

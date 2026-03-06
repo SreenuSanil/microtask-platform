@@ -122,11 +122,28 @@ skillRatings: [
   }
 ],
 
+cancelCount: {
+  type: Number,
+  default: 0
+},
 
 completedTasks: {
   type: Number,
   default: 0,
 },
+skillCompletedTasks: [
+  {
+    skill: {
+      type: String,
+      lowercase: true,
+      trim: true,
+    },
+    count: {
+      type: Number,
+      default: 0,
+    },
+  },
+],
 
 complaintCount: {
   type: Number,
@@ -179,21 +196,33 @@ languages: {
 },
 
 reviews: [
-  {
-    user: {
-      type: String, // reviewer name
-    },
-    rating: {
-      type: Number,
-    },
-    comment: {
-      type: String,
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    }
-  }
+ {
+   user: {
+     type: String
+   },
+
+   rating: {
+     type: Number
+   },
+
+   comment: {
+     type: String
+   },
+
+   skill: {
+     type: String
+   },
+
+   task: {
+     type: mongoose.Schema.Types.ObjectId,
+     ref: "Task"
+   },
+
+   createdAt: {
+     type: Date,
+     default: Date.now
+   }
+ }
 ],
 
 

@@ -1,7 +1,10 @@
 const User = require("../models/User");
 const sendEmail = require("../utils/sendEmail");
 const Notification = require("../models/Notification");
-
+const Task = require("../models/Task");
+const Connection = require("../models/Connection");
+const Message = require("../models/Message");
+const WalletTransaction = require("../models/WalletTransaction");
 /* =========================
    INTERVIEW MANAGEMENT
 ========================= */
@@ -324,7 +327,207 @@ exports.removeProvider = async (req, res) => {
   res.json({ message: "Provider removed" });
 };
 
+/* =========================
+   DISPUTE MANAGEMENT
+========================= */
 
+exports.getDisputes = async (req, res) => {
+  try {
 
+    const tasks = await Task.find({
+      status: "dispute",
+      "dispute.status": "open"
+    })
+      .populate("provider", "name phone profileImage")
+      .populate("assignedWorker", "name phone profileImage")
+      .sort({ createdAt: -1 });
 
+    res.json(tasks);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch disputes" });
+  }
+};
+
+exports.getDisputeChat = async (req, res) => {
+  try {
+
+    const { taskId } = req.params;
+
+    const connection = await Connection.findOne({ task: taskId });
+
+    if (!connection)
+      return res.json([]);
+
+    const messages = await Message.find({
+      connection: connection._id
+    })
+      .populate("sender", "name role")
+      .sort({ createdAt: 1 });
+
+    res.json(messages);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch chat" });
+  }
+};
+
+exports.approveWorkerDispute = async (req, res) => {
+  try {
+
+    const task = await Task.findById(req.params.taskId);
+
+    if (!task)
+      return res.status(404).json({ message: "Task not found" });
+
+    task.status = "completed";
+    task.escrowStatus = "released";
+
+    task.dispute.status = "resolved";
+
+    await task.save();
+
+    await WalletTransaction.create({
+      user: task.assignedWorker,
+      relatedUser: task.provider,
+      task: task._id,
+      type: "task_payment_release",
+      amount: task.budget,
+      description: "Admin approved worker in dispute",
+    });
+
+    res.json({ message: "Worker approved, payment released" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Approval failed" });
+  }
+};
+
+exports.refundProviderDispute = async (req, res) => {
+  try {
+
+    const task = await Task.findById(req.params.taskId);
+
+    if (!task)
+      return res.status(404).json({ message: "Task not found" });
+
+    task.status = "cancelled";
+    task.escrowStatus = "refunded";
+
+    task.dispute.status = "resolved";
+
+    await task.save();
+
+    await WalletTransaction.create({
+      user: task.provider,
+      relatedUser: task.assignedWorker,
+      task: task._id,
+      type: "refund",
+      amount: task.budget,
+      description: "Admin refunded provider after dispute",
+    });
+
+    res.json({ message: "Provider refunded" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Refund failed" });
+  }
+};
+
+exports.splitPaymentDispute = async (req, res) => {
+  try {
+
+    const { workerAmount, providerAmount } = req.body;
+
+    const task = await Task.findById(req.params.taskId);
+
+    if (!task)
+      return res.status(404).json({ message: "Task not found" });
+
+    if (workerAmount + providerAmount !== task.budget)
+      return res.status(400).json({
+        message: "Amounts must equal task budget"
+      });
+
+    task.status = "completed";
+    task.escrowStatus = "split";
+
+    task.dispute.status = "resolved";
+
+    await task.save();
+
+    await WalletTransaction.create({
+      user: task.assignedWorker,
+      relatedUser: task.provider,
+      task: task._id,
+      type: "worker_earning",
+      amount: workerAmount,
+      description: "Split dispute payment",
+    });
+
+    await WalletTransaction.create({
+      user: task.provider,
+      relatedUser: task.assignedWorker,
+      task: task._id,
+      type: "refund",
+      amount: providerAmount,
+      description: "Split dispute refund",
+    });
+
+    res.json({ message: "Payment split successfully" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Split payment failed" });
+  }
+};
+
+exports.getAllTasks = async (req, res) => {
+  try {
+
+    const tasks = await Task.find()
+      .populate("provider", "name phone profileImage")
+      .populate("assignedWorker", "name phone profileImage")
+      .sort({ createdAt: -1 });
+
+    res.json(tasks);
+
+  } catch (err) {
+    console.error("ADMIN TASK FETCH ERROR:", err);
+    res.status(500).json({ message: "Failed to fetch tasks" });
+  }
+};
+
+exports.adminCancelTask = async (req, res) => {
+  try {
+
+    const task = await Task.findById(req.params.taskId);
+
+    if (!task)
+      return res.status(404).json({ message: "Task not found" });
+
+    if (task.status === "completed")
+      return res.status(400).json({
+        message: "Completed tasks cannot be cancelled"
+      });
+
+    task.status = "cancelled";
+    task.cancelledBy = "admin";
+
+    await task.save();
+
+    res.json({
+      message: "Task cancelled by admin",
+      task
+    });
+
+  } catch (err) {
+    console.error("ADMIN CANCEL ERROR:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 

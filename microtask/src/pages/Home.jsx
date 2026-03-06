@@ -14,6 +14,22 @@ useEffect(() => {
     .then(data => setStats(data))
     .catch(err => console.error(err));
 }, []);
+useEffect(() => {
+  const reveals = document.querySelectorAll(".reveal");
+
+  const observer = new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("active");
+        }
+      });
+    },
+    { threshold: 0.2 }
+  );
+
+  reveals.forEach(el => observer.observe(el));
+}, []);
 
 
   return (
@@ -52,7 +68,9 @@ useEffect(() => {
       {/* STATS */}
     <section className="stats-section">
       <div className="stat-card">
-      <h3 className="gradient-text">{stats.workers}+</h3>
+      <h3 className="gradient-text">
+        {stats.workers}+
+        </h3>
       <p>Active Workers</p>
      </div>
 
@@ -64,7 +82,7 @@ useEffect(() => {
 
 
       {/* ABOUT */}
-      <section id="about" className="section">
+      <section id="about" className="section reveal">
         <div className="section-box">
         <h2>About the Platform</h2>
         <p>
@@ -82,7 +100,7 @@ useEffect(() => {
       </section>
 
       {/* FEATURES */}
-      <section id="features" className="section">
+      <section id="features" className="section reveal">
         <div className="section-box">
         <h2>Core Features</h2>
 
@@ -116,7 +134,7 @@ useEffect(() => {
       </section>
 
       {/* WORKFLOW */}
-      <section id="workflow" className="section">
+      <section id="workflow" className="section reveal">
         <div className="section-box">
         <h2>How TaskNest Works</h2>
 

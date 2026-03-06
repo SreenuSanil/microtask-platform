@@ -103,16 +103,16 @@ const WorkerMessages = () => {
 
           {chats.filter(
             (c) =>
-              c.status === "accepted" ||
-              c.status === "provider_confirmed"
+              c.taskStatus === "open" ||
+              c.taskStatus === "assigned"
           ).length === 0 ? (
             <p>No negotiation chats</p>
           ) : (
             chats
               .filter(
                 (c) =>
-                  c.status === "accepted" ||
-                  c.status === "provider_confirmed"
+                   c.taskStatus === "open" ||
+                   c.taskStatus === "assigned"
               )
               .map((chat) => (
                 <div
@@ -154,11 +154,10 @@ const WorkerMessages = () => {
         <>
           <h3 className="section-title">Ongoing Works</h3>
 
-          {chats.filter((c) => c.status === "confirmed").length === 0 ? (
+          {chats.filter((c) => c.taskStatus === "in_progress").length === 0 ? (
             <p>No ongoing chats</p>
           ) : (
-            chats
-              .filter((c) => c.status === "confirmed")
+            chats.filter((c) => c.taskStatus === "in_progress")
               .map((chat) => (
                 <div
                   key={chat._id}
@@ -199,11 +198,11 @@ const WorkerMessages = () => {
         <>
           <h3 className="section-title">Completed Works</h3>
 
-          {chats.filter((c) => c.status === "closed").length === 0 ? (
+          {chats.filter((c) => c.taskStatus === "completed").length === 0 ? (
             <p>No completed chats</p>
           ) : (
             chats
-              .filter((c) => c.status === "closed")
+              .filter((c) => c.taskStatus === "completed")
               .map((chat) => (
                 <div
                   key={chat._id}

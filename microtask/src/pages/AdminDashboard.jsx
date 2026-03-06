@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import "./AdminDashboard.css";
 import logo from "../assets/tasknest.png";
 import defaultAvatar from "../assets/default-avatar.png";
-
-
+import AdminDisputes from "./admin/AdminDisputes";
+import AdminTasks from "./admin/AdminTasks";
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -701,7 +701,7 @@ if (activeSection === "workers") {
 </p>
       {worker.skillRatings?.map(r => (
     <p key={r.skill} className="skill-rating-line">
-      {r.skill}: ⭐ {r.rating}
+      {r.skill}: ⭐ {r.ratingAverage.toFixed(1)}
     </p>
   ))}
 
@@ -898,7 +898,13 @@ if (activeSection === "providers") {
     </div>
   );
 }
+if (activeSection === "complaints") {
+  return <AdminDisputes />;
+}
 
+if (activeSection === "tasks") {
+  return <AdminTasks />;
+}
 
   /* =========================
      OTHER SECTIONS

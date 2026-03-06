@@ -199,7 +199,7 @@ const getMyChats = async (req, res) => {
     })
       .populate("provider", "name profileImage")
       .populate("worker", "name profileImage skills skillRatings")
-      .populate("task", "requiredSkill");
+      .populate("task");
 
     const chatsWithUnread = await Promise.all(
       chats.map(async (chat) => {
@@ -212,7 +212,9 @@ const getMyChats = async (req, res) => {
 
         return {
           ...chat.toObject(),
-          unreadCount: unread
+          unreadCount: unread,
+          taskStatus: chat.task?.status,
+          paymentStatus: chat.task?.paymentStatus,
         };
       })
     );

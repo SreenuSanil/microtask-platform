@@ -1,0 +1,137 @@
+.admin-tasks {
+  padding: 30px;
+}
+
+.page-title {
+  margin-bottom: 20px;
+}
+
+/* FILTERS */
+
+.task-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.task-filters button {
+  padding: 8px 14px;
+  border: none;
+  background: #e9ecef;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.task-filters button:hover {
+  background: #d6d6d6;
+}
+
+/* TASK GRID */
+
+.task-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
+  gap: 20px;
+}
+
+.task-card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.view-btn {
+  margin-top: 10px;
+  background: #2c7be5;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* DETAILS */
+
+.task-details {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+}
+
+.back-btn {
+  margin-bottom: 15px;
+  background: #ccc;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* PEOPLE */
+
+.people-section {
+  display: flex;
+  gap: 30px;
+  margin: 20px 0;
+}
+
+.person-box {
+  text-align: center;
+}
+
+.person-box img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* IMAGES */
+
+.image-grid {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.image-grid img {
+  width: 120px;
+  border-radius: 6px;
+}
+
+.completion-img {
+  width: 200px;
+  border-radius: 6px;
+}
+
+/* PAYMENT */
+
+.payment-section {
+  margin-top: 20px;
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+/* TIMELINE */
+
+.timeline {
+  margin-top: 20px;
+  background: #f1f3f5;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+/* CANCEL BUTTON */
+
+.cancel-btn {
+  margin-top: 25px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}

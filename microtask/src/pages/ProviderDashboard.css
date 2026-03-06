@@ -1,5 +1,8 @@
 .provider-dashboard {
-  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;        /* Full screen height */
+  overflow: hidden;     /* Prevent full page scroll */
   background: #f8fafc;
   font-family: "Segoe UI", sans-serif;
 }
@@ -12,6 +15,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.dashboard-header {
+  flex-shrink: 0;
+  height: 80px;   /* match your header height */
 }
 
 .header-left {
@@ -64,6 +71,8 @@
 /* LAYOUT */
 .dashboard-content {
   display: flex;
+  flex: 1;
+  overflow: hidden;   
 }
 
 /* SIDEBAR */
@@ -71,7 +80,9 @@
   width: 260px;
   background: white;
   border-right: 1px solid #e5e7eb;
-  min-height: calc(100vh - 80px);
+  height: 100%;
+  overflow-y: auto;  
+  flex-shrink: 0;
 }
 
 .menu-item {
@@ -99,7 +110,12 @@
 /* MAIN */
 .main-content {
   flex: 1;
+  overflow-y: auto;
   padding: 30px;
+}
+.dashboard-header {
+  position: relative;
+  z-index: 10;
 }
 
 /* STATS */

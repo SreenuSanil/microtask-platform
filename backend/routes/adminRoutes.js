@@ -19,7 +19,13 @@ const {
   blockProvider,
   unblockProvider,
   removeProvider,
- 
+  getDisputes,
+  getDisputeChat,
+  approveWorkerDispute,
+  refundProviderDispute,
+  splitPaymentDispute,
+  getAllTasks,
+  adminCancelTask
 
 } = require("../controllers/adminController");
 
@@ -73,6 +79,33 @@ router.post("/providers/unblock", auth, admin, unblockProvider);
 // remove provider
 router.post("/providers/remove", auth, admin, removeProvider);
 
+/* =========================
+   DISPUTE MANAGEMENT
+========================= */
 
+// get all disputes
+router.get("/disputes", auth, admin, getDisputes);
+
+// get dispute chat
+router.get("/disputes/:taskId/chat", auth, admin, getDisputeChat);
+
+// approve worker
+router.patch("/disputes/approve/:taskId", auth, admin, approveWorkerDispute);
+
+// refund provider
+router.patch("/disputes/refund/:taskId", auth, admin, refundProviderDispute);
+
+// split payment
+router.patch("/disputes/split/:taskId", auth, admin, splitPaymentDispute);
+
+/* =========================
+   ADMIN TASK MANAGEMENT
+========================= */
+
+// get all tasks
+router.get("/tasks", auth, admin, getAllTasks);
+
+// admin cancel task
+router.patch("/tasks/cancel/:taskId", auth, admin, adminCancelTask);
 
 module.exports = router;

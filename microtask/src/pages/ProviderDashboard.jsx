@@ -4,11 +4,14 @@ import "./ProviderDashboard.css";
 import logo from "../assets/tasknest.png";
 import PostTask from "./provider/PostTask";
 import MyTasks from "./provider/MyTasks";
+import TaskWorkers from "./provider/TaskWorkers";
 import ProviderProfile from "./provider/Profile";
 import ProviderMessages from "./chat/ProviderMessages";
 import ProviderInvites from "./provider/ProviderInvites";
 import { io } from "socket.io-client";
 import { useRef } from "react";
+import ProviderTransactions from "./provider/ProviderTransactions";
+import ProviderOverview from "./provider/ProviderOverview";
 
 const ProviderDashboard = () => {
   const navigate = useNavigate();
@@ -19,7 +22,7 @@ const ProviderDashboard = () => {
   const [inviteCount, setInviteCount] = useState(0);
   const [unreadCount, setUnreadCount] = useState(0);
   const socketRef = useRef(null);
-  
+  const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [userData, setUserData] = useState({
     name: "",
     organization: "",
@@ -156,7 +159,6 @@ const menuItems = [
   { id: "post-task", label: "Post Task", icon: "➕" },
   { id: "my-tasks", label: "My Tasks", icon: "📋" },
   { id: "messages", label: "Messages", icon: "💬" },
-  { id: "wallet", label: "Wallet", icon: "👛" },
   { id: "payments", label: "Transactions", icon: "💳" },
   { id: "notifications", label: "Notifications", icon: "🔔" },
   { id: "profile", label: "Profile", icon: "👤" },
@@ -168,29 +170,7 @@ const menuItems = [
   const renderContent = () => {
     switch (activeSection) {
       case "overview":
-        return (
-          <div className="dashboard-grid">
-            <div className="stat-card">
-              <h3>Total Tasks Posted</h3>
-              <p className="stat-value">0</p>
-            </div>
-
-            <div className="stat-card">
-              <h3>Active Tasks</h3>
-              <p className="stat-value">0</p>
-            </div>
-
-            <div className="stat-card">
-              <h3>Completed Tasks</h3>
-              <p className="stat-value">0</p>
-            </div>
-
-            <div className="stat-card">
-              <h3>Total Spent</h3>
-              <p className="stat-value">₹0</p>
-            </div>
-          </div>
-        );
+        return <ProviderOverview />;
 
     case "post-task":
       return <PostTask goToMyTasks={() => setActiveSection("my-tasks")} />;
@@ -229,12 +209,9 @@ case "workers":
 
 
       case "payments":
-        return (
-          <div>
-            <h2>Payments</h2>
-            <p>Payment history and wallet will be enabled later.</p>
-          </div>
-        );
+        return <ProviderTransactions />;
+          
+       
 
       case "notifications":
         return (
