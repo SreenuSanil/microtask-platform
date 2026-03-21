@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./WorkerProfile.css";
 
-const WorkerProfile = ({ workerId, goBack, taskId }) => {
+const WorkerProfile = ({ workerId, goBack, taskId, onReviewSubmitted }) => {
 
   const [worker, setWorker] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -154,13 +154,11 @@ const checkExistingRequest = async () => {
             worker.skillRatings.length > 0 && (
               <div className="skill-rating-list">
                 {worker.skillRatings.map((r, index) => (
-                  <div
-                    key={index}
-                    className="skill-rating-item"
-                  >
-                    {r.skill}: ⭐ {r.rating}
-                  </div>
-                ))}
+  <div key={index} className="skill-rating-item">
+    {r.skill}: ⭐ {r.ratingAverage?.toFixed(1) || "0.0"} ({r.ratingCount} reviews)
+  </div>
+))}
+        
               </div>
             )}
 
@@ -205,9 +203,10 @@ const checkExistingRequest = async () => {
           worker.reviews.map((review, index) => (
             <div key={index} className="review-card">
               <h4>{review.user}</h4>
-              <div className="review-rating">
-                ⭐ {review.rating}
-              </div>
+<div className="review-rating">
+  {"★".repeat(review.rating)}
+  {"☆".repeat(5 - review.rating)}
+</div>
               <div className="review-text">
                 {review.comment}
               </div>

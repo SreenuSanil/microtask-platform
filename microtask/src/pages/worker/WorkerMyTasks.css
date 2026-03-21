@@ -172,3 +172,23 @@
 .task-proof {
   margin-top: 10px;
 }
+.cancel-msg {
+  background: #ffecec;
+  color: #d8000c;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+.cancel-box{
+  background:#ffe9e9;
+  border:1px solid #ffb3b3;
+  padding:10px;
+  border-radius:6px;
+  margin-top:10px;
+}
+
+.cancel-title{
+  color:#d8000c;
+  font-weight:600;
+}

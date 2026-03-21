@@ -76,16 +76,28 @@
   text-transform: capitalize;
 }
 
+/* Escrow Payment */
+
 .txn-type.escrow_payment {
   color: #0e8f6a;
 }
+
+/* Refund */
 
 .txn-type.refund {
   color: #d32f2f;
 }
 
+/* Commission */
+
 .txn-type.commission {
   color: #f57c00;
+}
+
+/* Completed */
+
+.txn-type.completed {
+  color: #2e7d32;
 }
 
 .txn-amount {

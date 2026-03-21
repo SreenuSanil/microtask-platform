@@ -97,6 +97,9 @@ cancelledBy: {
   type: String,
   enum: ["worker", "provider","admin"]
 },
+cancelReason: {
+  type: String,
+},
 
 completedAt: {
   type: Date,

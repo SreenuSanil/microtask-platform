@@ -32,14 +32,18 @@ const createNotification = async ({
   userId,
   title,
   message,
+  taskId
 }) => {
-  try {
+  try{
+
     await Notification.create({
       userId,
       title,
       message,
+      taskId
     });
-  } catch (err) {
+
+  }catch(err){
     console.error("Notification creation failed");
   }
 };

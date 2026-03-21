@@ -1,7 +1,7 @@
 import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
-import { useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { useState, useEffect } from "react";
 
 const markerIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -21,21 +21,9 @@ export default function LocationPicker({ setLocationData }) {
   const [suggestions, setSuggestions] = useState([]);
 
   // 🔍 Search API
-  const handleSearch = async (value) => {
-    setSearch(value);
-
-    if (value.length < 3) {
-      setSuggestions([]);
-      return;
-    }
-
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${value}, Kerala&addressdetails=1`
-    );
-
-    const data = await res.json();
-    setSuggestions(data);
-  };
+const handleSearch = (value) => {
+  setSearch(value);
+};
 
   // 📍 Select Suggestion
   const handleSelect = (place) => {
@@ -58,6 +46,32 @@ export default function LocationPicker({ setLocationData }) {
       state: address.state || "",
     });
   };
+
+  useEffect(() => {
+  const delay = setTimeout(async () => {
+
+    if (search.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/location/search?q=${search}`
+      );
+
+      const data = await res.json();
+      setSuggestions(data);
+
+    } catch (err) {
+      console.error("Location search failed:", err);
+    }
+
+  }, 500); // wait 500ms after typing
+
+  return () => clearTimeout(delay);
+
+}, [search]);
 
   return (
     <div>

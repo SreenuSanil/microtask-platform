@@ -17,6 +17,48 @@ body {
   min-height: 100vh;
 }
 
+/* ===============================
+   SIDEBAR FIXED + SCROLL
+================================ */
+
+.admin-sidebar {
+  width: 240px;
+  background: white;
+  border-right: 1px solid #e5e7eb;
+
+  display: flex;
+  flex-direction: column;
+
+  height: calc(100vh - 70px);
+}
+
+/* LOGO TOP (FIXED) */
+.sidebar-top {
+  padding: 20px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.sidebar-logo {
+  height: 36px;
+}
+
+/* MENU SCROLL ONLY */
+.sidebar-menu {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* SCROLL STYLE */
+.sidebar-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 10px;
+}
+
 /* =====================================================
    HEADER
 ===================================================== */
@@ -64,12 +106,16 @@ body {
 .admin-body {
   display: flex;
 }
+.admin-dashboard {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
-.admin-sidebar {
-  width: 240px;
-  background: white;
-  border-right: 1px solid #e5e7eb;
-  min-height: calc(100vh - 70px);
+.admin-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden; /* 🔥 IMPORTANT */
 }
 
 .menu-item {
@@ -92,8 +138,9 @@ body {
 .admin-content {
   flex: 1;
   padding: 28px;
+  overflow-y: auto; /* 🔥 IMPORTANT */
+  height: 100%;
 }
-
 /* =====================================================
    SECTION TITLES
 ===================================================== */
@@ -134,54 +181,12 @@ body {
   border-color: #0f766e;
 }
 
-/* =====================================================
-   INTERVIEW SECTION
-===================================================== */
 
-.interview-toolbar {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 25px;
+.selection-count {
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #475569;
 }
-
-.skill-search {
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: 1px solid #cbd5e1;
-}
-
-.bulk-btn,
-.bulk-primary,
-.bulk-danger {
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-}
-
-.bulk-btn {
-  background: white;
-  border: 1px solid #0f766e;
-  color: #0f766e;
-}
-
-.bulk-primary {
-  background: linear-gradient(135deg, #0f766e, #14b8a6);
-  color: white;
-}
-
-.bulk-danger {
-  background: #0f172a;
-  color: white;
-}
-
-.interview-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
-}
-
 /* =====================================================
    WORKER & APPROVED CARDS
 ===================================================== */
@@ -347,8 +352,8 @@ body {
   }
 
   .approved-grid,
-  .provider-grid,
-  .interview-grid {
+  .provider-grid
+   {
     grid-template-columns: 1fr;
   }
 
@@ -459,28 +464,10 @@ body {
    CLEAN PENDING ROW STYLE
 =================================== */
 
-.pending-card {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 20px;
-  margin-bottom: 18px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-left: 6px solid #f59e0b;
-  transition: 0.3s ease;
-}
 
-.pending-card:hover {
-  transform: translateY(-3px);
-}
 
-.pending-left {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
+
+
 
 .pending-info h4 {
   margin: 0 0 4px;
@@ -493,76 +480,6 @@ body {
   margin-bottom: 6px;
 }
 
-.pending-actions {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.pending-actions input {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  font-size: 14px;
-  min-width: 130px;
-}
-
-/* APPROVE BUTTON */
-.approve-btn-modern {
-  background: linear-gradient(135deg, #10b981, #14b8a6);
-  color: white;
-  border: none;
-  padding: 8px 18px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.approve-btn-modern:hover {
-  opacity: 0.9;
-}
-
-/* REJECT BUTTON */
-.reject-btn-modern {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: white;
-  border: none;
-  padding: 8px 18px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.reject-btn-modern:hover {
-  opacity: 0.9;
-}
-/* =========================
-   INTERVIEW CARD CLEAN
-========================= */
-
-.interview-card {
-  position: relative;
-  background: white;
-  border-radius: 20px;
-  padding: 22px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.06);
-  transition: 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.interview-card:hover {
-  transform: translateY(-6px);
-}
-
-.interview-card input[type="checkbox"] {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-}
 
 /* =========================
    BADGE CLEAN

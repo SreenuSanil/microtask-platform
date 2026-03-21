@@ -3,13 +3,14 @@ const Task = require("../models/Task");
 const Notification = require("../models/Notification");
 const Message = require("../models/Message");
 
-// ============================
-// SEND CONNECTION REQUEST
-// ============================
-const sendConnectionRequest = async (req, res) => {
+/* =========================
+   SEND CONNECTION REQUEST
+========================= */
+exports.sendConnectionRequest = async (req, res) => {
   try {
     const { taskId, workerId } = req.body;
 
+    // Check duplicate request
     const existing = await Connection.findOne({
       task: taskId,
       worker: workerId,
@@ -20,6 +21,19 @@ const sendConnectionRequest = async (req, res) => {
       return res.status(400).json({ message: "Already requested" });
     }
 
+    //  LIMIT TO 3 WORKERS
+    const existingCount = await Connection.countDocuments({
+      task: taskId,
+      provider: req.user.userId,
+    });
+
+    if (existingCount >= 3) {
+      return res.status(400).json({
+        message: "You can invite only 3 workers per task",
+      });
+    }
+
+    // CREATE CONNECTION
     const connection = await Connection.create({
       task: taskId,
       provider: req.user.userId,
@@ -32,12 +46,12 @@ const sendConnectionRequest = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
-// ============================
-// CHECK EXISTING CONNECTION
-// ============================
-const checkConnection = async (req, res) => {
+/* =========================
+   CHECK CONNECTION
+========================= */
+exports.checkConnection = async (req, res) => {
   try {
+
     const { taskId, workerId } = req.query;
 
     const connection = await Connection.findOne({
@@ -58,33 +72,27 @@ const checkConnection = async (req, res) => {
 };
 
 
-
-
-// ============================
-// ACCEPT CONNECTION
-// ============================
-const acceptConnection = async (req, res) => {
+/* =========================
+   ACCEPT CONNECTION
+========================= */
+exports.acceptConnection = async (req, res) => {
   try {
+
     const connection = await Connection.findById(req.params.id)
       .populate("task");
 
-    if (!connection) {
+    if (!connection)
       return res.status(404).json({ message: "Connection not found" });
-    }
 
-    if (connection.status !== "pending") {
+    if (connection.status !== "pending")
       return res.status(400).json({ message: "Invalid status" });
-    }
 
     const task = await Task.findById(connection.task._id);
 
-    if (task.status !== "open") {
-      return res.status(400).json({
-        message: "Task already assigned",
-      });
-    }
+    if (task.status !== "open")
+      return res.status(400).json({ message: "Task already assigned" });
 
-    // ✅ MOVE YOUR SAME-DATE CHECK HERE
+    // same-date check
     const taskDate = connection.task.taskDate;
 
     const existingAccepted = await Connection.findOne({
@@ -93,6 +101,7 @@ const acceptConnection = async (req, res) => {
     }).populate("task");
 
     if (existingAccepted) {
+
       const existingDate = new Date(existingAccepted.task.taskDate).toDateString();
       const newDate = new Date(taskDate).toDateString();
 
@@ -103,7 +112,7 @@ const acceptConnection = async (req, res) => {
       }
     }
 
-    // 🔒 CHECK IF WORKER HAS ACTIVE TASK
+    // active task check
     const activeTask = await Task.findOne({
       assignedWorker: req.user.userId,
       status: { $in: ["assigned", "in_progress"] },
@@ -111,18 +120,38 @@ const acceptConnection = async (req, res) => {
 
     if (activeTask) {
       return res.status(400).json({
-        message:
-          "You must complete your current task before accepting another.",
+        message: "Finish current task before accepting another"
       });
     }
 
     connection.status = "accepted";
-     connection.chatEnabled = true;
+    connection.chatEnabled = true;
+
     await connection.save();
+
+    const removedConnections = await Connection.find({
+  task: connection.task._id,
+  _id: { $ne: connection._id }
+});
+
+    await Connection.deleteMany({
+  task: connection.task._id,
+  _id: { $ne: connection._id } 
+});
+
+const io = req.app.get("io");
+
+removedConnections.forEach((conn) => {
+  io.to(conn.worker.toString()).emit("job_taken", {
+    taskId: connection.task._id,
+    message: "Position filled by another worker",
+  });
+});
+
     await Notification.create({
       userId: connection.provider,
       title: "Invitation Accepted",
-      message: "A worker accepted your invitation.",
+      message: "A worker accepted your invitation",
     });
 
     res.json({ message: "Negotiation started" });
@@ -134,20 +163,22 @@ const acceptConnection = async (req, res) => {
 };
 
 
-
-const rejectConnection = async (req, res) => {
+/* =========================
+   REJECT CONNECTION
+========================= */
+exports.rejectConnection = async (req, res) => {
   try {
+
     const connection = await Connection.findById(req.params.id);
 
-    if (!connection) {
+    if (!connection)
       return res.status(404).json({ message: "Connection not found" });
-    }
 
-    if (connection.worker.toString() !== req.user.userId) {
+    if (connection.worker.toString() !== req.user.userId)
       return res.status(403).json({ message: "Not authorized" });
-    }
 
     connection.status = "rejected";
+
     await connection.save();
 
     res.json({ message: "Invitation rejected" });
@@ -156,15 +187,21 @@ const rejectConnection = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-const closeConnection = async (req, res) => {
+
+
+/* =========================
+   CLOSE CONNECTION
+========================= */
+exports.closeConnection = async (req, res) => {
   try {
+
     const connection = await Connection.findById(req.params.id);
 
-    if (!connection) {
+    if (!connection)
       return res.status(404).json({ message: "Connection not found" });
-    }
 
     connection.status = "closed";
+
     await connection.save();
 
     res.json({ message: "Negotiation closed" });
@@ -173,14 +210,20 @@ const closeConnection = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-const getWorkerInvitations = async (req, res) => {
+
+
+/* =========================
+   WORKER INVITATIONS
+========================= */
+exports.getWorkerInvitations = async (req, res) => {
   try {
+
     const invitations = await Connection.find({
       worker: req.user.userId,
       status: { $in: ["pending", "accepted"] }
     })
-    .populate("provider", "name profileImage")
-    .populate("task");
+      .populate("provider", "name profileImage")
+      .populate("task");
 
     res.json(invitations);
 
@@ -188,8 +231,35 @@ const getWorkerInvitations = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-const getMyChats = async (req, res) => {
+
+
+/* =========================
+   PROVIDER INVITES
+========================= */
+exports.getProviderInvites = async (req, res) => {
   try {
+
+    const invites = await Connection.find({
+      provider: req.user.userId,
+      status: { $in: ["pending", "accepted"] }
+    })
+      .populate("worker", "name profileImage skills skillRatings")
+      .populate("task", "requiredSkill");
+
+    res.json(invites);
+
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+/* =========================
+   GET MY CHATS
+========================= */
+exports.getMyChats = async (req, res) => {
+  try {
+
     const chats = await Connection.find({
       $or: [
         { worker: req.user.userId },
@@ -216,43 +286,121 @@ const getMyChats = async (req, res) => {
           taskStatus: chat.task?.status,
           paymentStatus: chat.task?.paymentStatus,
         };
+
       })
     );
 
-    return res.json(chatsWithUnread);
+    res.json(chatsWithUnread);
 
   } catch (err) {
-    console.error("getMyChats error:", err);
-    return res.status(500).json({ message: "Server error" });
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 
-const getProviderInvites = async (req, res) => {
+/* =========================
+   PROVIDER CONFIRM
+========================= */
+exports.confirmConnection = async (req, res) => {
   try {
-    const invites = await Connection.find({
-      provider: req.user.userId,
-      status: { $in: ["pending", "accepted"] }
-    })
-      .populate("worker", "name profileImage skills skillRatings")
-      .populate("task", "requiredSkill");
 
-    res.json(invites);
+    const connection = await Connection.findById(req.params.connectionId)
+      .populate("task");
+
+    if (!connection)
+      return res.status(404).json({ message: "Connection not found" });
+
+    if (connection.provider.toString() !== req.user.userId.toString())
+      return res.status(403).json({ message: "Only provider can confirm" });
+
+    if (connection.status !== "accepted")
+      return res.status(400).json({ message: "Invalid status" });
+
+    connection.status = "provider_confirmed";
+    connection.budgetConfirmed = true;
+
+    if (!connection.finalBudget)
+      connection.finalBudget = connection.task.budget;
+
+    await connection.save();
+
+    res.json({ message: "Job confirmed" });
+
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
 };
-  
 
-module.exports = {
-  sendConnectionRequest,
-  checkConnection,
-  acceptConnection,
-  rejectConnection,
-  closeConnection,
-  getWorkerInvitations,
-  getMyChats,
-  getProviderInvites,
 
+/* =========================
+   WORKER CONFIRM
+========================= */
+exports.workerConfirm = async (req, res) => {
+  try {
+
+    const connection = await Connection.findById(req.params.id);
+
+    if (!connection)
+      return res.status(404).json({ message: "Connection not found" });
+
+    if (connection.worker.toString() !== req.user.userId.toString())
+      return res.status(403).json({ message: "Not authorized" });
+
+    if (connection.status !== "provider_confirmed")
+      return res.status(400).json({ message: "Invalid status" });
+
+    connection.status = "confirmed";
+    await connection.save();
+
+    const task = await Task.findById(connection.task);
+
+    task.status = "assigned";
+    task.assignedWorker = req.user.userId;
+
+    await task.save();
+
+    res.json({ message: "Work started" });
+
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
+
+/* =========================
+   UPDATE BUDGET
+========================= */
+exports.updateBudget = async (req, res) => {
+  try {
+
+    const { newAmount } = req.body;
+
+    const connection = await Connection.findById(req.params.id)
+      .populate("task");
+
+    if (!connection)
+      return res.status(404).json({ message: "Connection not found" });
+
+   if (connection.provider.toString() !== req.user.userId.toString())
+      return res.status(403).json({ message: "Only provider can update" });
+
+    if (Number(newAmount) < Number(connection.task.budget)) {
+      return res.status(400).json({
+        message: "Cannot reduce below original budget",
+      });
+    }
+
+    connection.finalBudget = newAmount;
+
+    await connection.save();
+
+    res.json({
+      message: "Budget updated",
+      amount: newAmount
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};

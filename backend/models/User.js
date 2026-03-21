@@ -164,7 +164,7 @@ ratingCount: {
    WORKER PROFILE EXTRA DATA
 ========================= */
 
-previousWorks: [
+workImages: [
   {
     type: String, // image path
   }

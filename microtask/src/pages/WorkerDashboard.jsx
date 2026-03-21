@@ -8,12 +8,17 @@ import WorkerInvitations from "./worker/WorkerInvitations";
 import { io } from "socket.io-client";
 import { useRef } from "react";
 import WorkerProfile from "./worker/WorkerProfile";
+import { useLocation } from "react-router-dom";
+import WorkerNotifications from "./worker/WorkerNotifications";
+import WorkerWallet from "./worker/WorkerWallet";
+import WorkerRatings from "./worker/WorkerRatings";
+import WorkerOverview from "./worker/WorkerOverview";
 
 const AVAILABILITY_LIMIT = 48 * 60 * 60 * 1000; // 48 hours
 
 const WorkerDashboard = () => {
   const navigate = useNavigate();
-
+  const location = useLocation();
 
   const [activeSection, setActiveSection] = useState("overview");
   const [invitationCount, setInvitationCount] = useState(0);
@@ -21,12 +26,21 @@ const WorkerDashboard = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const socketRef = useRef(null);
 
-  const [userData, setUserData] = useState({
-    name: "Worker",
-    rating: 4.4,
-    totalEarnings: 4200,
-    completedTasks: 18
-  });
+const [userData, setUserData] = useState({
+  name: "Worker",
+  rating: 0,
+  totalEarnings: 0,
+  completedTasks: 0,
+  walletBalance: 0,
+  ongoingTasks: 0
+});
+
+const [taskStats, setTaskStats] = useState({
+  waitingPayment: 0,
+  ongoing: 0,
+  pendingApproval: 0,
+  completed: 0
+});
 
 useEffect(() => {
 
@@ -45,10 +59,14 @@ useEffect(() => {
 
       const data = await res.json();
 
-      setUserData(prev => ({
-        ...prev,
-        name: data.name || "Worker"
-      }));
+setUserData({
+  name: data.name || "Worker",
+  rating: data.ratingAverage || 0,
+  totalEarnings: data.totalEarnings || 0,
+  completedTasks: data.completedTasks || 0,
+  walletBalance: data.walletBalance || 0,
+  ongoingTasks: data.ongoingTasks || 0
+});
 
     } catch (err) {
       console.error("Failed to fetch user");
@@ -105,8 +123,22 @@ useEffect(() => {
   fetchUser();
   fetchInvitations();
   fetchNotifications();
+  fetchTaskStats();
 
 }, []);
+
+useEffect(() => {
+
+  const params = new URLSearchParams(location.search);
+
+  const taskId = params.get("task");
+  const tab = params.get("tab");
+
+  if (tab) {
+    setActiveSection(tab);
+  }
+
+}, [location.search]);
 
 const [availability, setAvailability] = useState({
   active: false,
@@ -210,6 +242,49 @@ const toggleAvailability = async () => {
   }
 };
 
+const fetchTaskStats = async () => {
+  try {
+    const res = await fetch("http://localhost:5000/api/tasks/worker-tasks", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      }
+    );
+
+    const tasks = await res.json();
+
+    if (res.ok) {
+
+      const completed = tasks.filter(
+        t => t.status === "completed"
+      ).length;
+
+      const ongoing = tasks.filter(
+        t => t.status === "accepted"
+      ).length;
+
+      const pendingApproval = tasks.filter(
+        t => t.status === "pending_approval"
+      ).length;
+
+      const waitingPayment = tasks.filter(
+        t => t.status === "waiting_payment"
+      ).length;
+
+      setTaskStats({
+        completed,
+        ongoing,
+        pendingApproval,
+        waitingPayment
+      });
+
+    }
+
+  } catch (err) {
+    console.error("Failed to fetch tasks");
+  }
+};
+
   const formatName = name =>
     name
       .toLowerCase()
@@ -220,58 +295,33 @@ const toggleAvailability = async () => {
 const renderContent = () => {
   switch (activeSection) {
 
-    case "overview":
-      return (
-        <div className="dashboard-grid">
-          <div className="stat-card">
-            <h3>Total Earnings</h3>
-            <p className="stat-value">₹{userData.totalEarnings}</p>
-          </div>
-
-          <div className="stat-card">
-            <h3>Completed Tasks</h3>
-            <p className="stat-value">{userData.completedTasks}</p>
-          </div>
-
-          <div className="stat-card">
-            <h3>Rating</h3>
-            <p className="stat-value">{userData.rating} ⭐</p>
-          </div>
-
-          <div className="stat-card availability-card">
-            <h3>Availability</h3>
-            <button
-              className={`availability-btn ${
-                availability.active ? "on" : "off"
-              }`}
-              onClick={toggleAvailability}
-            >
-              {availability.active ? "Available" : "Unavailable"}
-            </button>
-          </div>
-        </div>
-      );
+case "overview":
+  return (
+    <WorkerOverview
+      userData={userData}
+      availability={availability}
+      toggleAvailability={toggleAvailability}
+      taskStats={taskStats}
+    />
+  );
 
     case "mytasks":
       return <WorkerMyTasks />;
 
-    case "earnings":
-      return (
-        <div>
-          <h2>Earnings & Wallet</h2>
-          <p>Wallet balance: ₹{userData.totalEarnings}</p>
-        </div>
-      );
+   case "earnings":
+  return <WorkerWallet />;
+  
       case "invitations":
   return <WorkerInvitations setInvitationCount={setInvitationCount} />;
 
     case "messages":
       return <WorkerMessages />;
 
+case "notifications":
+  return <WorkerNotifications />;
 
-    case "ratings":
-      return(
-<h1>blah blah blee blee</h1>)
+case "ratings":
+  return <WorkerRatings />;
 
     case "profile":
      return <WorkerProfile />;
@@ -288,7 +338,6 @@ const renderContent = () => {
     { id: "earnings", label: "Earnings / Wallet", icon: "💰" },
     { id: "messages", label: "Chat / Messages", icon: "💬" },
     { id: "ratings", label: "Ratings & Reviews", icon: "⭐" },
-    { id: "notifications", label: "Notifications", icon: "🔔" },
     { id: "profile", label: "Profile", icon: "👤" }
   ];
 
@@ -311,7 +360,7 @@ const renderContent = () => {
 
   <div
   className="header-icon"
-  onClick={() => navigate("/worker/notifications")}
+  onClick={() => setActiveSection("notifications")}
 >
   🔔
   {notificationCount > 0 && (

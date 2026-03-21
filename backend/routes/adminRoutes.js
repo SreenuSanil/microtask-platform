@@ -25,7 +25,8 @@ const {
   refundProviderDispute,
   splitPaymentDispute,
   getAllTasks,
-  adminCancelTask
+  adminCancelTask,
+  getAdminDashboard
 
 } = require("../controllers/adminController");
 
@@ -107,5 +108,11 @@ router.get("/tasks", auth, admin, getAllTasks);
 
 // admin cancel task
 router.patch("/tasks/cancel/:taskId", auth, admin, adminCancelTask);
+
+/* =========================
+   ADMIN DASHBOARD
+========================= */
+
+router.get("/dashboard", auth, admin, getAdminDashboard);
 
 module.exports = router;

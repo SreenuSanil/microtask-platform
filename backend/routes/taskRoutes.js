@@ -5,6 +5,7 @@ const Task = require("../models/Task");
 const multer = require("multer");
 const User = require("../models/User");
 const Message = require("../models/Message");
+const Settings = require("../models/Settings");
 
 const storage = multer.diskStorage({
   destination: "uploads/tasks",
@@ -130,16 +131,13 @@ router.delete("/:id", auth, async (req, res) => {
 // GET Worker Tasks
 router.get("/worker-tasks", auth, async (req, res) => {
   try {
-    console.log("🔥 Worker Tasks Route Hit");
-    console.log("User ID:", req.user.userId);
+   
 
     const tasks = await Task.find({
       assignedWorker: req.user.userId,
     })
       .populate("provider", "name profileImage")
       .sort({ createdAt: -1 });
-
-    console.log("Tasks Found:", tasks);
 
     res.json(tasks);
 
@@ -439,19 +437,61 @@ router.patch("/approve/:taskId", auth, async (req, res) => {
     task.escrowStatus = "released";
     task.verifiedAt = new Date();
 
-    await task.save();
 
-    const WalletTransaction = require("../models/WalletTransaction");
-    const User = require("../models/User");
+const WalletTransaction = require("../models/WalletTransaction");
 
-    await WalletTransaction.create({
-      user: task.assignedWorker,
-      relatedUser: task.provider,
-      task: task._id,
-      type: "task_payment_release",
-      amount: task.budget,
-      description: "Payment released for completed task",
-    });
+const Connection = require("../models/Connection");
+
+// 🔥 GET SETTINGS
+const settings = await Settings.findOne();
+
+const commissionPercent = settings?.commissionPercent || 10;
+
+// 🔥 GET FINAL AMOUNT
+const connection = await Connection.findOne({
+  task: task._id,
+  status: "confirmed"
+});
+
+const totalAmount = Number(
+  connection?.finalBudget || task.budget
+);
+
+if (!totalAmount || totalAmount <= 0) {
+  return res.status(400).json({
+    message: "Invalid payment amount"
+  });
+}
+
+// 💰 CALCULATE
+const commission = (totalAmount * commissionPercent) / 100;
+const workerAmount = totalAmount - commission;
+
+/* =========================
+   WORKER EARNING
+========================= */
+
+await WalletTransaction.create({
+  user: task.assignedWorker,
+  relatedUser: task.provider,
+  task: task._id,
+  type: "worker_earning",
+  amount: workerAmount,
+  description: `Payment after ${commissionPercent}% commission`,
+});
+
+/* =========================
+   PLATFORM COMMISSION
+========================= */
+
+await WalletTransaction.create({
+  user: task.provider,
+  relatedUser: task.assignedWorker,
+  task: task._id,
+  type: "commission",
+  amount: commission,
+  description: `Platform commission (${commissionPercent}%)`,
+});
 
   const worker = await User.findById(task.assignedWorker);
 
@@ -475,6 +515,7 @@ if (!skillJob) {
 }
 
 await worker.save();
+await task.save();
 
     res.json({ message: "Task approved and payment released" });
 

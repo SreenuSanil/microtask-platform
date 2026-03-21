@@ -65,7 +65,7 @@ router.post("/search", auth, async (req, res) => {
       skip = 0,
     } = req.body;
 
-    if (!skill || !lat || !lng) {
+    if (!skill || lat == null || lng == null) {
       return res.status(400).json({ message: "Missing search data" });
     }
 
@@ -83,16 +83,20 @@ router.post("/search", auth, async (req, res) => {
     const workers = await User.aggregate([
       // ✅ MUST BE FIRST STAGE
       {
-        $geoNear: {
-          near: {
-            type: "Point",
-            coordinates: [lng, lat],
-          },
-          distanceField: "distance",
-          maxDistance: radius,
-          spherical: true,
-          query: baseQuery,
-        },
+ $geoNear: {
+  near: {
+    type: "Point",
+    coordinates: [lng, lat],
+  },
+  distanceField: "distance",
+  maxDistance: radius,
+  spherical: true,
+  query: {
+    ...baseQuery,
+    location: { $exists: true },
+    "location.coordinates": { $type: "array" }
+  }
+},
       },
 
       // Interview rating extraction
@@ -241,7 +245,7 @@ router.post("/search", auth, async (req, res) => {
 
     const paginated = finalWorkers.slice(skip, skip + limit);
 
-    res.json(paginated);
+    res.json(Array.isArray(paginated) ? paginated : []);
 
   } catch (err) {
     console.error(err);

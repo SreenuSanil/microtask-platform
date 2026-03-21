@@ -1,0 +1,148 @@
+/* =========================
+ADMIN DASHBOARD OVERVIEW
+========================= */
+
+.adminDashOverviewContainer{
+padding:25px;
+}
+
+/* TITLE */
+
+.adminDashOverviewTitle{
+font-size:22px;
+font-weight:600;
+margin-bottom:25px;
+}
+
+/* =========================
+TOP STAT CARDS
+========================= */
+
+.adminDashStatsGrid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+margin-bottom:30px;
+}
+
+.adminDashStatsCard{
+background:#ffffff;
+padding:25px;
+border-radius:14px;
+text-align:center;
+box-shadow:0 6px 18px rgba(0,0,0,0.08);
+transition:all .25s ease;
+}
+
+.adminDashStatsCard:hover{
+transform:translateY(-4px);
+box-shadow:0 10px 22px rgba(0,0,0,0.12);
+}
+
+.adminDashStatsCardTitle{
+font-size:14px;
+color:#6c757d;
+margin-bottom:8px;
+}
+
+.adminDashStatsCardValue{
+font-size:24px;
+font-weight:700;
+color:#2c3e50;
+}
+
+/* =========================
+SECTION BOX
+========================= */
+
+.adminDashSectionBox{
+background:#ffffff;
+padding:25px;
+border-radius:14px;
+margin-bottom:25px;
+box-shadow:0 6px 18px rgba(0,0,0,0.08);
+}
+
+.adminDashSectionTitle{
+font-size:18px;
+font-weight:600;
+margin-bottom:18px;
+}
+
+/* =========================
+TASK STATUS
+========================= */
+
+.adminDashSummaryGrid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:18px;
+}
+
+.adminDashSummaryCard{
+background:#f8fafc;
+padding:18px;
+border-radius:10px;
+text-align:center;
+transition:all .2s ease;
+}
+
+.adminDashSummaryCard:hover{
+transform:translateY(-3px);
+}
+
+.adminDashSummaryValue{
+font-size:22px;
+font-weight:700;
+color:#16a085;
+display:block;
+margin-bottom:4px;
+}
+
+.adminDashSummaryDispute{
+color:#e74c3c;
+}
+
+.adminDashSummaryLabel{
+font-size:14px;
+color:#2c3e50;
+}
+
+/* =========================
+SYSTEM ALERTS
+========================= */
+
+.adminDashAlertGrid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:18px;
+}
+
+.adminDashAlertCard{
+background:#f8fafc;
+padding:18px;
+border-radius:10px;
+text-align:center;
+transition:all .2s ease;
+}
+
+.adminDashAlertCard:hover{
+transform:translateY(-3px);
+}
+
+.adminDashAlertValue{
+font-size:22px;
+font-weight:700;
+color:#16a085;
+display:block;
+margin-bottom:4px;
+}
+
+.adminDashAlertDanger{
+color:#e74c3c;
+}
+
+.adminDashAlertLabel{
+font-size:14px;
+color:#2c3e50;
+}

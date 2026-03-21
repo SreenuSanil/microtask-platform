@@ -15,7 +15,6 @@ import MyTasks from "./pages/provider/MyTasks";
 import PostTask from "./pages/provider/PostTask";
 import TaskWorkers from "./pages/provider/TaskWorkers";
 import WorkerProfile from "./pages/WorkerProfile";
-import Notifications from "./pages/worker/Notifications";
 import ChatPage from "./pages/chat/ChatPage";
 import ProviderTransactions from "./pages/provider/ProviderTransactions";
  
@@ -89,14 +88,6 @@ const App = () => {
   element={<ProtectedRoute allowedRole="provider"><TaskWorkers /></ProtectedRoute>}
 />
 
-<Route
-  path="/worker/notifications"
-  element={
-    <ProtectedRoute allowedRole="worker">
-      <Notifications />
-    </ProtectedRoute>
-  }
-/>
 <Route
   path="/worker/chat/:connectionId"
   element={<ChatPage />}

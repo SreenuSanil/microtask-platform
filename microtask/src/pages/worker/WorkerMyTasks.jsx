@@ -255,6 +255,26 @@ return (
   </div>
 )}
 
+{task.status === "cancelled" && (
+  <div className="cancel-box">
+
+    <p className="cancel-title">
+      ❌ Task Cancelled
+    </p>
+
+    <p>
+      <strong>Cancelled By:</strong> {task.cancelledBy}
+    </p>
+
+    {task.cancelReason && (
+      <p>
+        <strong>Reason:</strong> {task.cancelReason}
+      </p>
+    )}
+
+  </div>
+)}
+
   {task.rejectionReason && (
   <div className="reject-box">
     <p style={{color:"red"}}>

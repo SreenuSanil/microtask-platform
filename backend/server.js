@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-
+require("./routes/autoReleaseEscrow");
 const connectDB = require("./config/db");
 
 const app = express();
@@ -14,8 +14,10 @@ const notificationRoutes = require("./routes/notificationRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const Message = require("./models/Message");
 const Connection = require("./models/Connection");
+const reviewRoutes = require("./routes/reviewRoutes");
+const locationRoutes = require("./routes/locationRoutes");
+const settingsRoutes = require("./routes/adminSettings");
 
-// Middleware
 app.use(
   cors({
     origin: [
@@ -48,6 +50,10 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/wallet", require("./routes/walletRoutes"));
 app.use("/api/provider-stats", require("./routes/providerStatsRoutes"));
+app.use("/api/admin/revenue", require("./routes/adminRevenueRoutes"));
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/location", locationRoutes);
+app.use("/api/admin/settings", settingsRoutes);
 
 // 🔥 Connect DB FIRST
 connectDB();

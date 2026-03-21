@@ -12,6 +12,7 @@ import { io } from "socket.io-client";
 import { useRef } from "react";
 import ProviderTransactions from "./provider/ProviderTransactions";
 import ProviderOverview from "./provider/ProviderOverview";
+import ProviderNotifications from "./provider/ProviderNotifications";
 
 const ProviderDashboard = () => {
   const navigate = useNavigate();
@@ -28,7 +29,29 @@ const ProviderDashboard = () => {
     organization: "",
     email: "",
   });
+  const [notificationCount, setNotificationCount] = useState(0);
 
+const fetchNotifications = async () => {
+
+  const res = await fetch(
+    "http://localhost:5000/api/notifications",
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
+
+  const data = await res.json();
+
+  if (res.ok) {
+
+    const unread = data.filter(n => !n.read).length;
+
+    setNotificationCount(unread);
+  }
+
+};
 
   const fetchUnread = async () => {
     const res = await fetch(
@@ -46,6 +69,10 @@ const ProviderDashboard = () => {
 
   useEffect(() => {
   fetchUnread();
+}, []);
+
+useEffect(() => {
+  fetchNotifications();
 }, []);
 
   /* =========================
@@ -106,12 +133,20 @@ setInviteCount(inviteCount);
 }, [userData]);
 
 useEffect(() => {
+
   const params = new URLSearchParams(location.search);
+
   const tab = params.get("tab");
+  const taskId = params.get("task");
 
   if (tab) {
     setActiveSection(tab);
   }
+
+  if (taskId) {
+    setSelectedTaskId(taskId);
+  }
+
 }, [location.search]);
 
   const fetchNearbyWorkers = async () => {
@@ -160,7 +195,6 @@ const menuItems = [
   { id: "my-tasks", label: "My Tasks", icon: "📋" },
   { id: "messages", label: "Messages", icon: "💬" },
   { id: "payments", label: "Transactions", icon: "💳" },
-  { id: "notifications", label: "Notifications", icon: "🔔" },
   { id: "profile", label: "Profile", icon: "👤" },
 ];
 
@@ -214,12 +248,7 @@ case "workers":
        
 
       case "notifications":
-        return (
-          <div>
-            <h2>Notifications</h2>
-            <p>No notifications yet.</p>
-          </div>
-        );
+  return <ProviderNotifications />;
  
 case "invitations":
   return <ProviderInvites />;
@@ -268,19 +297,24 @@ case "invitations":
         </div>
 
 
-  {/* 🔔 Notifications */}
-  <div
-    className="header-icon"
-    onClick={() => setActiveSection("notifications")}
-  >
-    🔔
-  </div>
+  
 
   {/* 💬 Messages */}
 <div className="header-right">
 
   
-
+{/* 🔔 Notifications */}
+  <div
+  className="header-icon"
+  onClick={() => setActiveSection("notifications")}
+>
+  🔔
+  {notificationCount > 0 && (
+    <span className="icon-badge">
+      {notificationCount}
+    </span>
+  )}
+</div>
 
   <div
     className="header-icon"

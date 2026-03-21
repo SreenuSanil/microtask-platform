@@ -48,7 +48,14 @@ const TaskWorkers = ({ taskId, goBack }) => {
     taskData = task
   ) => {
     try {
-      const [lng, lat] = taskData.location.coordinates;
+      if (!taskData?.location?.coordinates) {
+  console.error("❌ Invalid location data:", taskData);
+  setWorkers([]);
+  setLoading(false);
+  return;
+}
+
+const [lng, lat] = taskData.location.coordinates;
 
       const res = await fetch(
         "http://localhost:5000/api/workers/search",
@@ -70,13 +77,25 @@ const TaskWorkers = ({ taskId, goBack }) => {
         }
       );
 
-      const data = await res.json();
+const data = await res.json();
 
-      if (reset) {
-        setWorkers(data);
-      } else {
-        setWorkers((prev) => [...prev, ...data]);
-      }
+console.log("API RESPONSE:", data); // DEBUG
+
+if (Array.isArray(data)) {
+  if (reset) {
+    setWorkers(data);
+  } else {
+    setWorkers((prev) => [...prev, ...data]);
+  }
+
+  setSkip(customSkip + customLimit);
+  setHasMore(data.length === customLimit);
+} else {
+  console.error("❌ Invalid API response:", data);
+  setWorkers([]);
+}
+
+setLoading(false);
 
       setSkip(customSkip + customLimit);
       setHasMore(data.length === customLimit);
@@ -105,17 +124,61 @@ const TaskWorkers = ({ taskId, goBack }) => {
     .join(" ");
 };
 
+// get rating for specific skill
+const getSkillRating = (worker) => {
+  const skill = task?.requiredSkill?.toLowerCase();
+
+  const ratingData = worker.skillRatings?.find(
+    r => r.skill === skill
+  );
+
+  if (!ratingData || ratingData.ratingCount === 0) {
+    return null;
+  }
+
+  return ratingData.ratingAverage;
+};
+
+// get review count for specific skill
+const getSkillReviewCount = (worker) => {
+  const skill = task?.requiredSkill?.toLowerCase();
+
+  return worker.reviews?.filter(
+    r => r.skill === skill
+  ).length || 0;
+};
+
+// get completed jobs for specific skill
+const getSkillJobs = (worker) => {
+  const skill = task?.requiredSkill?.toLowerCase();
+
+  const jobData = worker.skillCompletedTasks?.find(
+    s => s.skill === skill
+  );
+
+  return jobData?.count || 0;
+};
+
+
+const refreshWorkers = () => {
+  if (!task) return;
+  loadWorkers(0, 5, true, task);
+};
+
 if (selectedWorkerId) {
   return (
     <div className="tw-profile-transition">
       <WorkerProfile
-        workerId={selectedWorkerId}
-        taskId={taskId}
-        goBack={() => setSelectedWorkerId(null)}
+       workerId={selectedWorkerId}
+       taskId={taskId}
+       goBack={() => setSelectedWorkerId(null)}
+       onReviewSubmitted={refreshWorkers}
       />
     </div>
   );
 }
+
+
 return (
   <div className="tw-content">
 <div className="tw-header">
@@ -162,70 +225,80 @@ return (
   <span>{workers.length}</span> Workers Found
 </div>
 
-        <div className="tw-grid">
-          {workers.map((worker,index) => (
-            <div
-              key={worker._id}
-              className="tw-card"
-              style={{ animationDelay: `${index * 0.08}s` }}
-             onClick={() => setSelectedWorkerId(worker._id)}
-            >
-              <img
-                src={
-                  worker.profileImage
-                    ? `http://localhost:5000/${worker.profileImage}`
-                    : "/default-user.png"
-                }
-                alt="worker"
-              />
+<div className="tw-grid">
 
-              <div className="tw-info">
-                <h4>{formatName(worker.name)}</h4>
+{Array.isArray(workers) && workers.map((worker,index) => {
 
-                <p className="tw-rating">
-  ⭐ {
-    worker.skillRatings?.find(
-      r =>
-        r.skill ===
-        task?.requiredSkill?.toLowerCase()
-    )?.ratingAverage?.toFixed(1) ?? "New"
-  }
+  const rating = getSkillRating(worker);
+  const jobs = getSkillJobs(worker);
+  const reviews = getSkillReviewCount(worker);
+
+ const distanceKm = worker.distance
+    ? (worker.distance / 1000).toFixed(1)
+    : null;
+
+  return (
+
+    <div
+      key={worker._id}
+      className="tw-card"
+      style={{ animationDelay: `${index * 0.08}s` }}
+      onClick={() => setSelectedWorkerId(worker._id)}
+    >
+
+      <img
+        src={
+          worker.profileImage
+            ? `http://localhost:5000/${worker.profileImage}`
+            : "/default-user.png"
+        }
+        alt="worker"
+      />
+
+      <div className="tw-info">
+
+        <h4>{formatName(worker.name)}</h4>
+
+    <div className="tw-rating-block">
+      <p className="tw-distance">
+  {distanceKm ? `${distanceKm} km away` : "Distance unavailable"}
 </p>
+
+  {rating ? (
+    <>
+      <div className="tw-stars">
+        {"★".repeat(Math.round(rating))}
+        {"☆".repeat(5 - Math.round(rating))}
+        <span className="tw-rating-value">
+          {rating.toFixed(1)}
+        </span>
+      </div>
+
+      <p className="tw-review-count">
+        {reviews} reviews
+      </p>
+    </>
+  ) : (
+    <p className="tw-new">New Worker</p>
+  )}
+
+</div>
 
 <p className="tw-jobs">
-  {
-    worker.skillCompletedTasks?.find(
-      s =>
-        s.skill ===
-        task?.requiredSkill?.toLowerCase()
-    )?.count ?? 0
-  } jobs completed
+  {jobs} jobs completed
 </p>
 
-<p className="tw-reviews">
-  {
-    worker.reviews?.filter(
-      r =>
-        r.skill ===
-        task?.requiredSkill?.toLowerCase()
-    ).length ?? 0
-  } reviews
-</p>
-                <p className="tw-distance">
-                  {worker.distance
-                    ? `${(worker.distance / 1000).toFixed(1)} km away`
-                    : ""}
-                </p>
 
-                {worker.isAvailable && (
-                  <span className="tw-available">
-                    Available
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+
+      </div>
+
+    </div>
+
+  );
+
+})}
+
+</div>
 
         {hasMore && (
           <div className="tw-more">

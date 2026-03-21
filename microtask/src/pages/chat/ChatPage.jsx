@@ -5,7 +5,7 @@ import "./ChatPage.css";
 
 const ChatPage = ({ connectionId }) => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
-  const userId = storedUser?.id;
+  const userId = storedUser?._id || storedUser?.id;
 
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
@@ -24,7 +24,8 @@ const [budget, setBudget] = useState(null);
   const audioChunksRef = useRef([]);
   const messagesEndRef = useRef(null);
   const [isProvider, setIsProvider] = useState(false);
- 
+ const [popupMessage, setPopupMessage] = useState("");
+
 useEffect(() => {
   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 }, [messages]);
@@ -34,14 +35,30 @@ useEffect(() => {
     socketRef.current = io("http://localhost:5000");
 
     socketRef.current.emit("join_room", connectionId);
+ socketRef.current.emit("join_user", userId);
 
+
+socketRef.current.on("job_taken", (data) => {
+  setPopupMessage(data.message);
+
+  // close chat
+  setConnectionStatus("closed");
+
+  // auto hide after 3 sec
+  setTimeout(() => {
+    setPopupMessage("");
+  }, 3000);
+});
     socketRef.current.on("receive_message", (data) => {
       setMessages((prev) => [...prev, data]);
     });
 
-    return () => {
-      socketRef.current.disconnect();
-    };
+return () => {
+  socketRef.current.off("job_taken");
+  socketRef.current.off("receive_message");
+  socketRef.current.disconnect();
+};
+
   }, [connectionId]);
 
   /* FETCH HISTORY */
@@ -325,6 +342,13 @@ const handleTaskPayment = async () => {
   }
 };
   return (
+  <>
+    {popupMessage && (
+      <div className="popup-notification">
+        {popupMessage}
+      </div>
+    )}
+
     <div className="chat-container">
       
       <div className="chat-messages">
@@ -333,11 +357,17 @@ const handleTaskPayment = async () => {
             key={msg._id}
             
 className={`chat-message ${
-  (msg.sender?._id || msg.sender)?.toString() === userId
+  (
+    (typeof msg.sender === "object"
+      ? msg.sender._id
+      : msg.sender
+    )?.toString() === userId?.toString()
+  )
     ? "sent"
     : "received"
 }`}
           >
+            <div className="message-content">
             {msg.type === "text" && (
               <div className="message-content">{msg.message}</div>
             )}
@@ -358,13 +388,13 @@ className={`chat-message ${
     controls
     src={`http://localhost:5000/${msg.voiceUrl}`}
   ></audio>
-)}
-
+)}   
+</div>
           </div>
         ))}
         <div ref={messagesEndRef}></div>
       </div>
-
+      
 {/* ===== BUDGET INCREASE SECTION ===== */}
 
 {connectionStatus === "accepted" && isProvider && (
@@ -474,6 +504,8 @@ className={`chat-message ${
       
     </div>
     
+</>
+
   );
 };
 

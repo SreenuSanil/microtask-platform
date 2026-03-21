@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import "./MyTasks.css";
 import { useNavigate } from "react-router-dom";
 import TaskWorkers from "./TaskWorkers";
+import RatingModal from "./RatingModal";
 
 const MyTasks = () => {
   const [tasks, setTasks] = useState([]);
@@ -11,11 +12,13 @@ const MyTasks = () => {
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [workerCounts, setWorkerCounts] = useState({});
   const [selectedTaskId, setSelectedTaskId] = useState(null);
+  const [showRating, setShowRating] = useState(false);
+  const [ratingTask, setRatingTask] = useState(null);
+  const [reviewedTasks, setReviewedTasks] = useState([]);
   /* =============================
      FETCH PROVIDER TASKS
   ============================== */
-  useEffect(() => {
-    const fetchTasks = async () => {
+  const fetchTasks = async () => {
       try {
         const res = await fetch(
           "http://localhost:5000/api/tasks/my-tasks",
@@ -33,8 +36,43 @@ const MyTasks = () => {
       }
     };
 
-    fetchTasks();
-  }, []);
+ useEffect(() => {
+  fetchTasks();
+}, []);
+
+  const fetchReviewedTasks = async () => {
+
+  const res = await fetch(
+    "http://localhost:5000/api/reviews/my-reviews",
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    }
+  );
+
+  const data = await res.json();
+
+  if(res.ok){
+    setReviewedTasks(data);
+  }
+
+};
+
+useEffect(() => {
+  fetchReviewedTasks();
+}, []);
+
+const refreshWorkers = async () => {
+
+  await fetchTasks();
+  await fetchReviewedTasks();
+
+  if (ratingTask) {
+    setReviewedTasks(prev => [...prev, ratingTask._id]);
+  }
+
+};
 
 /* =============================
    FILTER TASKS
@@ -268,7 +306,18 @@ const approveTask = async (taskId) => {
     const data = await res.json();
 
     if (res.ok) {
-      alert("Work approved. Payment released.");
+const task = tasks.find(t => t._id === taskId);
+
+setTasks(prev =>
+  prev.map(t =>
+    t._id === taskId ? { ...t, status: "completed" } : t
+  )
+);
+
+if(!reviewedTasks.includes(taskId)){
+  setRatingTask(task);
+  setShowRating(true);
+}
       setTasks(prev =>
         prev.map(t =>
           t._id === taskId ? { ...t, status: "completed" } : t
@@ -386,6 +435,26 @@ return (
               </div>
 
               <p className="task-desc">{task.description}</p>
+
+{task.status === "cancelled" && (
+  <div className="cancel-box">
+
+    <p className="cancel-title">
+      ❌ Task Cancelled
+    </p>
+
+    <p>
+      <strong>Cancelled By:</strong> {task.cancelledBy}
+    </p>
+
+    {task.cancelReason && (
+      <p>
+        <strong>Reason:</strong> {task.cancelReason}
+      </p>
+    )}
+
+  </div>
+)}
 
               {task.status === "dispute" && (
   <div className="dispute-box">
@@ -512,6 +581,30 @@ return (
     </button>
   </>
 )}
+
+{/* COMPLETED TASK - RATE WORKER */}
+{task.status === "completed" &&
+ task.assignedWorker &&
+ !reviewedTasks.includes(task._id) && (
+
+<button
+  className="rate-btn"
+  onClick={() => {
+
+    if (reviewedTasks.includes(task._id)) {
+      alert("You already rated this worker for this task.");
+      return;
+    }
+
+    setRatingTask(task);
+    setShowRating(true);
+
+  }}
+>
+  ⭐ Rate Worker
+</button>
+
+)}
 </div>
 
 
@@ -548,8 +641,22 @@ return (
     </div>
   </div>
 )}
+{showRating && ratingTask && (
 
-</div>   
+  <RatingModal
+    task={ratingTask}
+    onClose={()=>{
+      setShowRating(false);
+      setRatingTask(null);
+    }}
+    onReviewSubmitted={() => {
+  refreshWorkers();
+}}
+  />
+
+)}
+</div>  
+ 
 );
 };
 

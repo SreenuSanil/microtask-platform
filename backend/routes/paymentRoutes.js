@@ -5,6 +5,7 @@ const auth = require("../middleware/authMiddleware");
 const Task = require("../models/Task");
 const router = express.Router();
 const Connection = require("../models/Connection");
+const Settings = require("../models/Settings");
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -64,58 +65,51 @@ router.post("/verify-payment", (req, res) => {
 
 
 router.post("/task/create-order/:taskId", auth, async (req, res) => {
-
   try {
     const task = await Task.findById(req.params.taskId);
 
     if (!task)
       return res.status(404).json({ message: "Task not found" });
 
-    if (!task.provider.equals(req.user.userId))
-      return res.status(403).json({ message: "Not authorized" });
+    if (task.paymentStatus === "paid") {
+      return res.status(400).json({
+        message: "Payment already verified"
+      });
+    }
 
-    if (task.status !== "assigned")
-      return res.status(400).json({ message: "Task not ready for payment" });
+    const connection = await Connection.findOne({
+      task: task._id,
+      status: "confirmed"
+    });
 
-    if (task.paymentStatus === "paid")
-      return res.status(400).json({ message: "Already paid" });
+    const amountToUse = Number(
+      connection?.finalBudget || task.budget
+    );
 
-    // 🔥 GET CONNECTION FOR FINAL BUDGET
- const connection = await Connection.findOne({
-  task: task._id,
-  status: "confirmed"
-});
+    if (!amountToUse || amountToUse <= 0) {
+      return res.status(400).json({
+        message: "Invalid payment amount",
+      });
+    }
 
-const amountToUse = Number(
-  connection?.finalBudget || task.budget
-);
-
-if (!amountToUse || amountToUse <= 0) {
-  return res.status(400).json({
-    message: "Invalid payment amount",
-  });
-}
-
-console.log("Charging amount:", amountToUse);
-
-const options = {
-  amount: amountToUse * 100, // Razorpay expects paise
-  currency: "INR",
-  receipt: "task_" + task._id,
-};
+    const options = {
+      amount: amountToUse * 100,
+      currency: "INR",
+      receipt: "task_" + task._id,
+    };
 
     const order = await razorpay.orders.create(options);
-console.log("Created Order ID:", order.id);   // ✅ ADD HERE
-console.log("Saving to task:", task._id);  
+
+    // ✅ SAVE ORDER ID
     task.razorpayOrderId = order.id;
     await task.save();
 
     res.json(order);
 
   } catch (err) {
-  console.error("CREATE ORDER FULL ERROR:", err);
-  res.status(500).json({ message: "Task order creation failed" });
-}
+    console.error("CREATE ORDER FULL ERROR:", err);
+    res.status(500).json({ message: "Task order creation failed" });
+  }
 });
 
 
@@ -127,14 +121,29 @@ router.post("/task/verify-payment/:taskId", auth, async (req, res) => {
       razorpay_signature,
     } = req.body;
 
-    const task = await Task.findById(req.params.taskId);
-console.log("Creating wallet transaction...");
+   const task = await Task.findById(req.params.taskId);
+
+if (!task)
+  return res.status(404).json({ message: "Task not found" });
+
+if (task.provider.toString() !== req.user.userId.toString())
+  return res.status(403).json({ message: "Not authorized" });
+
+/* 🚫 Prevent duplicate payment */
+if (task.paymentStatus === "paid" || task.escrowStatus === "held") {
+  return res.status(400).json({
+    message: "Payment already completed for this task",
+  });
+}
+
+if (task.razorpayOrderId !== razorpay_order_id) {
+  return res.status(400).json({
+    message: "Order ID mismatch"
+  });
+}
+
     if (!task)
       return res.status(404).json({ message: "Task not found" });
-
-    console.log("Verify route hit");
-    console.log("DB Order ID:", task.razorpayOrderId);
-    console.log("Razorpay Order ID:", razorpay_order_id);
 
     const body = razorpay_order_id + "|" + razorpay_payment_id;
 
@@ -146,13 +155,10 @@ console.log("Creating wallet transaction...");
     if (expectedSignature !== razorpay_signature)
       return res.status(400).json({ message: "Invalid signature" });
 
-    task.paymentStatus = "paid";
-    task.escrowStatus = "held";
-
-    const connection = await Connection.findOne({
+const connection = await Connection.findOne({
   task: task._id,
   status: "confirmed"
-});
+}).lean();
 
 const amountToUse = Number(
   connection?.finalBudget || task.budget
@@ -162,8 +168,6 @@ task.paymentStatus = "paid";
 task.escrowStatus = "held";
 task.status = "in_progress";
 task.razorpayPaymentId = razorpay_payment_id;
-
-await task.save();
 
 const WalletTransaction = require("../models/WalletTransaction");
 
@@ -176,12 +180,11 @@ await WalletTransaction.create({
   description: "Escrow payment locked for task",
 });
 
+
     task.status = "in_progress";
     task.razorpayPaymentId = razorpay_payment_id;
 
     await task.save();
-
-    console.log("Task updated successfully");
 
     res.json({ message: "Escrow locked. Work started." });
 

@@ -9,6 +9,25 @@ const sendEmail = require("../utils/sendEmail");
 const upload = require("../middleware/upload");
 const { updateProfile } = require("../controllers/authController");
 const authMiddleware = require("../middleware/authMiddleware");
+const Settings = require("../models/Settings");
+
+const getSettings = async () => {
+  let settings = await Settings.findOne();
+
+  if (!settings) {
+    settings = await Settings.create({
+      loginEnabled: true,
+      userControls: {
+        allowWorkerRegistration: true,
+        allowProviderRegistration: true
+      },
+      maintenanceMode: false
+    });
+  }
+
+  return settings;
+};
+
 // ================= REGISTER =================
 router.post(
   "/register",
@@ -48,6 +67,29 @@ router.post(
       } = req.body;
 
       const profileImage = req.file ? req.file.path : null;
+
+const settings = await getSettings();
+
+// 🚫 MAINTENANCE BLOCK
+if (settings.maintenanceMode) {
+  return res.status(503).json({
+    error: settings.maintenanceMessage || "System under maintenance"
+  });
+}
+
+// 🚫 WORKER REGISTRATION OFF
+if (role === "worker" && !settings.userControls.allowWorkerRegistration) {
+  return res.status(403).json({
+    error: "Worker registration is disabled"
+  });
+}
+
+// 🚫 PROVIDER REGISTRATION OFF
+if (role === "provider" && !settings.userControls.allowProviderRegistration) {
+  return res.status(403).json({
+    error: "Provider registration is disabled"
+  });
+}
 
       // BASIC VALIDATION
      if (!name || !email || !password || !phone || !role || !latitude === undefined|| !longitude === undefined) {
@@ -173,96 +215,117 @@ if (password.length < 6) {
 
 // ================= LOGIN =================
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  try {
 
-  const user = await User.findOne({ email });
+    const { email, password } = req.body;
 
-  if (!user) {
-    return res.status(401).json({ error: "Invalid credentials" });
-  }
+    // ✅ FIRST get user
+    const user = await User.findOne({ email });
 
-   
-  if (!user.emailVerified) {
-    return res.status(403).json({
-      error: "Email not verified. Please verify your email first.",
-    });
-  }
-
-  // 💳 PAYMENT CHECK FOR WORKERS ONLY
-if (user.role === "worker") {
-  if (!user.payment || user.payment.status !== "paid") {
-    return res.status(403).json({
-      error: "Payment not completed. Please complete registration payment.",
-    });
-  }
-}
-
-
-
-// 🚫 REMOVED USER
-if (user.accountStatus === "removed") {
-  return res.status(403).json({
-    error: "Account removed",
-    reason: user.removeReason || "Account permanently removed by admin",
-  });
-}
-
-// 🚫 BLOCKED USER (WITH AUTO-UNBLOCK)
-if (user.accountStatus === "blocked") {
-  // ⏰ Auto-unblock if time-based block expired
-  if (
-    user.blockedUntil &&
-    new Date() > new Date(user.blockedUntil)
-  ) {
-    user.accountStatus = "active";
-    user.blockedUntil = null;
-    user.blockReason = null;
-    await user.save();
-  } else {
-    let daysLeft = null;
-
-    if (user.blockedUntil) {
-      daysLeft = Math.max(
-        0,
-        Math.ceil(
-          (new Date(user.blockedUntil) - new Date()) /
-            (1000 * 60 * 60 * 24)
-        )
-      );
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    return res.status(403).json({
-      error: "Account blocked",
-      reason: user.blockReason || "No reason provided",
-      blockedUntil: user.blockedUntil, // date or null
-      daysLeft, // number or null
+    // ✅ THEN get settings
+    const settings = await getSettings();
+
+    // 🚫 LOGIN DISABLED (ADMIN ALLOWED)
+    if (!settings.loginEnabled && user.role !== "admin") {
+      return res.status(403).json({
+        error: "Login is disabled by admin"
+      });
+    }
+
+    // 🚫 MAINTENANCE MODE (ADMIN ALLOWED)
+    if (settings.maintenanceMode && user.role !== "admin") {
+      return res.status(503).json({
+        error: settings.maintenanceMessage || "System under maintenance"
+      });
+    }
+
+    // 🚫 EMAIL NOT VERIFIED
+    if (!user.emailVerified) {
+      return res.status(403).json({
+        error: "Email not verified. Please verify your email first.",
+      });
+    }
+
+    // 💳 PAYMENT CHECK FOR WORKERS
+    if (user.role === "worker") {
+      if (!user.payment || user.payment.status !== "paid") {
+        return res.status(403).json({
+          error: "Payment not completed. Please complete registration payment.",
+        });
+      }
+    }
+
+    // 🚫 REMOVED USER
+    if (user.accountStatus === "removed") {
+      return res.status(403).json({
+        error: "Account removed",
+        reason: user.removeReason || "Account permanently removed by admin",
+      });
+    }
+
+    // 🚫 BLOCKED USER (AUTO-UNBLOCK)
+    if (user.accountStatus === "blocked") {
+      if (
+        user.blockedUntil &&
+        new Date() > new Date(user.blockedUntil)
+      ) {
+        user.accountStatus = "active";
+        user.blockedUntil = null;
+        user.blockReason = null;
+        await user.save();
+      } else {
+        let daysLeft = null;
+
+        if (user.blockedUntil) {
+          daysLeft = Math.max(
+            0,
+            Math.ceil(
+              (new Date(user.blockedUntil) - new Date()) /
+              (1000 * 60 * 60 * 24)
+            )
+          );
+        }
+
+        return res.status(403).json({
+          error: "Account blocked",
+          reason: user.blockReason || "No reason provided",
+          blockedUntil: user.blockedUntil,
+          daysLeft,
+        });
+      }
+    }
+
+    // 🔐 PASSWORD CHECK
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    // 🔑 TOKEN
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        role: user.role,
+        approvalStatus: user.approvalStatus,
+        accountStatus: user.accountStatus,
+      },
     });
+
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+    res.status(500).json({ error: "Login failed" });
   }
-}
-
-  /* 🚫 END BLOCK */
-
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(401).json({ error: "Invalid credentials" });
-  }
-
-  const token = jwt.sign(
-    { userId: user._id, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: "7d" }
-  );
-
-res.json({
-  token,
-  user: {
-    id: user._id,
-    role: user.role,
-    approvalStatus: user.approvalStatus,
-    accountStatus: user.accountStatus,
-  },
-});
-
 });
 
 

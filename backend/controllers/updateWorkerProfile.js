@@ -1,48 +1,97 @@
-exports.updateWorkerProfile = async (req, res) => {
+const User = require("../models/User");
+const multer = require("multer");
+
+// STORAGE CONFIG
+const storage = multer.diskStorage({
+  destination: "uploads/work",
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage }).fields([
+  { name: "profileImage", maxCount: 1 },
+  { name: "workImages", maxCount: 20 }, // unlimited-ish
+]);
+
+// ================= UPDATE PROFILE =================
+exports.updateWorkerProfile = [
+  upload,
+  async (req, res) => {
+    try {
+      const user = await User.findById(req.user.userId);
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // ✅ BASIC FIELDS
+      const fields = [
+        "name",
+        "phone",
+        "address",
+        "bio",
+        "experienceYears",
+        "pastWorkDescription",
+        "certifications",
+      ];
+
+      fields.forEach((field) => {
+        if (req.body[field] !== undefined) {
+          user[field] = req.body[field];
+        }
+      });
+
+      // ✅ LOCATION
+      if (req.body.location) {
+        user.location = JSON.parse(req.body.location);
+      }
+
+      // ✅ PROFILE IMAGE
+      if (req.files?.profileImage) {
+        user.profileImage = req.files.profileImage[0].path;
+      }
+
+      // ✅ EXISTING WORK IMAGES (after delete)
+      if (req.body.existingWorkImages) {
+        user.workImages = JSON.parse(req.body.existingWorkImages);
+      }
+
+      // ✅ NEW WORK IMAGES
+      if (req.files?.workImages) {
+        const newImages = req.files.workImages.map((f) => f.path);
+        user.workImages = [...(user.workImages || []), ...newImages];
+      }
+
+      await user.save();
+
+      res.json(user);
+
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Server error" });
+    }
+  }
+];
+
+// ================= CHANGE PASSWORD =================
+exports.changePassword = async (req, res) => {
   try {
     const user = await User.findById(req.user.userId);
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    if (req.body.oldPassword !== user.password) {
+      return res.status(400).json({ error: "Old password incorrect" });
     }
 
-    // Editable fields
-    user.name = req.body.name ?? user.name;
-    user.phone = req.body.phone ?? user.phone;
-    user.address = req.body.address ?? user.address;
-    user.bio = req.body.bio ?? user.bio;
-    user.experienceYears = req.body.experienceYears ?? user.experienceYears;
-    user.pastWorkDescription = req.body.pastWorkDescription ?? user.pastWorkDescription;
-    user.certifications = req.body.certifications ?? user.certifications;
-    user.languages = req.body.languages ?? user.languages;
-
-    // 🗺 Location update
-    if (req.body.location) {
-      user.location = req.body.location;
-    }
-
-    
-
+    user.password = req.body.newPassword;
     await user.save();
 
-    res.json(user);
+    res.json({ message: "Password updated" });
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ error: "Server error" });
   }
-};
-
-exports.changePassword = async (req, res) => {
-  const { currentPassword, newPassword } = req.body;
-
-  const user = await User.findById(req.user.userId);
-
-  const match = await bcrypt.compare(currentPassword, user.password);
-  if (!match) return res.status(400).json({ message: "Wrong password" });
-
-  user.password = await bcrypt.hash(newPassword, 10);
-  await user.save();
-
-  res.json({ message: "Password updated" });
 };

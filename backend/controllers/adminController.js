@@ -5,6 +5,7 @@ const Task = require("../models/Task");
 const Connection = require("../models/Connection");
 const Message = require("../models/Message");
 const WalletTransaction = require("../models/WalletTransaction");
+const { createNotification } = require("./notificationController");
 /* =========================
    INTERVIEW MANAGEMENT
 ========================= */
@@ -414,12 +415,33 @@ exports.refundProviderDispute = async (req, res) => {
     if (!task)
       return res.status(404).json({ message: "Task not found" });
 
-    task.status = "cancelled";
+   task.status = "cancelled";
+   task.cancelledBy = "admin";
+   task.cancelReason = reason;
+
     task.escrowStatus = "refunded";
 
     task.dispute.status = "resolved";
 
     await task.save();
+
+    // notify provider
+await createNotification({
+  userId: task.provider,
+  title: "Task Cancelled",
+  message: `Admin cancelled task "${task.title}"`,
+  taskId: task._id
+});
+
+// notify worker
+if(task.assignedWorker){
+  await createNotification({
+    userId: task.assignedWorker,
+    title: "Task Cancelled",
+    message: `Admin cancelled task "${task.title}"`,
+    taskId: task._id
+  });
+}
 
     await WalletTransaction.create({
       user: task.provider,
@@ -516,9 +538,26 @@ exports.adminCancelTask = async (req, res) => {
       });
 
     task.status = "cancelled";
+    
     task.cancelledBy = "admin";
 
     await task.save();
+
+    // Notify Provider
+await createNotification({
+  userId: task.provider,
+  title: "Task Cancelled",
+  message: `Admin cancelled the task "${task.title}".`
+});
+
+// Notify Worker
+if (task.assignedWorker) {
+  await createNotification({
+    userId: task.assignedWorker,
+    title: "Task Cancelled",
+    message: `Admin cancelled the task "${task.title}".`
+  });
+}
 
     res.json({
       message: "Task cancelled by admin",
@@ -530,4 +569,82 @@ exports.adminCancelTask = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+/* =========================
+   ADMIN DASHBOARD OVERVIEW
+========================= */
 
+exports.getAdminDashboard = async (req, res) => {
+  try {
+
+    // Total users
+    const totalWorkers = await User.countDocuments({ role: "worker" });
+    const totalProviders = await User.countDocuments({ role: "provider" });
+
+    // Tasks
+    const totalTasks = await Task.countDocuments();
+
+    const completedTasks = await Task.countDocuments({
+      status: "completed",
+    });
+
+    const openTasks = await Task.countDocuments({
+      status: "open",
+    });
+
+    const inProgressTasks = await Task.countDocuments({
+      status: "in_progress",
+    });
+
+    const disputedTasks = await Task.countDocuments({
+      status: "dispute",
+    });
+
+    // Pending interviews
+    const pendingInterviews = await User.countDocuments({
+      role: "worker",
+      "interview.interviewStatus": "not_scheduled",
+    });
+
+    // Workers waiting approval
+    const pendingWorkers = await User.countDocuments({
+      role: "worker",
+      approvalStatus: "pending",
+      "interview.interviewStatus": "completed",
+    });
+
+    const activeDisputes = disputedTasks;
+
+    // Revenue
+    const revenue = await WalletTransaction.aggregate([
+      {
+        $match: { type: "task_payment_release" }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$amount" }
+        }
+      }
+    ]);
+
+    const totalRevenue = revenue[0]?.total || 0;
+
+    res.json({
+      totalWorkers,
+      totalProviders,
+      totalTasks,
+      totalRevenue,
+      openTasks,
+      inProgressTasks,
+      completedTasks,
+      disputedTasks,
+      pendingInterviews,
+      pendingWorkers,
+      activeDisputes
+    });
+
+  } catch (err) {
+    console.error("ADMIN DASHBOARD ERROR:", err);
+    res.status(500).json({ message: "Dashboard fetch failed" });
+  }
+};

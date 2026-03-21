@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
+
 const protect = require("../middleware/authMiddleware");
-const Connection = require("../models/Connection");
-const Task = require("../models/Task");
 
 const {
   sendConnectionRequest,
@@ -11,117 +10,63 @@ const {
   rejectConnection,
   closeConnection,
   getWorkerInvitations,
+  getProviderInvites,
   getMyChats,
-  getProviderInvites 
-
+  confirmConnection,
+  workerConfirm,
+  updateBudget
 } = require("../controllers/connectionController");
 
+/* =========================
+   CONNECTION REQUEST
+========================= */
+
 router.post("/request", protect, sendConnectionRequest);
+
 router.get("/check", protect, checkConnection);
+
+
+/* =========================
+   INVITATIONS
+========================= */
+
 router.get("/worker-invitations", protect, getWorkerInvitations);
 
-router.patch("/:id/accept", protect, acceptConnection);
-router.patch("/:id/reject", protect, rejectConnection);
-router.patch("/:id/close", protect, closeConnection);
-router.get("/my-chats", protect, getMyChats);
 router.get("/provider-invites", protect, getProviderInvites);
-router.patch("/confirm/:connectionId", protect, async (req, res) => {
-  try {
-    const connection = await Connection.findById(req.params.connectionId)
-      .populate("task");
 
-    if (!connection) {
-      return res.status(404).json({ message: "Connection not found" });
-    }
 
-    // ✅ Only provider can confirm
-    if (connection.provider.toString() !== req.user.userId.toString()) {
-      return res.status(403).json({ message: "Only provider can confirm" });
-    }
+/* =========================
+   CONNECTION ACTIONS
+========================= */
 
-    if (connection.status !== "accepted") {
-      return res.status(400).json({ message: "Invalid status" });
-    }
+router.patch("/:id/accept", protect, acceptConnection);
 
-    // 🔒 Lock budget
-    connection.status = "provider_confirmed";
-    connection.budgetConfirmed = true;
+router.patch("/:id/reject", protect, rejectConnection);
 
-    if (!connection.finalBudget) {
-  connection.finalBudget = connection.task.budget;
-}
+router.patch("/:id/close", protect, closeConnection);
 
-    await connection.save();
 
-    res.json({ message: "Job confirmed" });
+/* =========================
+   CHAT
+========================= */
 
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
+router.get("/my-chats", protect, getMyChats);
 
-router.patch("/worker-confirm/:id", protect, async (req, res) => {
-  try {
-    const connection = await Connection.findById(req.params.id);
 
-    if (!connection)
-      return res.status(404).json({ message: "Connection not found" });
+/* =========================
+   JOB CONFIRMATION
+========================= */
 
-    if (connection.worker.toString() !== req.user.userId.toString())
-      return res.status(403).json({ message: "Not authorized" });
+router.patch("/confirm/:connectionId", protect, confirmConnection);
 
-    if (connection.status !== "provider_confirmed")
-      return res.status(400).json({ message: "Invalid status" });
+router.patch("/worker-confirm/:id", protect, workerConfirm);
 
-    //  Update connection
-    connection.status = "confirmed";
-    await connection.save();
 
-    const task = await Task.findById(connection.task);
+/* =========================
+   BUDGET UPDATE
+========================= */
 
-    if (!task)
-      return res.status(404).json({ message: "Task not found" });
+router.patch("/update-budget/:id", protect, updateBudget);
 
-    task.status = "assigned";
-    task.assignedWorker = req.user.userId;
 
-    await task.save();
-
-    console.log("✅ Task Assigned Successfully");
-
-    res.json({ message: "Work started" });
-
-  } catch (err) {
-    console.error("Worker confirm error:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-router.patch("/update-budget/:id", protect, async (req, res) => {
-  try {
-    const { newAmount } = req.body;
-
-    const connection = await Connection.findById(req.params.id)
-      .populate("task");
-
-    if (!connection)
-      return res.status(404).json({ message: "Not found" });
-
-    if (connection.provider.toString() !== req.user.userId.toString())
-      return res.status(403).json({ message: "Only provider can update" });
-
-   if (Number(newAmount) < Number(connection.task.budget)) {
-      return res.status(400).json({
-        message: "Cannot reduce below original budget",
-      });
-    }
-
-    connection.finalBudget = newAmount;
-    await connection.save();
-
-    res.json({ message: "Budget updated", amount: newAmount });
-
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
 module.exports = router;
