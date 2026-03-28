@@ -10,14 +10,31 @@ import SystemSettings from "./admin/SystemSettings";
 import AdminInterviews from "./admin/AdminInterviews";
 import AdminWorkers from "./admin/AdminWorkers";
 import AdminProviders from "./admin/AdminProviders";
-
+import AdminNotifications from "./admin/AdminNotifications";
+import { useLocation } from "react-router-dom";
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
+  const [notifCount, setNotifCount] = useState(0);
+  const [activeSection, setActiveSection] = useState("overview");
 
-  const [activeSection, setActiveSection] = useState("interviews");
 
+const location = useLocation();
+
+useEffect(() => {
+  const params = new URLSearchParams(location.search);
+
+  const tab = params.get("tab");
+  const userId = params.get("userId");
+
+  if (tab) setActiveSection(tab);
+
+  // store selected userId globally (simple way)
+  if (userId) {
+    localStorage.setItem("highlightUser", userId);
+  }
+}, [location.search]);
   /* =========================
      MENU
   ========================= */
@@ -31,6 +48,28 @@ const AdminDashboard = () => {
     { id: "revenue", label: "Revenue Analytics", icon: "💰" },
     { id: "settings", label: "System Settings", icon: "⚙️" },
   ];
+
+  const fetchNotifCount = async () => {
+  try {
+    const res = await fetch(
+      "http://localhost:5000/api/notifications/unread-count",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const data = await res.json();
+    if (res.ok) setNotifCount(data.count);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+useEffect(() => {
+  fetchNotifCount();
+}, []);
 
   /* =========================
      RENDER
@@ -56,6 +95,9 @@ case "workers":
     case "tasks":
       return <AdminTasks />;
 
+  case "notifications":
+  return <AdminNotifications />;
+
     case "revenue":
       return <AdminRevenue />;
 
@@ -76,21 +118,39 @@ case "workers":
 
   return (
     <div className="admin-dashboard">
-      <header className="admin-header">
-        <div className="header-left">
-          <img src={logo} alt="TaskNest" className="admin-logo" />
-          <h1>Admin Dashboard</h1>
-        </div>
-        <button
-          className="logout-btn"
-          onClick={() => {
-            localStorage.clear();
-            navigate("/login");
-          }}
-        >
-          Logout
-        </button>
-      </header>
+<header className="admin-header">
+  <div className="header-left">
+    <img src={logo} alt="TaskNest" className="admin-logo" />
+    <h1>Admin Dashboard</h1>
+  </div>
+
+  <div className="header-right">
+
+    {/* 🔔 Notification Icon */}
+    <div
+      className="notif-icon"
+      onClick={() => setActiveSection("notifications")}
+    >
+      🔔
+{notifCount > 0 && (
+  <span className="notif-badge">
+    {notifCount}
+  </span>
+)}
+    </div>
+
+    <button
+      className="logout-btn"
+      onClick={() => {
+        localStorage.clear();
+        navigate("/login");
+      }}
+    >
+      Logout
+    </button>
+
+  </div>
+</header>
 
       <div className="admin-body">
 <aside className="admin-sidebar">

@@ -8,56 +8,54 @@ const RatingModal = ({ task, onClose, onReviewSubmitted }) => {
   const [image, setImage] = useState(null);
   const [hover, setHover] = useState(0);
 
-  const submitReview = async () => {
+const submitReview = async () => {
 
-    if (rating < 1 || rating > 5) {
-      alert("Please select a rating between 1 and 5");
-      return;
-    }
-
-    const formData = new FormData();
-
-    formData.append("workerId", task.assignedWorker._id);
-    formData.append("rating", rating);
-    formData.append("comment", comment);
-    formData.append("taskId", task._id);
-    formData.append("skill", task.requiredSkill);
-
-    if (image) {
-      formData.append("image", image);
-    }
-
-    const res = await fetch(
-      "http://localhost:5000/api/reviews/add",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        },
-        body: formData
-      }
-    );
-
-    const data = await res.json();
-if (res.ok) {
-
-  const data = await res.json();
-
-  alert("Rating submitted successfully");
-
-  // notify parent component
-  if (task.onReviewSubmitted) {
-    task.onReviewSubmitted();
+  if (rating < 1 || rating > 5) {
+    alert("Please select a rating between 1 and 5");
+    return;
   }
 
-  onClose();
-}
-    else {
-      alert(data.message);
+  const formData = new FormData();
+
+  formData.append("workerId", task.assignedWorker._id);
+  formData.append("rating", rating);
+  formData.append("comment", comment);
+  formData.append("taskId", task._id);
+  formData.append("skill", task.requiredSkill);
+
+  if (image) {
+    formData.append("image", image);
+  }
+
+  const res = await fetch(
+    "http://localhost:5000/api/reviews/add",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      },
+      body: formData
+    }
+  );
+
+  const data = await res.json(); // ✅ ONLY ONCE
+
+  if (res.ok) {
+
+    alert("Rating submitted successfully");
+
+    // ✅ FIX: use correct prop
+    if (onReviewSubmitted) {
+      onReviewSubmitted();
     }
 
-  };
+    onClose();
 
+  } else {
+    alert(data.message);
+  }
+
+};
   return (
 
     <div className="rating-overlay">

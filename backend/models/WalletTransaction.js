@@ -13,6 +13,7 @@ const walletTransactionSchema = new mongoose.Schema(
       ref: "User",
     },
 
+
     task: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Task",
@@ -26,7 +27,11 @@ const walletTransactionSchema = new mongoose.Schema(
   "commission",
   "refund",
   "worker_earning",
-  "withdrawal",
+  "worker_withdrawal",
+  "provider_withdrawal",
+  "admin_withdrawal",
+  "compensation",
+  "registration_fee",
 ],
       required: true,
     },

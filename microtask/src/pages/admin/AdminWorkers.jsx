@@ -10,7 +10,11 @@ const AdminWorkers = () => {
   const [ratingMap, setRatingMap] = useState({});
   const [rejectReason, setRejectReason] = useState("");
   const [activeTab, setActiveTab] = useState("active");
-
+  const [search, setSearch] = useState("");
+  const [showBlockModal, setShowBlockModal] = useState(false);
+  const [selectedWorker, setSelectedWorker] = useState(null);
+  const [blockReason, setBlockReason] = useState("");
+  const [blockDate, setBlockDate] = useState("");
   const getProfileImage = (user) => {
     if (user.profileImage) {
       return `http://localhost:5000/${user.profileImage}`;
@@ -38,7 +42,7 @@ const AdminWorkers = () => {
     );
 
     const data = await res.json();
-    setApprovedWorkers(data);
+    setApprovedWorkers(Array.isArray(data) ? data : []);
   };
 
   useEffect(() => {
@@ -54,7 +58,10 @@ const AdminWorkers = () => {
   const approveWorker = async (workerId, skills) => {
     const ratings = skills.map((skill) => ({
       skill,
-      rating: Number(ratingMap[`${workerId}-${skill}`]),
+      rating: Math.min(
+        5,
+        Math.max(1, Number(ratingMap[`${workerId}-${skill}`]))
+      ),
     }));
 
     await fetch("http://localhost:5000/api/admin/workers/approve", {
@@ -86,21 +93,86 @@ const AdminWorkers = () => {
     fetchPendingWorkers();
   };
 
-  const blockWorker = async (id) => {
-    const reason = prompt("Reason?");
-    if (!reason) return;
+ const blockWorker = async (id) => {
+  const reason = prompt("Enter reason for blocking:");
+  if (!reason) return;
 
-    await fetch("http://localhost:5000/api/admin/workers/block", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ workerId: id, reason }),
-    });
+  const daysInput = prompt("Block for how many days? (leave empty for permanent)");
 
-    fetchWorkersByTab(activeTab);
-  };
+  let days = null;
+
+  if (daysInput) {
+    days = Number(daysInput);
+    if (isNaN(days) || days <= 0) {
+      alert("Invalid number of days");
+      return;
+    }
+  }
+
+  await fetch("http://localhost:5000/api/admin/workers/block", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      workerId: id,
+      reason,
+      days, // ✅ NEW
+    }),
+  });
+
+  fetchWorkersByTab(activeTab);
+};
+
+  const unblockWorker = async (id) => {
+  await fetch("http://localhost:5000/api/admin/workers/unblock", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ workerId: id }),
+  });
+
+  fetchWorkersByTab(activeTab);
+};
+
+const submitBlock = async () => {
+  if (!blockReason) {
+    alert("Enter reason");
+    return;
+  }
+
+  let days = null;
+
+  if (blockDate) {
+    const selected = new Date(blockDate);
+    const today = new Date();
+
+    const diffTime = selected - today;
+    days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  await fetch("http://localhost:5000/api/admin/workers/block", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      workerId: selectedWorker,
+      reason: blockReason,
+      days,
+    }),
+  });
+
+  setShowBlockModal(false);
+  setBlockReason("");
+  setBlockDate("");
+
+  fetchWorkersByTab(activeTab);
+};
 
   const removeWorker = async (id) => {
     const reason = prompt("Reason?");
@@ -130,10 +202,7 @@ const AdminWorkers = () => {
         <div key={worker._id} className="pending-card">
 
           <div className="pending-left">
-            <img
-              src={getProfileImage(worker)}
-              className="profile-img"
-            />
+            <img src={getProfileImage(worker)} className="profile-img" />
 
             <div className="pending-info">
               <h4>{worker.name}</h4>
@@ -144,8 +213,6 @@ const AdminWorkers = () => {
           </div>
 
           <div className="pending-actions">
-
-            {/* SKILL RATING */}
             <div className="skill-rating-container">
               {worker.skills?.map((skill) => (
                 <div key={skill} className="skill-rating-box">
@@ -187,7 +254,6 @@ const AdminWorkers = () => {
             >
               Reject
             </button>
-
           </div>
         </div>
       ))}
@@ -195,81 +261,155 @@ const AdminWorkers = () => {
       {/* APPROVED */}
       <h2 className="section-title">Approved Workers</h2>
 
+      <div className="search-box">
+        <input
+          type="text"
+          placeholder="Search by name..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
       <div className="worker-tabs">
-        <button
-          className={activeTab === "active" ? "active" : ""}
-          onClick={() => setActiveTab("active")}
-        >
-          Active
-        </button>
-        <button
-          className={activeTab === "blocked" ? "active" : ""}
-          onClick={() => setActiveTab("blocked")}
-        >
-          Blocked
-        </button>
-        <button
-          className={activeTab === "removed" ? "active" : ""}
-          onClick={() => setActiveTab("removed")}
-        >
-          Removed
-        </button>
+        <button className={activeTab === "active" ? "active" : ""} onClick={() => setActiveTab("active")}>Active</button>
+        <button className={activeTab === "blocked" ? "active" : ""} onClick={() => setActiveTab("blocked")}>Blocked</button>
+        <button className={activeTab === "removed" ? "active" : ""} onClick={() => setActiveTab("removed")}>Removed</button>
       </div>
 
       <div className="approved-grid">
-        {approvedWorkers.map((worker) => (
-          <div key={worker._id} className="approved-card">
+        {approvedWorkers
+          .filter((worker) =>
+            worker.name?.toLowerCase().includes(search.toLowerCase())
+          )
+          .map((worker) => {
+const highlightId = localStorage.getItem("highlightUser");
+const isHighlighted = highlightId === worker._id;
+            const totalTasks = worker.completedTasks + worker.cancelCount;
 
-            <span className={`status-badge ${worker.accountStatus}`}>
-              {worker.accountStatus?.toUpperCase()}
-            </span>
+            const cancelRate =
+              totalTasks > 0
+                ? (worker.cancelCount / totalTasks) * 100
+                : 0;
 
-            <div className="card-top">
-              <img
-                src={getProfileImage(worker)}
-                className="profile-img"
-              />
-              <div className="worker-main">
-                <h4>{worker.name}</h4>
-                <p className="email">{worker.email}</p>
-              </div>
-            </div>
+            return (
+              <div
+  key={worker._id}
+  className={`approved-card ${isHighlighted ? "highlight-card" : ""}`}
+>
 
-<div className="card-details">
+                <span className={`status-badge ${worker.accountStatus}`}>
+                  {worker.accountStatus?.toUpperCase()}
+                </span>
 
-  <p><strong>Skill:</strong> {worker.skills?.join(", ")}</p>
+                <div className="card-top">
+                  <img src={getProfileImage(worker)} className="profile-img" />
+                  <div className="worker-main">
+                    <h4>{worker.name}</h4>
+                    <p className="email">{worker.email}</p>
+                  </div>
+                </div>
 
-  <p><strong>Location:</strong> {worker.address}</p>
+                <div className="card-details">
+                  <p><strong>Skill:</strong> {worker.skills?.join(", ")}</p>
+                  <p><strong>Location:</strong> {worker.address}</p>
 
-  <p className="rating">
-    ⭐ {worker.overallRating > 0 
-        ? worker.overallRating.toFixed(1) 
-        : "Not Rated"}
+                  {/* ✅ NEW CANCEL RATE */}
+                  <p
+                    className={`cancel-count ${
+                      cancelRate > 15
+                        ? "danger"
+                        : cancelRate > 5
+                        ? "warning"
+                        : ""
+                    }`}
+                  >
+                    Cancels: {worker.cancelCount} ({cancelRate.toFixed(1)}%)
+                  </p>
+
+                  <p className="rating">
+                    ⭐ {worker.overallRating > 0
+                      ? worker.overallRating.toFixed(1)
+                      : "Not Rated"}
+                  </p>
+                  {worker.blockedUntil && (
+  <p className="blocked-until">
+    Blocked Until: {new Date(worker.blockedUntil).toLocaleDateString()}
   </p>
+)}
+                </div>
 
-  {worker.skillRatings?.map((r) => (
-    <p key={r.skill} className="skill-rating-line">
-      {r.skill}: ⭐ {r.ratingAverage.toFixed(1)}
-    </p>
-  ))}
+<div className="card-actions">
+
+  {worker.accountStatus === "blocked" ? (
+    <button
+      className="btn-unblock"
+      onClick={() => unblockWorker(worker._id)}
+    >
+      Unblock
+    </button>
+  ) : (
+<button
+  className="btn-block"
+  onClick={() => {
+    setSelectedWorker(worker._id);
+    setShowBlockModal(true);
+  }}
+>
+  Block
+</button>
+  )}
+
+  <button
+    className="btn-remove"
+    onClick={() => removeWorker(worker._id)}
+  >
+    Remove
+  </button>
 
 </div>
 
-            <div className="card-actions">
-              <button className="btn-block" onClick={() => blockWorker(worker._id)}>
-                Block
-              </button>
-              <button className="btn-remove" onClick={() => removeWorker(worker._id)}>
-                Remove
-              </button>
-            </div>
-
-          </div>
-        ))}
+              </div>
+            );
+          })}
       </div>
 
+      {showBlockModal && (
+  <div className="modal-overlay">
+    <div className="modal-box">
+      <h3>Block Worker</h3>
+
+      <input
+        type="text"
+        placeholder="Enter reason"
+        value={blockReason}
+        onChange={(e) => setBlockReason(e.target.value)}
+      />
+
+      <label>Block Until (optional)</label>
+      <input
+        type="date"
+        value={blockDate}
+        onChange={(e) => setBlockDate(e.target.value)}
+      />
+
+      <div className="modal-actions">
+        <button className="btn-submit" onClick={submitBlock}>
+          Confirm
+        </button>
+
+        <button
+          className="btn-cancel"
+          onClick={() => setShowBlockModal(false)}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 };
+
 
 export default AdminWorkers;

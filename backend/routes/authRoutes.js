@@ -10,7 +10,11 @@ const upload = require("../middleware/upload");
 const { updateProfile } = require("../controllers/authController");
 const authMiddleware = require("../middleware/authMiddleware");
 const Settings = require("../models/Settings");
-
+const WalletTransaction = require("../models/WalletTransaction");
+const {
+  resetPasswordTemplate,
+  emailVerificationTemplate,
+} = require("../utils/emailTemplates");
 const getSettings = async () => {
   let settings = await Settings.findOne();
 
@@ -127,67 +131,35 @@ if (password.length < 6) {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // 🔐 WORKER PAYMENT CHECK
-      let payment = null;
-      if (role === "worker") {
-        if (!req.body.payment) {
-          return res.status(403).json({
-            error: "Payment required for worker registration",
-          });
-        }
 
-        try {
-          payment = JSON.parse(req.body.payment);
-        } catch {
-          return res.status(400).json({ error: "Invalid payment format" });
-        }
-
-        if (!payment.orderId || !payment.paymentId || !payment.signature) {
-          return res.status(403).json({ error: "Invalid payment data" });
-        }
-      }
-
-      await User.create({
-        name,
-        email,
-        password: hashedPassword,
-        phone,
-
-        role,
-
- location: {
+ const newUser = await User.create({
+  name,
+  email,
+  password: hashedPassword,
+  phone,
+  role,
+  location: {
     type: "Point",
     coordinates: [
       parseFloat(longitude), 
       parseFloat(latitude),  
     ],
   },
-    address,
-    
-        skills:
-  role === "worker"
-    ? Array.isArray(skills)
-      ? skills
-      : JSON.parse(skills)
-    : undefined,
+  address,
+  skills:
+    role === "worker"
+      ? Array.isArray(skills)
+        ? skills
+        : JSON.parse(skills)
+      : undefined,
+  availability: role === "worker" ? availability : undefined,
+  organization: role === "provider" ? organization : undefined,
+  taskType: role === "provider" ? taskType : undefined,
+  profileImage,
 
-        availability: role === "worker" ? availability : undefined,
-        organization: role === "provider" ? organization : undefined,
-        taskType: role === "provider" ? taskType : undefined,
-        profileImage,
-        payment:
-          role === "worker"
-            ? {
-                orderId: payment.orderId,
-                paymentId: payment.paymentId,
-                signature: payment.signature,
-                status: "paid",
-                paidAt: new Date(),
-              }
-            : undefined,
-        emailVerified: false,
-        approvalStatus: role === "worker" ? "pending" : "approved",
-      });
+  emailVerified: false,
+  approvalStatus: role === "worker" ? "pending" : "approved",
+});
 
       // SEND EMAIL OTP
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -198,7 +170,13 @@ if (password.length < 6) {
         expiresAt: new Date(Date.now() + 10 * 60 * 1000),
       });
 
-      await sendEmail(email, otp);
+      const { subject, html } = emailVerificationTemplate(otp);
+
+await sendEmail({
+  to: email,
+  subject,
+  html,
+});
 
       res.status(201).json({
         message: "OTP sent to email. Please verify your email.",
@@ -248,15 +226,6 @@ router.post("/login", async (req, res) => {
       return res.status(403).json({
         error: "Email not verified. Please verify your email first.",
       });
-    }
-
-    // 💳 PAYMENT CHECK FOR WORKERS
-    if (user.role === "worker") {
-      if (!user.payment || user.payment.status !== "paid") {
-        return res.status(403).json({
-          error: "Payment not completed. Please complete registration payment.",
-        });
-      }
     }
 
     // 🚫 REMOVED USER
@@ -319,6 +288,7 @@ router.post("/login", async (req, res) => {
         role: user.role,
         approvalStatus: user.approvalStatus,
         accountStatus: user.accountStatus,
+        payment: user.payment,
       },
     });
 
@@ -367,7 +337,13 @@ router.post("/forgot-password", async (req, res) => {
 
     console.log("OTP SAVED, SENDING EMAIL...");
 
-    await sendEmail(email, otp);
+   const { subject, html } = resetPasswordTemplate(otp);
+
+await sendEmail({
+  to: email,
+  subject,
+  html,
+});
 
     console.log("EMAIL SENT SUCCESSFULLY");
 
@@ -487,7 +463,13 @@ router.post("/resend-email-otp", async (req, res) => {
     });
 
     // send email
-    await sendEmail(email, otp);
+    const { subject, html } = emailVerificationTemplate(otp);
+
+await sendEmail({
+  to: email,
+  subject,
+  html,
+});
 
     res.json({ message: "OTP resent successfully" });
   } catch (error) {

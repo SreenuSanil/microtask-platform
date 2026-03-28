@@ -28,6 +28,46 @@ const ProviderOverview = () => {
 
   if (!data) return <div>Loading...</div>;
 
+const getActivityLabel = (item) => {
+
+  if (item.task?.status === "completed" && item.type === "escrow_payment") {
+
+    const commissionTxn = data.recentActivity.find(
+      (t) => t.task?._id === item.task?._id && t.type === "commission"
+    );
+
+    const commission = commissionTxn?.amount || 0;
+
+    return `Paid to worker (₹${commission} fee)`;
+  }
+
+  if (item.task?.status === "cancelled") {
+    return "Refunded";
+  }
+
+  if (item.type === "escrow_payment") {
+    return "Escrow locked";
+  }
+
+  return item.type.replace("_", " ");
+};
+
+const getFinalAmount = (item) => {
+
+  if (item.task?.status === "completed" && item.type === "escrow_payment") {
+
+    const commissionTxn = data.recentActivity.find(
+      (t) => t.task?._id === item.task?._id && t.type === "commission"
+    );
+
+    const commission = commissionTxn?.amount || 0;
+
+    return item.amount - commission;
+  }
+
+  return item.amount;
+};
+
   return (
     <div className="provider-overview-container">
 
@@ -76,23 +116,23 @@ const ProviderOverview = () => {
         </div>
       </div>
 
-      {/* RECENT ACTIVITY */}
-      <div className="provider-activity">
-        <h2>Recent Activity</h2>
+{/* RECENT ACTIVITY */}
+<div className="provider-activity">
+  <h2>Recent Activity</h2>
 
-        <div className="activity-box">
-          {data.recentActivity.length === 0 ? (
-            <p>No recent activity.</p>
-          ) : (
-            data.recentActivity.map((item) => (
-              <p key={item._id}>
-                {item.type.replace("_", " ")} – ₹{item.amount} (
-                {item.task?.title || "Task"})
-              </p>
-            ))
-          )}
-        </div>
-      </div>
+  <div className="activity-box">
+    {data.recentActivity.length === 0 ? (
+      <p>No recent activity.</p>
+    ) : (
+      data.recentActivity.map((item) => (
+       <p key={item._id}>
+  {getActivityLabel(item)} – ₹{getFinalAmount(item)} (
+  {item.task?.title || "Task"})
+</p>
+      ))
+    )}
+  </div>
+</div>
 
     </div>
   );

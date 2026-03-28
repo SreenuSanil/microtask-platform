@@ -12,6 +12,15 @@ const notificationSchema = new mongoose.Schema(
     type:String,
     required:true
   },
+  connectionId: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Connection"
+},
+
+  profileImage: {
+  type: String,
+  default: ""
+},
 
   message:{
     type:String,
@@ -22,6 +31,10 @@ const notificationSchema = new mongoose.Schema(
     type: mongoose.Schema.Types.ObjectId,
     ref:"Task"
   },
+  userRole: {
+  type: String,
+  enum: ["worker", "provider"],
+},
 
   read:{
     type:Boolean,

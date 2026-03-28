@@ -17,7 +17,7 @@ import TaskWorkers from "./pages/provider/TaskWorkers";
 import WorkerProfile from "./pages/WorkerProfile";
 import ChatPage from "./pages/chat/ChatPage";
 import ProviderTransactions from "./pages/provider/ProviderTransactions";
- 
+import Payment from "./pages/Payment";
 const App = () => {
   return (
     <>
@@ -25,6 +25,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+         <Route path="/payment" element={<Payment />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />

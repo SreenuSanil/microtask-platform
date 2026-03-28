@@ -27,6 +27,19 @@ const markAllAsRead = async (req, res) => {
   }
 };
 
+const getUnreadCount = async (req, res) => {
+  try {
+    const count = await Notification.countDocuments({
+      userId: req.user.userId,
+      read: false
+    });
+
+    res.json({ count });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch count" });
+  }
+};
+
 // 🔔 Create Notification (Reusable)
 const createNotification = async ({
   userId,
@@ -52,4 +65,5 @@ module.exports = {
   getNotifications,
   markAllAsRead,
   createNotification,
+  getUnreadCount
 };

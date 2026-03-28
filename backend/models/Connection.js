@@ -35,6 +35,14 @@ const connectionSchema = new mongoose.Schema(
       default: false,
     },
 
+    proposedDate: {
+  type: Date
+},
+dateConfirmed: {
+  type: Boolean,
+  default: false
+},
+
     finalBudget: Number,
 
     budgetConfirmed: {

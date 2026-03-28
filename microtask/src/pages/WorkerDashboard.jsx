@@ -19,13 +19,12 @@ const AVAILABILITY_LIMIT = 48 * 60 * 60 * 1000; // 48 hours
 const WorkerDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
   const [activeSection, setActiveSection] = useState("overview");
   const [invitationCount, setInvitationCount] = useState(0);
   const [notificationCount, setNotificationCount] = useState(0);
   const [unreadCount, setUnreadCount] = useState(0);
   const socketRef = useRef(null);
-
+const [selectedConnectionId, setSelectedConnectionId] = useState(null);
 const [userData, setUserData] = useState({
   name: "Worker",
   rating: 0,
@@ -128,14 +127,17 @@ setUserData({
 }, []);
 
 useEffect(() => {
-
   const params = new URLSearchParams(location.search);
 
-  const taskId = params.get("task");
   const tab = params.get("tab");
+  const connectionId = params.get("connectionId");
 
   if (tab) {
     setActiveSection(tab);
+  }
+
+  if (connectionId) {
+    setSelectedConnectionId(connectionId);
   }
 
 }, [location.search]);
@@ -314,8 +316,8 @@ case "overview":
       case "invitations":
   return <WorkerInvitations setInvitationCount={setInvitationCount} />;
 
-    case "messages":
-      return <WorkerMessages />;
+case "messages":
+  return <WorkerMessages selectedConnectionId={selectedConnectionId} />;
 
 case "notifications":
   return <WorkerNotifications />;

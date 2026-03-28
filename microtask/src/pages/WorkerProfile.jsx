@@ -6,6 +6,7 @@ const WorkerProfile = ({ workerId, goBack, taskId, onReviewSubmitted }) => {
   const [worker, setWorker] = useState(null);
   const [loading, setLoading] = useState(true);
   const [connecting, setConnecting] = useState(false);
+ const [selectedImage, setSelectedImage] = useState(null);
   const [requestSent, setRequestSent] = useState(false);
   const sendConnection = async () => {
   if (!taskId) {
@@ -127,7 +128,9 @@ const checkExistingRequest = async () => {
 
         <div className="profile-info">
           <h2>{formatName(worker.name)}</h2>
-
+ <p className="worker-exp">
+    {worker.experienceYears || 0}+ years experience
+  </p>
 
           {/* Overall Rating */}
           <div className="rating-badge">
@@ -174,25 +177,60 @@ const checkExistingRequest = async () => {
         </div>
       </div>
 
-      {/* PREVIOUS WORKS */}
-      <div className="profile-section">
-        <h3>Previous Works</h3>
+      
+  <div className="profile-section">
+  <h3>About</h3>
+  <p>{worker.bio || "No description provided."}</p>
+</div>
 
-        <div className="work-gallery">
-          {worker.previousWorks &&
-          worker.previousWorks.length > 0 ? (
-            worker.previousWorks.map((img, index) => (
-              <img
-                key={index}
-                src={`http://localhost:5000/${img}`}
-                alt="work"
-              />
-            ))
-          ) : (
-            <p>No previous works uploaded.</p>
-          )}
-        </div>
-      </div>
+<div className="profile-section">
+  <h3>Past Work Description</h3>
+  <p>{worker.pastWorkDescription || "No details provided."}</p>
+</div>
+
+<div className="profile-section">
+  <h3>Certifications</h3>
+  <p>{worker.certifications || "No certifications provided."}</p>
+</div>
+
+{worker.certificationImages?.length > 0 && (
+  <div className="profile-section">
+    <h3>Certification Proof</h3>
+
+    <div className="work-gallery">
+      {worker.certificationImages.map((img, i) => (
+<img
+  key={i}
+  src={`http://localhost:5000/${img}`}
+  alt="cert"
+  onClick={() => setSelectedImage(`http://localhost:5000/${img}`)}
+  style={{ cursor: "pointer" }}
+/>
+      ))}
+    </div>
+  </div>
+)}
+
+      {/* PREVIOUS WORKS */}
+<div className="profile-section">
+  <h3>Previous Works</h3>
+
+  <div className="work-gallery">
+    {worker.workImages && worker.workImages.length > 0 ? (
+      worker.workImages.map((img, index) => (
+<img
+  key={index}
+  src={`http://localhost:5000/${img}`}
+  alt="work"
+  onClick={() => setSelectedImage(`http://localhost:5000/${img}`)}
+  style={{ cursor: "pointer" }}
+/>
+      ))
+    ) : (
+      <p>No previous works uploaded.</p>
+    )}
+  </div>
+</div>
 
       {/* REVIEWS */}
       <div className="profile-section">
@@ -216,7 +254,12 @@ const checkExistingRequest = async () => {
           <p>No reviews yet.</p>
         )}
       </div>
-
+{selectedImage && (
+  <div className="image-modal" onClick={() => setSelectedImage(null)}>
+    <span className="close-btn">✕</span>
+    <img src={selectedImage} alt="preview" />
+  </div>
+)}
     </div>
   
 );

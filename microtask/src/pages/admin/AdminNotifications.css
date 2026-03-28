@@ -1,0 +1,33 @@
+.admin-notifications {
+  padding: 20px;
+}
+
+.notif-card {
+  background: #fff;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-left: 4px solid red;
+}
+.alert-card {
+  border-left: 5px solid red;
+  background: #fff5f5;
+}
+
+.alert-icon {
+  color: red;
+  font-weight: bold;
+}
+
+.action-btn {
+  margin-top: 8px;
+  padding: 5px 10px;
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.action-btn:hover {
+  background: #333;
+}

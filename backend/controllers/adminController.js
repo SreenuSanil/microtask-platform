@@ -6,6 +6,18 @@ const Connection = require("../models/Connection");
 const Message = require("../models/Message");
 const WalletTransaction = require("../models/WalletTransaction");
 const { createNotification } = require("./notificationController");
+const Settings = require("../models/Settings");
+const { workerRejectedTemplate } = require("../utils/emailTemplates");
+const { interviewScheduledTemplate } = require("../utils/emailTemplates");
+const { workerBlockedTemplate } = require("../utils/emailTemplates");
+const { workerUnblockedTemplate } = require("../utils/emailTemplates");
+const { workerRemovedTemplate } = require("../utils/emailTemplates");
+const { workerApprovedTemplate } = require("../utils/emailTemplates");
+const {
+  providerBlockedTemplate,
+  providerUnblockedTemplate,
+  providerRemovedTemplate,
+} = require("../utils/emailTemplates");
 /* =========================
    INTERVIEW MANAGEMENT
 ========================= */
@@ -28,23 +40,57 @@ exports.getInterviewCandidates = async (req, res) => {
 };
 
 // schedule interview
+
 exports.scheduleInterview = async (req, res) => {
-  const { workerIds, interviewDate } = req.body;
+ const { workerIds, interviewDate, interviewTime } = req.body;
 
   try {
+    // Get workers first
+    const workers = await User.find({ _id: { $in: workerIds } });
+
+    // Update interview details
     await User.updateMany(
       { _id: { $in: workerIds } },
       {
         $set: {
           "interview.interviewStatus": "scheduled",
           "interview.scheduledDate": interviewDate,
+           "interview.scheduledTime": interviewTime,
         },
       }
     );
 
-    // email simulated
-    res.json({ message: "Interview scheduled successfully" });
-  } catch {
+    // ✅ SEND EMAIL TO EACH WORKER
+    for (const worker of workers) {
+const { subject, html } = interviewScheduledTemplate(
+  worker.name,
+  interviewDate,
+  interviewTime
+);
+
+for (const worker of workers) {
+  try {
+    const { subject, html } = interviewScheduledTemplate(
+      worker.name,
+      interviewDate,
+      interviewTime
+    );
+
+    await sendEmail({
+      to: worker.email,
+      subject,
+      html,
+    });
+  } catch (err) {
+    console.error("Email failed for:", worker.email);
+  }
+}
+    }
+
+    res.json({ message: "Interview scheduled & emails sent" });
+
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Interview scheduling failed" });
   }
 };
@@ -119,7 +165,7 @@ exports.getWorkersByStatus = async (req, res) => {
       query.accountStatus = "removed";
     }
 
-    const workers = await User.find(query).select("-password");
+   const workers = await User.find(query).select("-password");
     res.json(workers);
   } catch (err) {
     console.error(err);
@@ -152,12 +198,16 @@ exports.approveWorker = async (req, res) => {
     }
 
     // ✅ Save skill ratings
-    worker.skillRatings = ratings.map((r) => ({
-      skill: r.skill,
-      rating: r.rating,
-      ratingAverage: r.rating,
-      ratingCount: 1,
-    }));
+worker.skillRatings = ratings.map((r) => {
+  const safeRating = Math.min(5, Math.max(1, Number(r.rating)));
+
+  return {
+    skill: r.skill,
+    rating: safeRating,
+    ratingAverage: safeRating,
+    ratingCount: 1,
+  };
+});
 
     // ✅ Calculate overall rating
     worker.overallRating =
@@ -168,6 +218,15 @@ exports.approveWorker = async (req, res) => {
     worker.approvalStatus = "approved";
 
     await worker.save();
+
+    // ✅ SEND APPROVAL EMAIL
+const { subject, html } = workerApprovedTemplate(worker.name);
+
+await sendEmail({
+  to: worker.email,
+  subject,
+  html,
+});
 
     res.json(worker);
   } catch (error) {
@@ -182,12 +241,30 @@ exports.rejectWorker = async (req, res) => {
   const { workerId, reason } = req.body;
 
   try {
-    await User.findByIdAndUpdate(workerId, {
-      approvalStatus: "rejected",
+    const worker = await User.findById(workerId);
+
+    if (!worker) {
+      return res.status(404).json({ error: "Worker not found" });
+    }
+
+    worker.approvalStatus = "rejected";
+
+    await worker.save();
+
+    const { subject, html } = workerRejectedTemplate(
+      worker.name,
+      reason
+    );
+
+    await sendEmail({
+      to: worker.email,
+      subject,
+      html,
     });
 
-    res.json({ message: "Worker rejected" });
-  } catch {
+    res.json({ message: "Worker rejected & email sent" });
+
+  } catch (err) {
     res.status(500).json({ error: "Rejection failed" });
   }
 };
@@ -195,66 +272,132 @@ exports.rejectWorker = async (req, res) => {
 exports.blockWorker = async (req, res) => {
   const { workerId, reason, days } = req.body;
 
-  let blockedUntil = null;
+  try {
+    const worker = await User.findById(workerId);
 
-  if (days) {
-    blockedUntil = new Date();
-    blockedUntil.setDate(blockedUntil.getDate() + days);
+    if (!worker) {
+      return res.status(404).json({ error: "Worker not found" });
+    }
+
+    let blockedUntil = null;
+
+    if (days) {
+      blockedUntil = new Date();
+      blockedUntil.setDate(blockedUntil.getDate() + days);
+    }
+
+    // ✅ update using object
+    worker.accountStatus = "blocked";
+    worker.blockReason = reason;
+    worker.blockedUntil = blockedUntil;
+
+    await worker.save();
+
+    await Notification.create({
+      userId: workerId,
+      title: "Account Blocked",
+      message: `Your account has been blocked. Reason: ${reason}`,
+    });
+
+    // ✅ email
+    const { subject, html } = workerBlockedTemplate(
+      worker.name,
+      reason,
+      days
+    );
+
+    await sendEmail({
+      to: worker.email,
+      subject,
+      html,
+    });
+
+    res.json({
+      message: days
+        ? `Blocked for ${days} days`
+        : "Blocked permanently",
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: "Block failed" });
   }
-
-  await User.findByIdAndUpdate(workerId, {
-    accountStatus: "blocked",
-    blockReason: reason,
-    blockedUntil,
-  });
-
-  await Notification.create({
-    userId: workerId,
-    title: "Account Blocked",
-    message: `Your account has been blocked. Reason: ${reason}`,
-  });
-
-   res.json({
-    message: days
-      ? `Blocked for ${days} days`
-      : "Blocked permanently",
-  });
 };
 
 
 exports.unblockWorker = async (req, res) => {
   const { workerId } = req.body;
 
-  await User.findByIdAndUpdate(workerId, {
-    accountStatus: "active",
-    blockReason: null,
-  });
+  try {
+    const worker = await User.findById(workerId);
 
-  await Notification.create({
-    userId: workerId,
-    title: "Account Unblocked",
-    message: "Your account has been unblocked. You can continue working.",
-  });
+    if (!worker) {
+      return res.status(404).json({ error: "Worker not found" });
+    }
 
-  res.json({ message: "Worker unblocked" });
+    worker.accountStatus = "active";
+    worker.blockReason = null;
+    worker.blockedUntil = null;
+
+    await worker.save();
+
+    await Notification.create({
+      userId: workerId,
+      title: "Account Unblocked",
+      message: "Your account has been unblocked.",
+    });
+
+    const { subject, html } = workerUnblockedTemplate(worker.name);
+
+    await sendEmail({
+      to: worker.email,
+      subject,
+      html,
+    });
+
+    res.json({ message: "Worker unblocked" });
+
+  } catch (err) {
+    res.status(500).json({ error: "Unblock failed" });
+  }
 };
-
 
 exports.removeWorker = async (req, res) => {
   const { workerId, reason } = req.body;
 
-  await User.findByIdAndUpdate(workerId, {
-    accountStatus: "removed",
-    removeReason: reason,
-  });
+  try {
+    const worker = await User.findById(workerId);
 
-  await Notification.create({
-    userId: workerId,
-    title: "Account Removed",
-    message: `Your account has been removed. Reason: ${reason}`,
-  });
+    if (!worker) {
+      return res.status(404).json({ error: "Worker not found" });
+    }
 
-  res.json({ message: "Worker removed" });
+    worker.accountStatus = "removed";
+    worker.removeReason = reason;
+
+    await worker.save();
+
+    await Notification.create({
+      userId: workerId,
+      title: "Account Removed",
+      message: `Reason: ${reason}`,
+    });
+
+    const { subject, html } = workerRemovedTemplate(
+      worker.name,
+      reason
+    );
+
+    await sendEmail({
+      to: worker.email,
+      subject,
+      html,
+    });
+
+    res.json({ message: "Worker removed" });
+
+  } catch (err) {
+    res.status(500).json({ error: "Remove failed" });
+  }
 };
 
 
@@ -266,12 +409,11 @@ exports.removeWorker = async (req, res) => {
 // get approved providers
 exports.getApprovedProviders = async (req, res) => {
   try {
-    const providers = await User.find({
-      role: "provider",
-      approvalStatus: "approved",
-        approvalStatus: "approved",
-      emailVerified: true,
-    }).select("-password");
+const providers = await User.find({
+  role: "provider",
+  approvalStatus: "approved",
+  emailVerified: true,
+}).select("-password");
 
     res.json(providers);
   } catch {
@@ -283,23 +425,43 @@ exports.getApprovedProviders = async (req, res) => {
 exports.blockProvider = async (req, res) => {
   const { providerId, reason, days } = req.body;
 
-  let blockedUntil = null;
+  try {
+    const provider = await User.findById(providerId);
 
-  if (days) {
-    blockedUntil = new Date();
-    blockedUntil.setDate(blockedUntil.getDate() + days);
+    if (!provider) {
+      return res.status(404).json({ error: "Provider not found" });
+    }
+
+    let blockedUntil = null;
+
+    if (days) {
+      blockedUntil = new Date();
+      blockedUntil.setDate(blockedUntil.getDate() + days);
+    }
+
+    provider.accountStatus = "blocked";
+    provider.blockReason = reason;
+    provider.blockedUntil = blockedUntil;
+
+    await provider.save();
+
+    const { subject, html } = providerBlockedTemplate(
+      provider.name,
+      reason,
+      days
+    );
+
+    await sendEmail({
+      to: provider.email,
+      subject,
+      html,
+    });
+
+    res.json({ message: "Provider blocked" });
+
+  } catch (err) {
+    res.status(500).json({ error: "Block failed" });
   }
-
-  await User.findByIdAndUpdate(providerId, {
-    accountStatus: "blocked",
-    blockReason: reason,
-    blockedUntil, // null = permanent
-  });
-
-  res.json({
-    message: "Provider blocked",
-    blockedUntil,
-  });
 };
 
 
@@ -307,25 +469,66 @@ exports.blockProvider = async (req, res) => {
 exports.unblockProvider = async (req, res) => {
   const { providerId } = req.body;
 
-  await User.findByIdAndUpdate(providerId, {
-    accountStatus: "active",
-    blockReason: null,
-    blockedUntil: null,
-  });
+  try {
+    const provider = await User.findById(providerId);
 
-  res.json({ message: "Provider unblocked" });
+    if (!provider) {
+      return res.status(404).json({ error: "Provider not found" });
+    }
+
+    provider.accountStatus = "active";
+    provider.blockReason = null;
+    provider.blockedUntil = null;
+
+    await provider.save();
+
+    const { subject, html } = providerUnblockedTemplate(provider.name);
+
+    await sendEmail({
+      to: provider.email,
+      subject,
+      html,
+    });
+
+    res.json({ message: "Provider unblocked" });
+
+  } catch (err) {
+    res.status(500).json({ error: "Unblock failed" });
+  }
 };
 
 // remove provider
 exports.removeProvider = async (req, res) => {
   const { providerId, reason } = req.body;
 
-  await User.findByIdAndUpdate(providerId, {
-    accountStatus: "removed",
-    removeReason: reason,
-  });
+  try {
+    const provider = await User.findById(providerId);
 
-  res.json({ message: "Provider removed" });
+    if (!provider) {
+      return res.status(404).json({ error: "Provider not found" });
+    }
+
+    provider.accountStatus = "removed";
+    provider.removeReason = reason;
+
+    await provider.save();
+
+    const { subject, html } = providerRemovedTemplate(
+      provider.name,
+      reason
+    );
+
+    await sendEmail({
+      to: provider.email,
+      subject,
+      html,
+    });
+
+    res.json({ message: "Provider removed" });
+
+  } catch (err) {
+    res.status(500).json({ error: "Remove failed" });
+  }
 };
 
 /* =========================
@@ -390,14 +593,86 @@ exports.approveWorkerDispute = async (req, res) => {
 
     await task.save();
 
-    await WalletTransaction.create({
-      user: task.assignedWorker,
-      relatedUser: task.provider,
-      task: task._id,
-      type: "task_payment_release",
-      amount: task.budget,
-      description: "Admin approved worker in dispute",
-    });
+const settings = await Settings.findOne();
+const commissionPercent = settings?.commissionPercent || 10;
+
+const totalAmount = task.budget;
+
+const commission = (totalAmount * commissionPercent) / 100;
+const workerAmount = totalAmount - commission;
+
+/* =========================
+   WORKER PAYMENT
+========================= */
+await WalletTransaction.create({
+  user: task.assignedWorker,
+  relatedUser: task.provider,
+  task: task._id,
+  type: "worker_earning",
+ amount: Number(workerAmount),
+  description: `Dispute resolved: payment after ${commissionPercent}% commission`,
+});
+
+/* =========================
+   PLATFORM COMMISSION
+========================= */
+await WalletTransaction.create({
+  user: task.provider,
+  relatedUser: task.assignedWorker,
+  task: task._id,
+  type: "commission",
+  amount: commission,
+  description: `Platform commission (${commissionPercent}%)`,
+});
+
+    // 🔔 NOTIFY BOTH
+await Notification.create({
+  userId: task.assignedWorker,
+  title: "Dispute Resolved",
+  message: "Admin approved your work. Payment released.",
+  taskId: task._id,
+});
+
+await Notification.create({
+  userId: task.provider,
+  title: "Dispute Resolved",
+  message: "Admin approved worker. Payment released to worker.",
+  taskId: task._id,
+});
+
+const provider = await User.findById(task.provider);
+const worker = await User.findById(task.assignedWorker);
+
+// 📧 Worker email
+try {
+  const { subject, html } =
+    disputeResolvedWorkerTemplate(worker.name, task.title);
+
+  await sendEmail({
+    to: worker.email,
+    subject,
+    html,
+  });
+} catch (err) {
+  console.log("Email failed:", err.message);
+}
+
+// 📧 Provider email
+try {
+  await sendEmail({
+    to: provider.email,
+    subject: "Dispute Resolved",
+    html: `
+      <h2>Dispute Resolved</h2>
+      <p>Hello ${provider.name},</p>
+      <p>Admin approved worker for task:</p>
+      <h3>${task.title}</h3>
+      <p>Payment released to worker.</p>
+    `,
+  });
+} catch (err) {
+  console.log("Email failed:", err.message);
+}
 
     res.json({ message: "Worker approved, payment released" });
 
@@ -417,35 +692,74 @@ exports.refundProviderDispute = async (req, res) => {
 
    task.status = "cancelled";
    task.cancelledBy = "admin";
-   task.cancelReason = reason;
-
+const reason = req.body?.reason || "Admin refund after dispute";
+task.cancelReason = reason;
     task.escrowStatus = "refunded";
 
     task.dispute.status = "resolved";
 
     await task.save();
 
-    // notify provider
-await createNotification({
+// 🔔 NOTIFY BOTH
+
+// Provider
+await Notification.create({
   userId: task.provider,
-  title: "Task Cancelled",
-  message: `Admin cancelled task "${task.title}"`,
-  taskId: task._id
+  title: "Dispute Resolved",
+  message: "Admin refunded your payment.",
+  taskId: task._id,
 });
 
-// notify worker
-if(task.assignedWorker){
-  await createNotification({
+// Worker
+if (task.assignedWorker) {
+  await Notification.create({
     userId: task.assignedWorker,
-    title: "Task Cancelled",
-    message: `Admin cancelled task "${task.title}"`,
-    taskId: task._id
+    title: "Dispute Resolved",
+    message: "Admin rejected your work. Payment refunded to provider.",
+    taskId: task._id,
   });
+}
+const provider = await User.findById(task.provider);
+const worker = task.assignedWorker
+  ? await User.findById(task.assignedWorker)
+  : null;
+
+// 📧 Provider email
+try {
+  const { subject, html } =
+    disputeResolvedProviderTemplate(provider.name, task.title);
+
+  await sendEmail({
+    to: provider.email,
+    subject,
+    html,
+  });
+} catch (err) {
+  console.log("Email failed:", err.message);
+}
+
+// 📧 Worker email
+if (worker) {
+  try {
+    await sendEmail({
+      to: worker.email,
+      subject: "Dispute Result",
+      html: `
+        <h2>Dispute Result</h2>
+        <p>Hello ${worker.name},</p>
+        <p>Your work was not approved:</p>
+        <h3>${task.title}</h3>
+        <p>Payment refunded to provider.</p>
+      `,
+    });
+  } catch (err) {
+    console.log("Email failed:", err.message);
+  }
 }
 
     await WalletTransaction.create({
       user: task.provider,
-      relatedUser: task.assignedWorker,
+      relatedUser: task.assignedWorker || null,
       task: task._id,
       type: "refund",
       amount: task.budget,
@@ -466,19 +780,38 @@ exports.splitPaymentDispute = async (req, res) => {
     const { workerAmount, providerAmount } = req.body;
 
     const task = await Task.findById(req.params.taskId);
-
-    if (!task)
+if (!task)
       return res.status(404).json({ message: "Task not found" });
 
-    if (workerAmount + providerAmount !== task.budget)
-      return res.status(400).json({
-        message: "Amounts must equal task budget"
-      });
+const settings = await Settings.findOne();
+const commissionPercent = settings?.commissionPercent || 10;
+
+const totalAmount = task.budget;
+
+// 💰 commission first
+const commission = (totalAmount * commissionPercent) / 100;
+
+// 💰 remaining after commission
+const remainingAmount = totalAmount - commission;
+   
+
+
+if (Number(workerAmount) + Number(providerAmount) !== remainingAmount) {
+  return res.status(400).json({
+    message: `Split must equal ₹${remainingAmount} after ${commissionPercent}% commission`,
+  });
+}
 
     task.status = "completed";
     task.escrowStatus = "split";
 
     task.dispute.status = "resolved";
+
+    task.splitDetails = {
+  workerAmount: Number(workerAmount),
+  providerAmount: Number(providerAmount),
+  commission,
+};
 
     await task.save();
 
@@ -487,7 +820,7 @@ exports.splitPaymentDispute = async (req, res) => {
       relatedUser: task.provider,
       task: task._id,
       type: "worker_earning",
-      amount: workerAmount,
+      amount: Number(workerAmount),
       description: "Split dispute payment",
     });
 
@@ -496,9 +829,34 @@ exports.splitPaymentDispute = async (req, res) => {
       relatedUser: task.assignedWorker,
       task: task._id,
       type: "refund",
-      amount: providerAmount,
+     amount: Number(providerAmount),
       description: "Split dispute refund",
     });
+
+    await WalletTransaction.create({
+  user: task.provider,
+  relatedUser: task.assignedWorker,
+  task: task._id,
+  type: "commission",
+  amount: commission,
+  description: `Platform commission (${commissionPercent}%)`,
+});
+
+    // 🔔 NOTIFY BOTH WITH SPLIT DETAILS
+
+await Notification.create({
+  userId: task.assignedWorker,
+  title: "Dispute Resolved (Split)",
+  message: `After ${commissionPercent}% commission, you received ₹${workerAmount}`,
+  taskId: task._id,
+});
+
+await Notification.create({
+  userId: task.provider,
+  title: "Dispute Resolved (Split)",
+  message: `After ${commissionPercent}% commission, you received ₹${providerAmount}`,
+  taskId: task._id,
+});
 
     res.json({ message: "Payment split successfully" });
 
@@ -547,7 +905,8 @@ exports.adminCancelTask = async (req, res) => {
 await createNotification({
   userId: task.provider,
   title: "Task Cancelled",
-  message: `Admin cancelled the task "${task.title}".`
+  message: `Admin cancelled the task "${task.title}".`,
+  taskId: task._id,
 });
 
 // Notify Worker
@@ -555,7 +914,8 @@ if (task.assignedWorker) {
   await createNotification({
     userId: task.assignedWorker,
     title: "Task Cancelled",
-    message: `Admin cancelled the task "${task.title}".`
+    message: `Admin cancelled the task "${task.title}".`,
+    taskId: task._id,
   });
 }
 
@@ -615,20 +975,28 @@ exports.getAdminDashboard = async (req, res) => {
     const activeDisputes = disputedTasks;
 
     // Revenue
-    const revenue = await WalletTransaction.aggregate([
-      {
-        $match: { type: "task_payment_release" }
-      },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: "$amount" }
-        }
-      }
-    ]);
+// ✅ Revenue (CORRECT LOGIC)
+const transactions = await WalletTransaction.find();
 
-    const totalRevenue = revenue[0]?.total || 0;
+let commission = 0;
+let registration = 0;
+let withdrawals = 0;
 
+transactions.forEach(txn => {
+  if (txn.type === "commission") {
+    commission += txn.amount;
+  }
+
+  if (txn.type === "registration_fee") {
+    registration += txn.amount;
+  }
+
+  if (txn.type === "admin_withdrawal") {
+    withdrawals += txn.amount;
+  }
+});
+
+const totalRevenue = commission + registration - withdrawals;
     res.json({
       totalWorkers,
       totalProviders,

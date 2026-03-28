@@ -256,67 +256,77 @@ body{
 /* ===============================
    Task Summary Section
 ================================ */
-
-.task-summary{
-  background:white;
-  padding:24px;
-  border-radius:14px;
-  box-shadow:0 6px 18px rgba(0,0,0,0.08);
-  transition:all 0.25s ease;
-
-  backdrop-filter: blur(6px);
-  background:rgba(255,255,255,0.9);
+.overview-summary-card {
+  background: white;
+  padding: 18px;
+  border-radius: 14px;
+  text-align: center;
+  transition: 0.25s ease;
+  border: 1px solid #eef1f4;
+  position: relative;
 }
 
-.task-summary:hover{
-  box-shadow:0 12px 28px rgba(0,0,0,0.12);
+.overview-summary-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
 }
 
-.task-summary h3{
-  margin-bottom:18px;
-  font-weight:600;
-  color:#2c3e50;
+/* ICON */
+.summary-icon {
+  font-size: 20px;
+  display: block;
+  margin-bottom: 6px;
 }
 
-/* Summary Grid */
-
-.summary-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:16px;
+/* VALUE */
+.summary-value {
+  display: block;
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: 4px;
 }
 
-/* Summary Card */
-
-.overview-summary-card{
-  background:#f8fafc;
-  padding:16px;
-  border-radius:12px;
-  text-align:center;
-  transition:all 0.25s ease;
-  border:1px solid #eef1f4;
+/* LABEL */
+.summary-label {
+  font-size: 13px;
+  color: #6c757d;
 }
 
-.overview-summary-card:hover{
-  transform:translateY(-4px);
-  background:white;
-  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+/* ================= COLORS ================= */
+
+/* Waiting */
+.waiting .summary-value {
+  color: #f39c12;
 }
 
-/* Value */
-
-.summary-value{
-  display:block;
-  font-size:22px;
-  font-weight:700;
-  color:#16a085;
+/* Ongoing */
+.ongoing .summary-value {
+  color: #3498db;
 }
 
-/* Label */
+/* Pending */
+.pending .summary-value {
+  color: #e67e22;
+}
 
-.summary-label{
-  font-size:13px;
-  color:#6c757d;
+/* Completed (IMPORTANT) */
+.completed {
+  border: 1px solid #d4f5e9;
+  background: linear-gradient(135deg,#ecfff7,#ffffff);
+}
+
+.completed .summary-value {
+  color: #27ae60;
+  font-size: 28px;
+}
+
+/* Dispute */
+.dispute {
+  border: 1px solid #fdecea;
+}
+
+.dispute .summary-value {
+  color: #e74c3c;
 }
 
 /* ===============================
@@ -350,4 +360,34 @@ body{
 
 .overview-stat-card{
   animation:floatCard 6s ease-in-out infinite;
+}
+.overview-stat-card p {
+  font-size: 26px;
+  font-weight: 800;
+}
+
+/* Make wallet & earnings stronger */
+.overview-stat-card:nth-child(1),
+.overview-stat-card:nth-child(2) {
+  border-top: 4px solid #16a085;
+}
+/* ===============================
+   FIX HORIZONTAL TASK CARDS
+================================ */
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 cards in one row */
+  gap: 16px;
+}
+@media (max-width: 1000px) {
+  .summary-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

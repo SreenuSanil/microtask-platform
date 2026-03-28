@@ -208,3 +208,44 @@
   font-size: 14px;
   color: #374151;
 }
+.worker-exp {
+  font-size: 13px;
+  color: #16a085;
+  font-weight: 600;
+  margin-top: 4px;
+}
+/* ===============================
+   SIMPLE IMAGE PREVIEW (FINAL)
+================================ */
+
+.image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  background: rgba(0, 0, 0, 0.25); /* very light overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* 👇 Medium size preview */
+.image-modal img {
+  width: 400px;        /* 🔥 slightly bigger */
+  max-width: 80%;
+  max-height: 500px;
+
+  border-radius: 12px;
+  object-fit: cover;
+
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+  transition: transform 0.2s ease;
+}
+
+/* slight hover effect */
+.image-modal img:hover {
+  transform: scale(1.03);
+}

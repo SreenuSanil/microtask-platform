@@ -3,117 +3,119 @@ import { useNavigate } from "react-router-dom";
 import "./WorkerNotifications.css";
 
 const WorkerNotifications = () => {
-
   const [notifications, setNotifications] = useState([]);
-
   const navigate = useNavigate();
-
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-
     fetchNotifications();
     markRead();
-
   }, []);
 
+  // ✅ FETCH NOTIFICATIONS
   const fetchNotifications = async () => {
-
     try {
-
       const res = await fetch(
         "http://localhost:5000/api/notifications",
         {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
       const data = await res.json();
 
-      if (res.ok) {
+      if (res.ok && Array.isArray(data)) {
         setNotifications(data);
+      } else {
+        console.error("Invalid notifications response:", data);
       }
-
     } catch (err) {
-      console.error("Failed to fetch notifications");
+      console.error("Failed to fetch notifications", err);
     }
-
   };
 
+  // ✅ MARK AS READ
   const markRead = async () => {
-
     try {
-
       await fetch(
         "http://localhost:5000/api/notifications/read",
         {
           method: "PATCH",
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
-
     } catch (err) {
-      console.error("Failed to mark notifications as read");
+      console.error("Failed to mark notifications as read", err);
     }
+  };
 
+  // ✅ CLICK HANDLER
+  const handleClick = (notification) => {
+    console.log("Clicked notification:", notification); // DEBUG
+
+    if (notification?.connectionId) {
+      navigate(
+  `/worker-dashboard?tab=messages&connectionId=${notification.connectionId}`
+);
+    } else {
+      console.warn("No connectionId found in notification");
+    }
   };
 
   return (
-
     <div className="notifications-page">
-
       <h2 className="page-title">Notifications</h2>
 
       {notifications.length === 0 ? (
-
         <p>No notifications</p>
-
       ) : (
-
         <div className="notifications-list">
-
-          {notifications.map(notification => (
-
+          {notifications.map((notification) => (
             <div
               key={notification._id}
               className="notification-card"
-              onClick={() => {
-
-                if (notification.taskId) {
-
-                  navigate(
-                    `/worker/dashboard?tab=mytasks&task=${notification.taskId}`
-                  );
-
-                }
-
-              }}
+              onClick={() => handleClick(notification)}
             >
+              {/* ✅ PROFILE IMAGE */}
+              <img
+                src={
+                  notification?.profileImage
+                    ? `http://localhost:5000/${notification.profileImage}`
+                    : "/default-user.png"
+                }
+                alt="provider"
+                className="notif-avatar"
+              />
 
-              <h4>{notification.title}</h4>
+              {/* ✅ CONTENT */}
+<div className="notification-content">
+  <h4>{notification?.title || "Notification"}</h4>
 
-              <p>{notification.message}</p>
+  <p>{notification?.message || "No message"}</p>
 
-              <small>
-                {new Date(notification.createdAt).toLocaleString()}
-              </small>
+  {/* ✅ ADD THIS */}
+  {notification?.title === "Payment Completed" && (
+    <p style={{ fontSize: "12px", color: "green" }}>
+      Work has started. You can begin now.
+    </p>
+  )}
 
+  <small>
+    {notification?.createdAt
+      ? new Date(notification.createdAt).toLocaleString()
+      : ""}
+  </small>
+</div>
             </div>
-
           ))}
-
         </div>
-
       )}
-
     </div>
-
   );
-
 };
 
 export default WorkerNotifications;

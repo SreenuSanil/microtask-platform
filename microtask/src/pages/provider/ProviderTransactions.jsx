@@ -4,9 +4,10 @@ import "./ProviderTransactions.css";
 const ProviderTransactions = () => {
 
   const [transactions, setTransactions] = useState([]);
-
+  const [wallet, setWallet] = useState({});
   useEffect(() => {
     fetchTransactions();
+    fetchSummary();
   }, []);
 
   const fetchTransactions = async () => {
@@ -50,47 +51,138 @@ const ProviderTransactions = () => {
      TRANSACTION TYPE LOGIC
   =========================== */
 
-  const getTypeLabel = (txn) => {
+const getTypeLabel = (txn) => {
 
-    if (txn.task?.status === "completed") {
-      return "completed";
+  if (txn.type === "withdrawal") return "withdrawal";
+
+  if (txn.task?.status === "completed") {
+    return "completed";
+  }
+
+  if (txn.task?.status === "cancelled") {
+    return "refund";
+  }
+
+  return txn.type;
+
+};
+
+const getDescription = (txn) => {
+
+  if (txn.task?.status === "completed" && txn.type === "escrow_payment") {
+
+    const commissionTxn = transactions.find(
+      (t) => t.task?._id === txn.task?._id && t.type === "commission"
+    );
+
+    const commission = commissionTxn?.amount || 0;
+
+    return `Paid to worker (₹${commission} platform fee deducted)`;
+  }
+
+  if (txn.task?.status === "cancelled") {
+    return "Task cancelled — amount refunded";
+  }
+
+  if (txn.type === "withdrawal") {
+  return "Money withdrawn from wallet";
+}
+
+  if (txn.type === "escrow_payment") {
+    return "Escrow payment locked for task";
+  }
+
+  return txn.description;
+};
+
+const getFinalAmount = (txn) => {
+
+  // withdrawal → direct amount
+  if (txn.type === "withdrawal") {
+    return txn.amount;
+  }
+
+  // completed task → minus commission
+  if (txn.task?.status === "completed" && txn.type === "escrow_payment") {
+
+    const commissionTxn = transactions.find(
+      (t) => t.task?._id === txn.task?._id && t.type === "commission"
+    );
+
+    const commission = commissionTxn?.amount || 0;
+
+    return txn.amount - commission;
+  }
+
+  return txn.amount;
+};
+
+const withdrawMoney = async () => {
+
+  const amount = prompt("Enter withdraw amount");
+
+  if (!amount) return;
+
+  const res = await fetch(
+    "http://localhost:5000/api/wallet/withdraw",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      },
+      body: JSON.stringify({ amount })
     }
+  );
 
-    if (txn.task?.status === "cancelled") {
-      return "refund";
+  const data = await res.json();
+
+  if (res.ok) {
+    alert("Withdrawal successful");
+    fetchTransactions();
+  } else {
+    alert(data.message);
+  }
+};
+const fetchSummary = async () => {
+
+  const res = await fetch(
+    "http://localhost:5000/api/wallet/provider-summary",
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
     }
+  );
 
-    return txn.type;
+  const data = await res.json();
+  setWallet(data);
 
-  };
-
-  const getDescription = (txn) => {
-
-    if (txn.task?.status === "completed") {
-      return "Task completed — payment released to worker";
-    }
-
-    if (txn.task?.status === "cancelled") {
-      return "Task cancelled — amount refunded";
-    }
-
-    return txn.description;
-
-  };
+};
 
   return (
 
     <div className="txn-container">
 
-      <div className="txn-top">
+<div className="txn-top">
 
-        <h2>Transaction History</h2>
+  <h2>Transaction History</h2>
 
-        <button className="download-btn">
-          Download Statement
-        </button>
+  <div className="txn-actions">
+    <button className="withdraw-btn" onClick={withdrawMoney}>
+      Withdraw Money
+    </button>
+  </div>
 
-      </div>
+</div>
+<div className="wallet-cards">
+
+  <div className="wallet-card balance">
+    <p>Wallet Balance</p>
+    <h3>₹{wallet.walletBalance || 0}</h3>
+  </div>
+
+</div>
 
       <div className="wallet-summary">
 
@@ -98,7 +190,9 @@ const ProviderTransactions = () => {
 
           <p className="label">Total Transactions</p>
 
-          <h3>{transactions.length}</h3>
+          <h3>
+ {transactions.filter((txn) => txn.type !== "commission").length}
+</h3>
 
         </div>
 
@@ -124,7 +218,9 @@ const ProviderTransactions = () => {
 
         ) : (
 
-          transactions.map((txn) => (
+          transactions
+  .filter((txn) => txn.type !== "commission")
+  .map((txn) => (
 
             <div key={txn._id} className="txn-row">
 
@@ -136,9 +232,16 @@ const ProviderTransactions = () => {
                 {getTypeLabel(txn).replace("_", " ")}
               </div>
 
-              <div className="txn-amount">
-                ₹{txn.amount}
-              </div>
+<div
+  className={
+    txn.type === "withdrawal"
+      ? "txn-amount debit"
+      : "txn-amount credit"
+  }
+>
+  {txn.type === "withdrawal" ? "-" : "+"}
+  ₹{getFinalAmount(txn)}
+</div>
 
               <div>
                 {formatDate(txn.createdAt)}

@@ -138,8 +138,9 @@ const LocationPicker = ({ setForm, markerPosition, setMarkerPosition }) => {
 /* =========================
    MAIN COMPONENT
 ========================= */
-
 const PostTask = ({ goToMyTasks }) => {
+  const [previewImage, setPreviewImage] = useState(null);
+   const [existingImages, setExistingImages] = useState([]);
 const navigate = useNavigate();
 const [form, setForm] = useState({
   title: "",
@@ -206,11 +207,13 @@ setForm({
   landmark: data.siteAddress?.landmark || "",
   instructions: data.siteAddress?.instructions || "",
 
-  latitude: data.location?.coordinates[1],
-  longitude: data.location?.coordinates[0],
+latitude: data.location?.coordinates?.[1] || "",
+longitude: data.location?.coordinates?.[0] || "",
 });
-
-
+setSearchQuery(
+  `${data.siteAddress?.area || ""}`
+);
+setExistingImages(data.images || []);
     setSkillSearch(data.requiredSkill);
 
     if (data.location?.coordinates) {
@@ -328,7 +331,7 @@ const res = await fetch(url, {
 
  if (res.ok) {
       alert(editId ? "Task updated successfully!" : "Task posted successfully!");
-      goToMyTasks();
+      navigate("/provider-dashboard?tab=my-tasks");
 
 
 
@@ -576,6 +579,7 @@ const res = await fetch(url, {
             <input
              type="text"
               name="area" 
+              value={form.area}
               onChange={handleChange}
                required 
                />
@@ -640,6 +644,21 @@ const res = await fetch(url, {
             </div>
           </div>
          <div className="form-group">
+          {existingImages.length > 0 && (
+  <div className="existing-images">
+{existingImages.map((img, i) => (
+  <img
+    key={i}
+    src={`http://localhost:5000/${img}`}
+    width="100"
+    style={{ cursor: "pointer" }}
+    onClick={() =>
+      setPreviewImage(`http://localhost:5000/${img}`)
+    }
+  />
+))}
+  </div>
+)}
   <label>Upload Work Images (Optional)</label>
   <input
     type="file"
@@ -662,6 +681,17 @@ const res = await fetch(url, {
 
         </form>
       </div>
+      {previewImage && (
+  <div
+    className="image-preview-modal"
+    onClick={() => setPreviewImage(null)}
+  >
+    <img
+      src={previewImage}
+      className="preview-image"
+    />
+  </div>
+)}
     </div>
   );
 };

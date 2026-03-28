@@ -8,7 +8,8 @@ const AdminInterviews = () => {
   const [interviewWorkers, setInterviewWorkers] = useState([]);
   const [selectedWorkers, setSelectedWorkers] = useState([]);
   const [skillSearch, setSkillSearch] = useState("");
-
+  const [interviewDate, setInterviewDate] = useState("");
+  const [interviewTime, setInterviewTime] = useState("");
   const getProfileImage = (user) => {
     if (user.profileImage) {
       return `http://localhost:5000/${user.profileImage}`;
@@ -63,53 +64,65 @@ const AdminInterviews = () => {
   };
 
   /* ================= ACTIONS ================= */
-  const scheduleInterviewBulk = async () => {
-    const eligible = interviewWorkers
-      .filter(
-        (w) =>
-          selectedWorkers.includes(w._id) &&
-          w.interview?.interviewStatus === "not_scheduled"
-      )
-      .map((w) => w._id);
+const scheduleInterviewBulk = async () => {
+if (!interviewDate || !interviewTime) {
+  alert("Please select date and time");
+  return;
+}
 
-    if (eligible.length === 0) {
-      alert("Interview already scheduled");
-      return;
-    }
+  const eligible = interviewWorkers
+    .filter(
+      (w) =>
+        selectedWorkers.includes(w._id) &&
+        w.interview?.interviewStatus === "not_scheduled"
+    )
+    .map((w) => w._id);
 
-    await fetch("http://localhost:5000/api/admin/interviews/schedule", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        workerIds: eligible,
-        interviewDate: new Date().toISOString().split("T")[0],
-      }),
-    });
+  if (eligible.length === 0) {
+    alert("Interview already scheduled");
+    return;
+  }
 
-    alert("Interview scheduled");
-    fetchInterviewWorkers();
-    setSelectedWorkers([]);
-  };
+  await fetch("http://localhost:5000/api/admin/interviews/schedule", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      workerIds: eligible,
+      interviewDate,
+       interviewTime,
+    }),
+  });
 
-  const scheduleSingleInterview = async (id) => {
-    await fetch("http://localhost:5000/api/admin/interviews/schedule", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        workerIds: [id],
-        interviewDate: new Date().toISOString().split("T")[0],
-      }),
-    });
+  alert("Interview scheduled");
+  fetchInterviewWorkers();
+  setSelectedWorkers([]);
+};
 
-    alert("Interview scheduled");
-    fetchInterviewWorkers();
-  };
+const scheduleSingleInterview = async (id) => {
+  if (!interviewDate || !interviewTime) {
+    alert("Please select date and time");
+    return;
+  }
+
+  await fetch("http://localhost:5000/api/admin/interviews/schedule", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      workerIds: [id],
+      interviewDate,
+      interviewTime, // ✅ ADD
+    }),
+  });
+
+  alert("Interview scheduled");
+  fetchInterviewWorkers();
+};
 
   const markInterviewCompleted = async () => {
     const eligible = interviewWorkers
@@ -150,6 +163,18 @@ const AdminInterviews = () => {
     className="skill-search"
   />
 
+<input
+  type="date"
+  value={interviewDate}
+  onChange={(e) => setInterviewDate(e.target.value)}
+  className="date-input"
+/>
+<input
+  type="time"
+  value={interviewTime}
+  onChange={(e) => setInterviewTime(e.target.value)}
+  className="time-input"
+/>
   <button className="bulk-btn" onClick={toggleSelectAll}>
     Select All
   </button>
@@ -161,6 +186,8 @@ const AdminInterviews = () => {
   <button className="bulk-danger" onClick={markInterviewCompleted}>
     Mark as Interviewed
   </button>
+
+
 </div>
 
       <p>Selected: {selectedWorkers.length}</p>

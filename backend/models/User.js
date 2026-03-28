@@ -170,6 +170,12 @@ workImages: [
   }
 ],
 
+certificationImages: [
+  {
+    type: String, // certificate image path
+  }
+],
+
 bio: {
   type: String,
   default: "",
@@ -190,10 +196,6 @@ certifications: {
   default: "",
 },
 
-languages: {
-  type: String,
-  default: "",
-},
 
 reviews: [
  {

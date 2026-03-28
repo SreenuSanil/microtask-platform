@@ -49,7 +49,7 @@ const WorkerWallet = () => {
 
   const formatType = (type) => {
 
-    if (type === "task_payment_release") return "Payment Received";
+    if (type === "task_payment_release") return "Payment Received (after fee)";
     if (type === "worker_earning") return "Payment Received";
     if (type === "withdrawal") return "Withdrawal";
     if (type === "escrow_payment") return "Escrow Payment";
@@ -96,6 +96,15 @@ const WorkerWallet = () => {
 
   }
 
+};
+
+const getCommission = (txn) => {
+
+  const commissionTxn = transactions.find(
+    (t) => t.task?._id === txn.task?._id && t.type === "commission"
+  );
+
+  return commissionTxn?.amount || 0;
 };
   return (
 
@@ -161,9 +170,15 @@ const WorkerWallet = () => {
 
               <div>{txn.task?.title || "-"}</div>
 
-              <div className="txn-type">
-                {formatType(txn.type)}
-              </div>
+<div className="txn-type">
+  {formatType(txn.type)}
+
+  {txn.type === "task_payment_release" && (
+    <div style={{ fontSize: "12px", color: "#888" }}>
+      ₹{getCommission(txn)} platform fee deducted
+    </div>
+  )}
+</div>
 
               <div
                 className={

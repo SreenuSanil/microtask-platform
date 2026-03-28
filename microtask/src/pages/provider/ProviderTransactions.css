@@ -2,6 +2,8 @@
   padding: 30px;
 }
 
+/* ================= TOP ================= */
+
 .txn-top {
   display: flex;
   justify-content: space-between;
@@ -14,15 +16,53 @@
   font-weight: 600;
 }
 
-.download-btn {
-  background: #0e8f6a;
+/* ================= WALLET CARDS ================= */
+
+.wallet-cards {
+  display: flex;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.wallet-card {
+  flex: 1;
+  padding: 20px;
+  border-radius: 10px;
+  background: #f9f9f9;
+  border-left: 5px solid #1e8e3e;
+}
+
+.wallet-card p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.wallet-card h3 {
+  margin-top: 8px;
+  font-size: 22px;
+  color: #000;
+}
+
+/* ================= WITHDRAW BUTTON ================= */
+
+.withdraw-btn {
+  background-color: #1e8e3e; /* ✅ GREEN */
   color: white;
   border: none;
-  padding: 8px 14px;
+  padding: 10px 16px;
   border-radius: 6px;
-  font-size: 14px;
   cursor: pointer;
+  margin-bottom: 20px;
+  font-weight: 500;
+  transition: 0.2s;
 }
+
+.withdraw-btn:hover {
+  background-color: #166d2f;
+}
+
+/* ================= SUMMARY BOX ================= */
 
 .wallet-summary {
   background: white;
@@ -42,6 +82,8 @@
   font-size: 20px;
   color: #0e8f6a;
 }
+
+/* ================= TABLE ================= */
 
 .txn-table {
   background: white;
@@ -71,43 +113,55 @@
   background: #f3faf8;
 }
 
+/* ================= TYPE COLORS ================= */
+
 .txn-type {
   font-weight: 500;
   text-transform: capitalize;
 }
 
-/* Escrow Payment */
-
 .txn-type.escrow_payment {
   color: #0e8f6a;
 }
-
-/* Refund */
 
 .txn-type.refund {
   color: #d32f2f;
 }
 
-/* Commission */
-
 .txn-type.commission {
   color: #f57c00;
 }
-
-/* Completed */
 
 .txn-type.completed {
   color: #2e7d32;
 }
 
+.txn-type.withdrawal {
+  color: #c62828;
+}
+
+/* ================= AMOUNT ================= */
+
 .txn-amount {
   font-weight: 600;
 }
+
+.txn-amount.credit {
+  color: #2e7d32;
+}
+
+.txn-amount.debit {
+  color: #c62828;
+}
+
+/* ================= DESCRIPTION ================= */
 
 .txn-desc {
   color: #666;
   font-size: 13px;
 }
+
+/* ================= EMPTY ================= */
 
 .no-data {
   padding: 20px;

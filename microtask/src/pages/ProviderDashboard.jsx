@@ -23,6 +23,7 @@ const ProviderDashboard = () => {
   const [inviteCount, setInviteCount] = useState(0);
   const [unreadCount, setUnreadCount] = useState(0);
   const socketRef = useRef(null);
+  const [selectedConnectionId, setSelectedConnectionId] = useState(null);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [userData, setUserData] = useState({
     name: "",
@@ -133,19 +134,25 @@ setInviteCount(inviteCount);
 }, [userData]);
 
 useEffect(() => {
-
   const params = new URLSearchParams(location.search);
 
   const tab = params.get("tab");
   const taskId = params.get("task");
+  const connectionId = params.get("connection");
+    
 
   if (tab) {
     setActiveSection(tab);
   }
 
-  if (taskId) {
+  if (tab === "my-tasks" && taskId) {
     setSelectedTaskId(taskId);
+  } else {
+    setSelectedTaskId(null);
   }
+
+  // 🔥 THIS LINE WAS MISSING
+  setSelectedConnectionId(connectionId || null);
 
 }, [location.search]);
 
@@ -210,13 +217,12 @@ const menuItems = [
       return <PostTask goToMyTasks={() => setActiveSection("my-tasks")} />;
 
 
-      case "my-tasks":
-        return <MyTasks />;
+case "my-tasks":
+  return <MyTasks selectedTaskId={selectedTaskId} />;
 
          
-        case "messages":
-  return <ProviderMessages />;
-
+case "messages":
+  return <ProviderMessages selectedConnectionId={selectedConnectionId} />;
 
 
 
@@ -354,7 +360,13 @@ case "invitations":
               className={`menu-item ${
                 activeSection === item.id ? "active" : ""
               }`}
-              onClick={() => setActiveSection(item.id)}
+onClick={() => {
+  setActiveSection(item.id);
+
+  if (item.id === "my-tasks") {
+    setSelectedTaskId(null); // ✅ RESET HERE
+  }
+}}
             >
               <span className="menu-icon">{item.icon}</span>
               <span className="menu-label"><div className="menu-item-content">

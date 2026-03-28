@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./Register.css";
 import logo from "../assets/tasknest.png";
 import Home_bg from "../assets/Home-bg.png";
@@ -10,7 +10,7 @@ import LocationPicker from "../components/LocationPicker";
 const Register = () => {
   const navigate = useNavigate();
   const [role, setRole] = useState("");
-  const [paymentInfo, setPaymentInfo] = useState(null);
+ 
   const [skillInput, setSkillInput] = useState("");
   const [filteredSkills, setFilteredSkills] = useState([]);
  
@@ -114,8 +114,6 @@ const CATEGORY_ICONS = {
 
 
 const [errors, setErrors] = useState({});
-const [paymentDone, setPaymentDone] = useState(false);
-
 
 const handleChange = (e) => {
   setFormData({
@@ -165,98 +163,6 @@ const handleSkillInput = (e) => {
 
   setFilteredSkills(newFiltered);
 };
-
-
-
-const handleWorkerPayment = async () => {
-   const tempErrors = {};
-
-  if (!formData.name.trim())
-    tempErrors.name = "Full name is required";
-
-  if (!formData.email)
-    tempErrors.email = "Email is required";
-
-  if (!formData.password)
-    tempErrors.password = "Password is required";
-
-  if (!formData.phone)
-    tempErrors.phone = "Phone number is required";
-
-  if (!formData.latitude || !formData.longitude)
-    tempErrors.location = "Location is required";
-
-  if (formData.skills.length === 0)
-    tempErrors.skills = "At least one skill is required";
-
-  if (Object.keys(tempErrors).length > 0) {
-    setErrors(tempErrors);
-    scrollToFirstError(tempErrors);
-    alert("Please complete all required fields before payment");
-    return;
-  }
-  try {
-    // 1️⃣ create order from backend
-    const res = await fetch(
-      "http://localhost:5000/api/payment/create-order",
-      { method: "POST" }
-    );
-
-    const order = await res.json();
-
-    // 2️⃣ Razorpay options
-    const options = {
-      key: "rzp_test_RS7N4gK5yMwA9E", 
-      amount: order.amount,
-      currency: "INR",
-      name: "TaskNest",
-      description: "Worker Registration Fee",
-      order_id: order.id,
-
-      handler: async function (response) {
-        // 3️⃣ verify payment
-        const verifyRes = await fetch(
-          "http://localhost:5000/api/payment/verify-payment",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(response),
-          }
-        );
-
-        const verifyData = await verifyRes.json();
-
-        if (verifyData.success) {
-          // ✅ PAYMENT SUCCESS
-          
-          setPaymentInfo({
-  orderId: verifyData.payment.orderId,
-  paymentId: verifyData.payment.paymentId,
-  signature: verifyData.payment.signature,
-});
-setPaymentDone(true);
-
-          alert("Payment successful (Test Mode)");
-        } else {
-          alert("Payment verification failed");
-        }
-      },
-
-      theme: { color: "#2f80ed" },
-    };
-
-    // 4️⃣ open Razorpay checkout
-    const rzp = new window.Razorpay(options);
-    rzp.open();
-
-  } catch (error) {
-    console.error(error);
-    alert("Payment failed");
-  }
-};
-
-
-
 
 const validateForm = () => {
   let newErrors = {};
@@ -326,11 +232,7 @@ const scrollToFirstError = (errors) => {
 const handleSubmit = async (e) => {
   e.preventDefault();
 
-  // worker payment check
-  if (role === "worker" && !paymentDone) {
-    alert("Please complete payment before registering");
-    return;
-  }
+
 
   const isValid = validateForm();
   if (!isValid) {
@@ -351,21 +253,6 @@ const handleSubmit = async (e) => {
 
 
     formPayload.append("role", role);
-
-    // 🔐 BACKEND PAYMENT ENFORCEMENT (IMPORTANT)
-if (role === "worker") {
-  if (!paymentInfo) {
-    alert("Payment not verified");
-    return;
-  }
-
-  formPayload.append(
-    "payment",
-    JSON.stringify(paymentInfo)
-  );
-}
-
-
 
     const response = await fetch(
       "http://localhost:5000/api/auth/register",
@@ -403,13 +290,13 @@ if (response.ok) {
          <div className="back-home">
          <button
            type="button"
-            onClick={() => {
-              if (role) {
-                setRole("");       // go back to role selection
-            } else {
-               window.location.href = "/"; // go back to home
-            }
-       }}
+onClick={() => {
+  if (role) {
+    setRole(""); 
+  } else {
+    window.location.href = "/";
+  }
+}}
           title="Go Back"
           className="back-arrow"
           >
@@ -605,21 +492,6 @@ if (response.ok) {
     </div>
   </>
 )}
-
-
-{role === "worker" && (
-  <div className="input-group worker-payment">
-    {!paymentDone ? (
-      <button type="button" onClick={handleWorkerPayment}>
-        Pay Registration Fee
-      </button>
-    ) : (
-      <p className="payment-success">✅ Payment Completed</p>
-    )}
-  </div>
-)}
-
-
 
               {/* PROVIDER-SPECIFIC FIELDS */}
               {role === "provider" && (

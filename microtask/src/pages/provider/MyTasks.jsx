@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import TaskWorkers from "./TaskWorkers";
 import RatingModal from "./RatingModal";
 
-const MyTasks = () => {
+const MyTasks = ({ selectedTaskId: externalTaskId }) => {
   const [tasks, setTasks] = useState([]);
   const [activeTab, setActiveTab] = useState("open");
   const navigate = useNavigate();
@@ -15,6 +15,10 @@ const MyTasks = () => {
   const [showRating, setShowRating] = useState(false);
   const [ratingTask, setRatingTask] = useState(null);
   const [reviewedTasks, setReviewedTasks] = useState([]);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [showCancelPreview, setShowCancelPreview] = useState(false);
+const [cancelTaskId, setCancelTaskId] = useState(null);
+const [cancelBreakdown, setCancelBreakdown] = useState(null);
   /* =============================
      FETCH PROVIDER TASKS
   ============================== */
@@ -39,6 +43,14 @@ const MyTasks = () => {
  useEffect(() => {
   fetchTasks();
 }, []);
+
+useEffect(() => {
+  if (externalTaskId) {
+    setSelectedTaskId(externalTaskId);
+  } else {
+    setSelectedTaskId(null); 
+  }
+}, [externalTaskId]);
 
   const fetchReviewedTasks = async () => {
 
@@ -118,7 +130,12 @@ if (activeTab === "dispute") displayTasks = disputeTasks;
      CANCEL TASK
   ============================== */
 const cancelTask = async (taskId) => {
-  if (!window.confirm("Cancel this task?")) return;
+ if (
+  !window.confirm(
+    "Cancelling will deduct 5% of amount.\nPart goes to worker as compensation.\nDo you want to continue?"
+  )
+)
+  return;
 
   const res = await fetch(
     `http://localhost:5000/api/tasks/${taskId}/cancel`,
@@ -167,37 +184,32 @@ const confirmDelete = async () => {
 };
 
 
-  if (selectedTaskId) {
+if (selectedTaskId) {
   return (
     <TaskWorkers
       taskId={selectedTaskId}
-      goBack={() => setSelectedTaskId(null)}
+      goBack={() => {
+        setSelectedTaskId(null);
+      }}
     />
   );
 }
 
-const cancelOngoingTask = async (taskId) => {
+const cancelOngoingTask = (task) => {
+  const totalPenalty = task.budget * 0.05;
+  const worker = totalPenalty * 0.7;
+  const system = totalPenalty * 0.3;
+  const refund = task.budget - totalPenalty;
 
-  if (!window.confirm("Cancel this task?")) return;
+  setCancelBreakdown({
+    totalPenalty,
+    worker,
+    system,
+    refund,
+  });
 
-  const res = await fetch(
-    `http://localhost:5000/api/tasks/cancel-ongoing/${taskId}`,
-    {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    }
-  );
-
-  const data = await res.json();
-
-  if (res.ok) {
-    alert("Task cancelled");
-    window.location.reload();
-  } else {
-    alert(data.message);
-  }
+  setCancelTaskId(task._id);
+  setShowCancelPreview(true);
 };
 
 const rejectTask = async (taskId) => {
@@ -331,7 +343,58 @@ if(!reviewedTasks.includes(taskId)){
     console.error(err);
   }
 };
+const handleTaskPayment = async (taskId) => {
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/payment/task/create-order/${taskId}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
 
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err.message);
+      return;
+    }
+
+    const order = await res.json();
+
+    const options = {
+      key: "rzp_test_RS7N4gK5yMwA9E",
+      amount: order.amount,
+      currency: order.currency,
+      order_id: order.id,
+      name: "TaskNest Escrow",
+      description: "Task Escrow Payment",
+
+      handler: async function (response) {
+        await fetch(
+          `http://localhost:5000/api/payment/task/verify-payment/${taskId}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify(response),
+          }
+        );
+
+        window.location.reload();
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+
+  } catch (err) {
+    console.error("Payment error:", err);
+  }
+};
 return (
   <div className="mytasks-container">
       <h2 className="page-title">My Tasks</h2>
@@ -444,7 +507,12 @@ return (
     </p>
 
     <p>
-      <strong>Cancelled By:</strong> {task.cancelledBy}
+       <strong>Cancelled By:</strong>{" "}
+  {task.cancelledBy === "worker"
+    ? "Worker"
+    : task.cancelledBy === "provider"
+    ? "Provider"
+    : "Admin"}
     </p>
 
     {task.cancelReason && (
@@ -490,20 +558,24 @@ return (
 {/* Task Images */}
 {task.images?.length > 0 && (
   <div className="task-images">
-    {task.images.map((img, index) => (
-      <img
-        key={index}
-        src={`http://localhost:5000/${img}`}
-        alt="task"
-      />
-    ))}
+{task.images.map((img, index) => (
+  <img
+    key={index}
+    src={`http://localhost:5000/${img}`}
+    alt="task"
+    style={{ cursor: "pointer" }}
+    onClick={() =>
+      setPreviewImage(`http://localhost:5000/${img}`)
+    }
+  />
+))}
   </div>
 )}
 
 {task.status === "in_progress" && (
   <button
     className="cancel-btn"
-    onClick={() => cancelOngoingTask(task._id)}
+   onClick={() => cancelOngoingTask(task)}
   >
     Cancel Task
   </button>
@@ -514,11 +586,15 @@ return (
 {task.completionImage && (
   <div className="completion-proof">
     <p><strong>Worker Completion Proof:</strong></p>
-    <img
-      src={`http://localhost:5000/${task.completionImage}`}
-      alt="completion proof"
-      className="completion-img"
-    />
+<img
+  src={`http://localhost:5000/${task.completionImage}`}
+  alt="completion proof"
+  className="completion-img"
+  style={{ cursor: "pointer" }}
+  onClick={() =>
+    setPreviewImage(`http://localhost:5000/${task.completionImage}`)
+  }
+/>
   </div>
 )}
 
@@ -556,6 +632,47 @@ return (
 
     </>
   )}
+
+{task.status === "assigned" && task.paymentStatus !== "paid" && (
+  <>
+    <button
+      className="pay-btn"
+      onClick={() => handleTaskPayment(task._id)}
+    >
+      💳 Pay & Start Work
+    </button>
+
+    <button
+      className="cancel-btn"
+      onClick={async () => {
+
+        const confirmCancel = window.confirm(
+          "Cancel this and go back to open?"
+        );
+
+        if (!confirmCancel) return;
+
+        await fetch(
+          `http://localhost:5000/api/tasks/reset/${task._id}`,
+          {
+            method: "PATCH",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        window.location.reload();
+      }}
+    >
+      Cancel
+    </button>
+  </>
+)}
+
+{task.paymentStatus === "paid" && (
+  <p className="paid-text">✅ Payment Completed</p>
+)}
 
 {/* PENDING VERIFICATION */}
 {task.status === "pending_verification" && (
@@ -654,6 +771,71 @@ return (
 }}
   />
 
+)}
+
+{previewImage && (
+  <div
+    className="image-preview-modal"
+    onClick={() => setPreviewImage(null)}
+  >
+    <img
+      src={previewImage}
+      className="preview-image"
+      onClick={(e) => e.stopPropagation()}
+    />
+  </div>
+)}
+
+{showCancelPreview && cancelBreakdown && (
+  <div className="modal-overlay">
+    <div className="modal-box">
+      <h3>Cancel Task?</h3>
+
+      <p>This will apply a 5% cancellation penalty.</p>
+
+      <div style={{ textAlign: "left", marginTop: "10px" }}>
+        <p>💰 Refund: ₹{cancelBreakdown.refund.toFixed(0)}</p>
+        <p>👷 Worker Compensation: ₹{cancelBreakdown.worker.toFixed(0)}</p>
+        <p>🏢 Platform Fee: ₹{cancelBreakdown.system.toFixed(0)}</p>
+      </div>
+
+      <div className="modal-actions">
+        <button
+          className="modal-cancel"
+          onClick={() => {
+            setShowCancelPreview(false);
+            setCancelTaskId(null);
+          }}
+        >
+          Back
+        </button>
+
+        <button
+          className="modal-delete"
+          onClick={async () => {
+            const res = await fetch(
+              `http://localhost:5000/api/tasks/cancel-ongoing/${cancelTaskId}`,
+              {
+                method: "PATCH",
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+              }
+            );
+
+            if (res.ok) {
+              alert("Task cancelled");
+              window.location.reload();
+            }
+
+            setShowCancelPreview(false);
+          }}
+        >
+          Confirm Cancel
+        </button>
+      </div>
+    </div>
+  </div>
 )}
 </div>  
  

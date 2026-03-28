@@ -141,12 +141,16 @@ const AdminDisputes = () => {
       return;
     }
 
-    const total = Number(workerAmount) + Number(providerAmount);
+const commissionPercent = 10; // or fetch from backend
+const commission = task.budget * (commissionPercent / 100);
+const remaining = task.budget - commission;
 
-    if (total !== task.budget) {
-      alert("Amounts must equal task budget");
-      return;
-    }
+const total = Number(workerAmount) + Number(providerAmount);
+
+if (total !== remaining) {
+  alert(`Split must equal ₹${remaining} after commission`);
+  return;
+}
 
     try {
       const res = await fetch(
@@ -178,9 +182,14 @@ const AdminDisputes = () => {
     }
   };
 
-  /* ===============================
-     UI
-  =============================== */
+let commission = 0;
+let remaining = 0;
+
+if (selectedTask) {
+  const commissionPercent = 10;
+  commission = selectedTask.budget * (commissionPercent / 100);
+  remaining = selectedTask.budget - commission;
+}
 
   return (
     <div className="admin-disputes">
@@ -190,19 +199,33 @@ const AdminDisputes = () => {
       {selectedTask ? (
 
         <div className="dispute-details">
-
-          <button
+        <button
             className="back-btn"
             onClick={() => setSelectedTask(null)}
           >
             ← Back
           </button>
 
+          <h2 className="page-title">
+  Disputed Tasks ({disputes.length})
+</h2>
+{selectedTask.escrowStatus === "split" && (
+  <div className="split-result">
+    <p>💰 Worker Received:₹{selectedTask.splitDetails?.workerAmount}</p>
+    <p>💰 Provider Refunded: ₹{selectedTask.splitDetails?.providerAmount}</p>
+  </div>
+)}
           <h3>{selectedTask.title}</h3>
 
           <p>
             <strong>Budget:</strong> ₹{selectedTask.budget}
           </p>
+
+          <div className="split-info">
+  <p>💰 Total: ₹{selectedTask.budget}</p>
+  <p>🏢 Commission: ₹{commission}</p>
+  <p>🧾 Amount to Split: ₹{remaining}</p>
+</div>
 
           {/* PEOPLE SECTION */}
 

@@ -3,7 +3,13 @@ const multer = require("multer");
 
 // STORAGE CONFIG
 const storage = multer.diskStorage({
-  destination: "uploads/work",
+ destination: (req, file, cb) => {  
+  if (file.fieldname === "certificationImages") {  
+    cb(null, "uploads/certifications");  
+  } else {  
+    cb(null, "uploads/work");  
+  }  
+},
   filename: (req, file, cb) => {
     cb(null, Date.now() + "-" + file.originalname);
   },
@@ -11,7 +17,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage }).fields([
   { name: "profileImage", maxCount: 1 },
-  { name: "workImages", maxCount: 20 }, // unlimited-ish
+  { name: "workImages", maxCount: 20 },
+  { name: "certificationImages", maxCount: 10 }, 
 ]);
 
 // ================= UPDATE PROFILE =================
@@ -62,7 +69,20 @@ exports.updateWorkerProfile = [
         const newImages = req.files.workImages.map((f) => f.path);
         user.workImages = [...(user.workImages || []), ...newImages];
       }
+// ✅ EXISTING CERTIFICATION IMAGES (after delete)
+if (req.body.existingCertificationImages) {
+  user.certificationImages = JSON.parse(req.body.existingCertificationImages);
+}
 
+// ✅ NEW CERTIFICATION IMAGES
+if (req.files?.certificationImages) {
+  const newCertImages = req.files.certificationImages.map((f) => f.path);
+
+  user.certificationImages = [
+    ...(user.certificationImages || []),
+    ...newCertImages,
+  ];
+}
       await user.save();
 
       res.json(user);

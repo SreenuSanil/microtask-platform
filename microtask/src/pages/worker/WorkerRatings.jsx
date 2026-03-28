@@ -7,29 +7,26 @@ const WorkerRatings = () => {
   const [skills, setSkills] = useState([]);
   const [selectedSkill, setSelectedSkill] = useState("all");
 
-  useEffect(() => {
+const fetchData = async () => {
 
-    const fetchData = async () => {
+  const res = await fetch(
+    "http://localhost:5000/api/auth/me",
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    }
+  );
 
-      const res = await fetch(
-        "http://localhost:5000/api/auth/me",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-          }
-        }
-      );
+  const data = await res.json();
 
-      const data = await res.json();
+  setReviews(data.reviews || []);
+  setSkills(data.skillRatings || []);
+};
 
-      setReviews(data.reviews || []);
-      setSkills(data.skillRatings || []);
-
-    };
-
-    fetchData();
-
-  }, []);
+useEffect(() => {
+  fetchData();
+}, []);
 
   const filteredReviews =
     selectedSkill === "all"
@@ -92,7 +89,7 @@ const WorkerRatings = () => {
                 {"☆".repeat(5 - safeAvg)}
 
                 <span className="rating-value">
-                  {skill.ratingAverage.toFixed(1)}
+                  {skill.ratingAverage ? skill.ratingAverage.toFixed(1) : "0.0"}
                 </span>
 
               </div>

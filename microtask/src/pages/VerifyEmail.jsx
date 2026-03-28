@@ -103,7 +103,7 @@ const handleVerify = async (autoOtp) => {
 
         localStorage.removeItem("verifyEmail");
 
-        setTimeout(() => navigate("/login"), 1500);
+        setTimeout(() => navigate("/payment"), 1500);
       } else {
 setMessage(data.error || "Verification failed");
 setMessageType("error");

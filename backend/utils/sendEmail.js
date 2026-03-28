@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 
-const sendEmail = async (to, otp) => {
+const sendEmail = async ({ to, subject, html }) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -12,14 +12,10 @@ const sendEmail = async (to, otp) => {
   await transporter.sendMail({
     from: process.env.EMAIL_USER,
     to,
-    subject: "Reset Password OTP",
-    html: `
-      <h3>Password Reset</h3>
-      <p>Your OTP is:</p>
-      <h1>${otp}</h1>
-      <p>This OTP is valid for 10 minutes.</p>
-    `,
+    subject,
+    html,
   });
 };
 
 module.exports = sendEmail;
+

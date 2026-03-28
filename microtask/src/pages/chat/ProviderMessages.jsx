@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 import "./ProviderMessages.css";
 import ChatPage from "./ChatPage";
 
-const ProviderMessages = () => {
+const ProviderMessages = ({ selectedConnectionId }) => {
   const [invites, setInvites] = useState([]);
   const [chats, setChats] = useState([]);
   const [activeTab, setActiveTab] = useState("negotiation");
@@ -51,18 +51,34 @@ const ProviderMessages = () => {
     if (res.ok) setInvites(data);
   };
 
-  const fetchChats = async () => {
-    const res = await fetch(
-      "http://localhost:5000/api/connections/my-chats",
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+const fetchChats = async () => {
+  const res = await fetch(
+    "http://localhost:5000/api/connections/my-chats",
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
+
+  const data = await res.json();
+
+  if (res.ok) {
+    setChats(data);
+
+    // 🔥 AUTO OPEN CHAT HERE (IMPORTANT FIX)
+    if (selectedConnectionId) {
+      const chat = data.find(
+        c => c._id?.toString() === selectedConnectionId?.toString()
+      );
+
+      if (chat) {
+        setSelectedChat(chat);
+        setActiveTab("negotiation");
       }
-    );
-    const data = await res.json();
-    if (res.ok) setChats(data);
-  };
+    }
+  }
+};
 
 
 const negotiationList = chats.filter(

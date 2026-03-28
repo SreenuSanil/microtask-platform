@@ -24,3 +24,22 @@
 .notification-card:hover {
   background: #f5f7ff;
 }
+.notification-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.notif-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.notification-content {
+  display: flex;
+  flex-direction: column;
+}

@@ -1,3 +1,36 @@
 .provider-management {
   width: 100%;
 }
+.cancel-count {
+  font-size: 12px;
+  color: gray;
+  margin-top: 5px;
+}
+
+.cancel-count.danger {
+  color: red;
+  font-weight: bold;
+}
+.search-box {
+  margin: 15px 0;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+.warning {
+  color: orange;
+}
+
+.danger {
+  color: red;
+  font-weight: bold;
+}
+.highlight-card {
+  border: 2px solid red;
+  background: #fff3f3;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+}

@@ -3,117 +3,110 @@ import { useNavigate } from "react-router-dom";
 import "./ProviderNotifications.css";
 
 const ProviderNotifications = () => {
-
   const [notifications, setNotifications] = useState([]);
-
   const navigate = useNavigate();
-
   const token = localStorage.getItem("token");
 
   useEffect(() => {
+    if (token) {
+      fetchNotifications();
+      markRead();
+    }
+  }, [token]);
 
-    fetchNotifications();
-    markRead();
-
-  }, []);
-
+  // ✅ FETCH NOTIFICATIONS
   const fetchNotifications = async () => {
-
     try {
-
       const res = await fetch(
         "http://localhost:5000/api/notifications",
         {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
       const data = await res.json();
 
-      if (res.ok) {
+      if (res.ok && Array.isArray(data)) {
         setNotifications(data);
+      } else {
+        console.error("Invalid response:", data);
       }
-
     } catch (err) {
-      console.error("Failed to fetch notifications");
+      console.error("Failed to fetch notifications", err);
     }
-
   };
 
+  // ✅ MARK AS READ
   const markRead = async () => {
-
     try {
-
       await fetch(
         "http://localhost:5000/api/notifications/read",
         {
           method: "PATCH",
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
-
     } catch (err) {
-      console.error("Failed to mark notifications as read");
+      console.error("Failed to mark notifications as read", err);
     }
-
   };
 
   return (
-
     <div className="notifications-page">
-
       <h2 className="page-title">Notifications</h2>
 
       {notifications.length === 0 ? (
-
         <p>No notifications</p>
-
       ) : (
-
         <div className="notifications-list">
-
-          {notifications.map(notification => (
-
+          {notifications.map((notification) => (
             <div
               key={notification._id}
-              className="notification-card"
-              onClick={() => {
-
-                if (notification.taskId) {
-
-                  navigate(
-                    `/provider/dashboard?tab=my-tasks&task=${notification.taskId}`
-                  );
-
-                }
-
-              }}
+              className={`notification-card ${
+  notification?.type === "connection_rejected" ? "disabled" : ""
+}`}
             >
+              {/* ✅ PROFILE IMAGE */}
+              <img
+                src={
+                  notification?.profileImage || "/default-avatar.png"
+                }
+                alt="user"
+                className="notif-avatar"
+              />
 
-              <h4>{notification.title}</h4>
+              {/* ✅ TEXT CONTENT */}
+<div className="notification-content">
+  <h4>{notification?.title || "Notification"}</h4>
 
-              <p>{notification.message}</p>
+  <p>{notification?.message || "No message"}</p>
+{notification?.title === "Worker Ready for Payment" && (
+  <p style={{ fontSize: "12px", color: "green" }}>
+   Pay from Chat or My Tasks → Waiting Payment
+  </p>
+)}
+  {notification?.title === "Invitation Accepted" && (
+    <p style={{ fontSize: "12px", color: "gray" }}>
+      Go to Messages to chat
+    </p>
+  )}
 
-              <small>
-                {new Date(notification.createdAt).toLocaleString()}
-              </small>
-
+  <small>
+    {notification?.createdAt
+      ? new Date(notification.createdAt).toLocaleString()
+      : ""}
+  </small>
+</div>
             </div>
-
           ))}
-
         </div>
-
       )}
-
     </div>
-
   );
-
 };
 
 export default ProviderNotifications;

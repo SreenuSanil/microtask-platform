@@ -51,14 +51,15 @@ router.get("/worker-summary", protect, async (req, res) => {
 
       if (
   txn.type === "worker_earning" ||
-  txn.type === "task_payment_release"
+  txn.type === "task_payment_release"||
+  txn.type === "compensation"
 ) {
   totalEarnings += txn.amount;
 }
 
-      if (txn.type === "withdrawal") {
-        withdrawals += txn.amount;
-      }
+if (txn.type === "worker_withdrawal") {
+  withdrawals += txn.amount;
+}
 
     });
 
@@ -111,26 +112,29 @@ if (amount < settings.minWithdrawal) {
     const transactions = await WalletTransaction.find({
       user: userId
     });
+let credits = 0;
+let withdrawals = 0;
 
-    let earnings = 0;
-    let withdrawals = 0;
+transactions.forEach(txn => {
 
-  transactions.forEach(txn => {
-
+  // ✅ Worker credits
   if (
     txn.type === "worker_earning" ||
-    txn.type === "task_payment_release"
+    txn.type === "task_payment_release" ||
+    txn.type === "compensation"
   ) {
-    earnings += txn.amount;
+    credits += txn.amount;
   }
 
-  if (txn.type === "withdrawal") {
-    withdrawals += txn.amount;
-  }
+  // withdrawals
+if (txn.type === "worker_withdrawal") {
+  withdrawals += txn.amount;
+}
+
 
 });
 
-    const balance = earnings - withdrawals;
+const balance = credits - withdrawals;
 
     if (amount > balance) {
 
@@ -143,7 +147,7 @@ if (amount < settings.minWithdrawal) {
     await WalletTransaction.create({
 
       user: userId,
-      type: "withdrawal",
+      type: "worker_withdrawal",
       amount,
       status: "completed",
       description: "Worker wallet withdrawal"
@@ -158,6 +162,48 @@ if (amount < settings.minWithdrawal) {
 
     res.status(500).json({
       message: "Withdrawal failed"
+    });
+
+  }
+
+});
+router.get("/provider-summary", protect, async (req, res) => {
+
+  try {
+
+    const userId = req.user.userId;
+
+    const transactions = await WalletTransaction.find({
+      user: userId
+    });
+
+    let refunds = 0;
+    let withdrawals = 0;
+
+    transactions.forEach(txn => {
+
+      if (txn.type === "refund") {
+        refunds += txn.amount;
+      }
+
+if (txn.type === "provider_withdrawal") {
+  withdrawals += txn.amount;
+}
+
+    });
+
+    const walletBalance = refunds - withdrawals;
+
+    res.json({
+      walletBalance,
+      totalRefunds: refunds,
+      withdrawals
+    });
+
+  } catch (err) {
+
+    res.status(500).json({
+      message: "Failed to fetch provider wallet"
     });
 
   }

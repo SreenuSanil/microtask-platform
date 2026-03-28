@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 import "./ChatPage.css";
+import { useParams } from "react-router-dom";
 
-
-const ChatPage = ({ connectionId }) => {
+const ChatPage = ({ connectionId: propConnectionId }) => {
+  const params = useParams();
+   const connectionId = propConnectionId || params.connectionId;
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const userId = storedUser?._id || storedUser?.id;
 
@@ -18,11 +20,12 @@ const ChatPage = ({ connectionId }) => {
 const [taskStatus, setTaskStatus] = useState(null);
 const [paymentStatus, setPaymentStatus] = useState(null);
 const [budget, setBudget] = useState(null);
-
+const [taskDate, setTaskDate] = useState("");
   const [recording, setRecording] = useState(false);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const messagesEndRef = useRef(null);
+ const [isWorkerBusy, setIsWorkerBusy] = useState(false);
   const [isProvider, setIsProvider] = useState(false);
  const [popupMessage, setPopupMessage] = useState("");
 
@@ -91,6 +94,7 @@ setTaskId(data.taskId);
 setTaskStatus(data.taskStatus);
 setPaymentStatus(data.paymentStatus);
 setBudget(data.budget);
+setIsWorkerBusy(data.isWorkerBusy || false);
 console.log({
   connectionStatus,
   taskStatus,
@@ -197,11 +201,13 @@ const stopRecording = () => {
 
 const confirmJob = async () => {
 
-  const sure = window.confirm(
-    "Are you sure you want to confirm this job and lock the budget?"
-  );
+  if (isWorkerBusy) {
+    const confirmProceed = window.confirm(
+      "⚠ Worker already has another job on this date.\n\nYou may need to wait.\n\nDo you still want to confirm?"
+    );
 
-  if (!sure) return;
+    if (!confirmProceed) return;
+  }
 
   try {
     const res = await fetch(
@@ -219,7 +225,7 @@ const confirmJob = async () => {
       return;
     }
 
-   window.location.reload();
+    window.location.reload();
 
   } catch (err) {
     console.log("Error confirming job:", err);
@@ -265,7 +271,10 @@ const handleIncreaseBudget = async () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({ newAmount: budget }),
+        body: JSON.stringify({ 
+        newAmount: budget,
+        newDate: taskDate
+        }),
       }
     );
 
@@ -274,10 +283,16 @@ const handleIncreaseBudget = async () => {
       return;
     }
 
-    const resData = await res.json();
-     setBudget(resData.amount);
-     
-      alert("Budget updated successfully");
+const resData = await res.json();
+
+setBudget(resData.amount);
+setTaskDate(resData.taskDate); 
+setIsWorkerBusy(resData.isWorkerBusy);
+
+
+setIsWorkerBusy(resData.isWorkerBusy || false);
+
+alert("Budget & date updated successfully");
 
   } catch (err) {
     console.error("Budget update error:", err);
@@ -285,6 +300,19 @@ const handleIncreaseBudget = async () => {
 };
 
 const handleTaskPayment = async () => {
+
+if (isWorkerBusy) {
+  const confirmPay = window.confirm(
+    "⚠ This worker already has another task on this date.\n\nYou may need to wait until the worker completes that work.\n\nDo you still want to continue with payment?"
+  );
+
+  if (!confirmPay) {
+    // ✅ DO NOTHING (just stop payment)
+    return;
+  }
+
+  }
+
   try {
     const res = await fetch(
       `http://localhost:5000/api/payment/task/create-order/${taskId}`,
@@ -296,16 +324,13 @@ const handleTaskPayment = async () => {
       }
     );
 
-    // 🔥 THIS PART IS CRITICAL
     if (!res.ok) {
       const err = await res.json();
       alert(err.message);
-      return;   // STOP if backend failed
+      return;
     }
 
     const order = await res.json();
-
-    console.log("Order received:", order);
 
     const options = {
       key: "rzp_test_RS7N4gK5yMwA9E",
@@ -316,8 +341,6 @@ const handleTaskPayment = async () => {
       description: "Task Escrow Payment",
 
       handler: async function (response) {
-        console.log("Razorpay response:", response);
-
         await fetch(
           `http://localhost:5000/api/payment/task/verify-payment/${taskId}`,
           {
@@ -330,7 +353,7 @@ const handleTaskPayment = async () => {
           }
         );
 
-        window.location.reload();  // 🔥 VERY IMPORTANT
+        window.location.reload();
       },
     };
 
@@ -399,8 +422,26 @@ className={`chat-message ${
 
 {connectionStatus === "accepted" && isProvider && (
   <div className="confirm-job-box provider-box">
-    <p>Increase budget if needed (cannot reduce)</p>
 
+    {/* ⚠ WARNING */}
+<p
+  style={{
+    color: isWorkerBusy ? "#f59e0b" : "#10b981",
+    fontWeight: "600",
+  }}
+>
+  {isWorkerBusy
+    ? "⚠ Worker is already working on another task for this date"
+    : "✅ Worker is available for this date"}
+</p>
+
+<p style={{ fontSize: "14px", marginBottom: "10px" }}>
+  {isWorkerBusy
+    ? "Worker already has a confirmed job on this date. You can still proceed, but work may be delayed."
+    : "You can proceed to confirm and start the work."}
+</p>
+
+    {/* 💰 BUDGET */}
     <input
       type="number"
       placeholder="Enter new amount"
@@ -408,22 +449,29 @@ className={`chat-message ${
       onChange={(e) => setBudget(e.target.value)}
     />
 
+    {/* 📅 DATE */}
+    <input
+      type="date"
+      value={taskDate}
+      onChange={(e) => setTaskDate(e.target.value)}
+    />
+
     <button onClick={handleIncreaseBudget}>
-      Update Budget
+      Update Budget & Date
     </button>
+
+    {/* ✅ CONFIRM BUTTON (MOVED HERE) */}
+    <div style={{ marginTop: "10px" }}>
+<button 
+  onClick={confirmJob}
+>
+  Confirm Job & Lock Budget
+</button>
+    </div>
+
   </div>
 )}
 
-{/* ===== JOB CONFIRMATION SECTION ===== */}
-
-{connectionStatus === "accepted" && isProvider && (
-  <div className="confirm-job-box provider-box">
-    <p>Lock the budget and confirm this worker?</p>
-    <button onClick={confirmJob}>
-      Confirm Job & Lock Budget
-    </button>
-  </div>
-)}
 
 {connectionStatus === "provider_confirmed" && !isProvider && (
   <div className="confirm-job-box worker-box">
@@ -442,9 +490,9 @@ className={`chat-message ${
  taskId && (
   <div className="confirm-job-box provider-box">
     <p>Escrow Amount: ₹{budget}</p>
-    <button onClick={handleTaskPayment}>
-      Pay & Start Work
-    </button>
+<button onClick={handleTaskPayment}>
+  {isWorkerBusy ? "Pay Anyway (Worker Busy)" : "Pay & Start Work"}
+</button>
   </div>
 )}
 

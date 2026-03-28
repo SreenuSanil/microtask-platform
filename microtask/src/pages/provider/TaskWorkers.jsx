@@ -34,8 +34,17 @@ const TaskWorkers = ({ taskId, goBack }) => {
       );
 
       const data = await res.json();
+
+    if (!res.ok || !data || data.message) {
+      console.error("❌ Invalid task:", data);
+      setTask(null);
+      setLoading(false);
+      return;
+    }
+
       setTask(data);
       loadWorkers(0, 5, true, data);
+
     } catch (err) {
       console.error(err);
     }
@@ -48,7 +57,7 @@ const TaskWorkers = ({ taskId, goBack }) => {
     taskData = task
   ) => {
     try {
-      if (!taskData?.location?.coordinates) {
+  if (!taskData || !taskData.location || !taskData.location.coordinates) {
   console.error("❌ Invalid location data:", taskData);
   setWorkers([]);
   setLoading(false);
@@ -178,6 +187,14 @@ if (selectedWorkerId) {
   );
 }
 
+if (!task) {
+  return (
+    <div style={{ padding: "20px" }}>
+      <p>⚠ Task not found or failed to load</p>
+      <button onClick={goBack}>← Go Back</button>
+    </div>
+  );
+}
 
 return (
   <div className="tw-content">

@@ -47,34 +47,57 @@ router.post("/add", auth, upload.single("image"), async (req, res) => {
       });
     }
 
-    const existing = worker.reviews.find(
-      r => r.task && r.task.toString() === taskId
-    );
+   const existing = worker.reviews.find(
+  r => r.task && r.task.toString() === taskId
+);
 
-    if (existing) {
-      return res.status(400).json({
-        message: "Already reviewed"
-      });
-    }
+if (existing) {
+  return res.status(400).json({
+    message: "Already reviewed"
+  });
+}
 
-    worker.reviews.push({
-      user: req.user.userId,
-      rating,
-      comment,
-      skill: skill.toLowerCase(),
-      task: taskId,
-      image
-    });
+const numericRating = Number(rating);
+const skillName = skill.toLowerCase();
 
-    worker.ratingCount += 1;
+// ✅ PUSH REVIEW FIRST
+worker.reviews.push({
+  user: req.user.userId,
+  rating: numericRating,
+  comment,
+  skill: skillName,
+  task: taskId,
+  image
+});
 
-    worker.overallRating =
-      ((worker.overallRating * (worker.ratingCount - 1)) + rating)
-      / worker.ratingCount;
+// ✅ REBUILD SKILL RATING
+const skillReviews = worker.reviews.filter(
+  r => r.skill === skillName
+);
 
-    const skillName = skill.toLowerCase();
+const total = skillReviews.reduce((sum, r) => sum + Number(r.rating), 0);
+const avg = total / skillReviews.length;
 
-    await worker.save();
+// find or create
+let skillRating = worker.skillRatings.find(
+  s => s.skill === skillName
+);
+
+if (!skillRating) {
+  worker.skillRatings.push({
+    skill: skillName,
+    ratingAverage: avg,
+    ratingCount: skillReviews.length
+  });
+} else {
+  skillRating.ratingAverage = avg;
+  skillRating.ratingCount = skillReviews.length;
+}
+
+// 🔥 FORCE UPDATE
+worker.markModified("skillRatings");
+
+await worker.save();
 
     res.json({ message: "Review added" });
 

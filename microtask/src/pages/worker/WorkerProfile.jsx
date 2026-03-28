@@ -22,7 +22,8 @@ const WorkerProfile = () => {
   const [position, setPosition] = useState([9.9312, 76.2673]);
   const [profileImage, setProfileImage] = useState(null);
   const [preview, setPreview] = useState(null);
-
+const [certificationImages, setCertificationImages] = useState([]);
+const [certPreview, setCertPreview] = useState([]);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
@@ -53,6 +54,20 @@ const [workPreview, setWorkPreview] = useState([]);
       ]);
     }
   };
+
+  const handleCertificationImages = (e) => {
+  const files = Array.from(e.target.files);
+
+  if (files.length + certificationImages.length > 5) {
+    alert("Max 5 certification images allowed");
+    return;
+  }
+
+  setCertificationImages((prev) => [...prev, ...files]);
+
+  const previews = files.map((file) => URL.createObjectURL(file));
+  setCertPreview((prev) => [...prev, ...previews]);
+};
 
   // ⭐ PROFILE COMPLETION
   const calculateCompletion = () => {
@@ -114,6 +129,16 @@ const handleSearch = async (value) => {
   setSuggestions(results.slice(0, 5));
 };
 
+const removeCertImage = (index, type) => {
+  if (type === "new") {
+    setCertificationImages((prev) => prev.filter((_, i) => i !== index));
+    setCertPreview((prev) => prev.filter((_, i) => i !== index));
+  } else {
+    const updated = form.certificationImages.filter((_, i) => i !== index);
+    setForm((prev) => ({ ...prev, certificationImages: updated }));
+  }
+};
+
   const saveProfile = async () => {
     const formData = new FormData();
 
@@ -127,6 +152,13 @@ const allowedFields = [
   "certifications"
 ];
 
+certificationImages.forEach((img) => {
+  formData.append("certificationImages", img);
+});
+formData.append(
+  "existingCertificationImages",
+  JSON.stringify(form.certificationImages || [])
+);
 allowedFields.forEach((key) => {
   formData.append(key, form[key]);
 });
@@ -250,58 +282,46 @@ allowedFields.forEach((key) => {
         <input value={form.skills?.join(", ")} disabled />
       </div>
 
-      {/* PROFESSIONAL */}
-      <div className="profile-card">
-        <h3>Professional Info</h3>
-
-        <textarea
-          name="bio"
-          placeholder="About you"
-          value={form.bio}
-          onChange={handleChange}
-        />
-<input
-  type="number"
-  name="experienceYears"
-  placeholder="Years of Experience"
-  value={form.experienceYears || ""}
-  onChange={handleChange}
-/>
-
-<h4>Past Work Photos (Optional)</h4>
-
-<label className="upload-box">
-  📸 Upload Work Photos
-  <input
-    type="file"
-    multiple
-    accept="image/*"
-    onChange={handleWorkImages}
-    hidden
+{/* ABOUT */}
+<div className="profile-section">
+  <h3>About</h3>
+  <textarea
+    name="bio"
+    placeholder="Write about yourself"
+    value={form.bio}
+    onChange={handleChange}
   />
-</label>
+</div>
 
-<div className="work-preview">
+{/* EXPERIENCE */}
+<div className="profile-section">
+  <h3>Experience</h3>
+  <input
+    type="number"
+    name="experienceYears"
+    placeholder="Years of Experience"
+    value={form.experienceYears || ""}
+    onChange={handleChange}
+  />
+</div>
 
-  {/* OLD IMAGES */}
-  {form.workImages?.map((img, i) => (
-    <div className="img-box" key={`old-${i}`}>
-      <img src={`http://localhost:5000/${img}`} alt="old" />
-      <button onClick={() => removeImage(i, "old")}>✕</button>
-    </div>
-  ))}
+{/* PAST WORK DESCRIPTION */}
+<div className="profile-section">
+  <h3>Past Work Description</h3>
+  <textarea
+    name="pastWorkDescription"
+    placeholder="Describe your past work..."
+    value={form.pastWorkDescription}
+    onChange={handleChange}
+  />
+</div>
 
-  {/* NEW IMAGES */}
-  {workPreview.map((img, i) => (
-    <div className="img-box" key={`new-${i}`}>
-      <img src={img} alt="new" />
-      <button onClick={() => removeImage(i, "new")}>✕</button>
-    </div>
-  ))}
+{/* WORK IMAGES */}
+<div className="profile-section">
+  <h3>Past Work Images</h3>
 
-  {/* ADD MORE CARD */}
-  <label className="add-more">
-    +
+  <label className="upload-box">
+    📸 Upload Work Photos
     <input
       type="file"
       multiple
@@ -311,16 +331,63 @@ allowedFields.forEach((key) => {
     />
   </label>
 
+  <div className="work-preview">
+    {form.workImages?.map((img, i) => (
+      <div className="img-box" key={`old-${i}`}>
+        <img src={`http://localhost:5000/${img}`} alt="work" />
+        <button onClick={() => removeImage(i, "old")}>✕</button>
+      </div>
+    ))}
+
+    {workPreview.map((img, i) => (
+      <div className="img-box" key={`new-${i}`}>
+        <img src={img} alt="work" />
+        <button onClick={() => removeImage(i, "new")}>✕</button>
+      </div>
+    ))}
+  </div>
 </div>
 
-<textarea
-  name="certifications"
-  placeholder="Any certifications, licenses, or proof (optional)"
-  value={form.certifications}
-  onChange={handleChange}
-/>
+{/* CERTIFICATIONS */}
+<div className="profile-section">
+  <h3>Certifications</h3>
 
+  <textarea
+    name="certifications"
+    placeholder="Add your certifications, licenses, etc."
+    value={form.certifications}
+    onChange={handleChange}
+  />
+
+  <label className="upload-box">
+    📄 Upload Certification Images
+    <input
+      type="file"
+      multiple
+      accept="image/*"
+      onChange={handleCertificationImages}
+      hidden
+    />
+  </label>
+
+  <div className="work-preview">
+    {form.certificationImages?.map((img, i) => (
+      <div className="img-box" key={`old-cert-${i}`}>
+        <img src={`http://localhost:5000/${img}`} alt="cert" />
+        <button onClick={() => removeCertImage(i, "old")}>✕</button>
       </div>
+    ))}
+
+    {certPreview.map((img, i) => (
+      <div className="img-box" key={`new-cert-${i}`}>
+        <img src={img} alt="work" />
+        <button onClick={() => removeCertImage(i, "new")}>✕</button>
+      </div>
+    ))}
+  </div>
+</div>
+
+{/* LOCATION */}
 
       {/* LOCATION */}
       <div className="profile-card">

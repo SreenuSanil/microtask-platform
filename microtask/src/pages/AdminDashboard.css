@@ -503,6 +503,28 @@ body {
   background: #fde68a;
   color: #92400e;
 }
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.notif-icon {
+  position: relative;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.notif-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background: red;
+  color: white;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
 
 
 

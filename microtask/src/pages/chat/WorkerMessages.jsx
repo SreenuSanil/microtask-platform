@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 import "./WorkerMessages.css";
 import ChatPage from "./ChatPage";
 
-const WorkerMessages = () => {
+const WorkerMessages = ({ selectedConnectionId }) => {
   const [chats, setChats] = useState([]);
   const [activeTab, setActiveTab] = useState("negotiation");
   const [selectedChat, setSelectedChat] = useState(null);
@@ -12,6 +12,8 @@ const WorkerMessages = () => {
   useEffect(() => {
     fetchChats();
   }, []);
+  
+
 
   useEffect(() => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -33,6 +35,16 @@ const WorkerMessages = () => {
     socketRef.current.disconnect();
   };
 }, []);
+
+useEffect(() => {
+  if (selectedConnectionId && chats.length > 0) {
+    const found = chats.find(c => c._id === selectedConnectionId);
+
+    if (found) {
+      setSelectedChat(found);
+    }
+  }
+}, [selectedConnectionId, chats]);
 
   const fetchChats = async () => {
     try {

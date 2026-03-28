@@ -50,19 +50,25 @@ const WorkerInvitations = ({ setInvitationCount }) => {
     fetchInvitations();
   };
 
-  const handleReject = async (id) => {
-    await fetch(
-      `http://localhost:5000/api/connections/${id}/reject`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
+const handleReject = async (id) => {
+  const res = await fetch(
+    `http://localhost:5000/api/connections/${id}/reject`,
+    {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
 
-    fetchInvitations();
-  };
+  if (res.ok) {
+    // 🔥 REMOVE CARD INSTANTLY
+    setInvitations(prev => prev.filter(i => i._id !== id));
+
+    // OPTIONAL: update count
+    setInvitationCount(prev => prev - 1);
+  }
+};
 
   return (
     <div className="worker-inv-page">

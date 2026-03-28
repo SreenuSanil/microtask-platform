@@ -11,37 +11,42 @@ router.get("/summary", protect, async (req, res) => {
 
   try {
 
-    const commissions = await WalletTransaction.find({
-      type: "commission"
+    const transactions = await WalletTransaction.find();
+
+    let commissionRevenue = 0;
+    let registrationRevenue = 0;
+    let withdrawals = 0;
+
+    transactions.forEach(txn => {
+
+      if (txn.type === "commission") {
+        commissionRevenue += txn.amount;
+      }
+
+      if (txn.type === "registration_fee") {
+        registrationRevenue += txn.amount;
+      }
+
+if (txn.type === "admin_withdrawal") {
+  withdrawals += txn.amount;
+}
+
     });
 
-    const totalRevenue = commissions.reduce(
-      (sum, txn) => sum + txn.amount,
-      0
-    );
-
-    const totalTasks = commissions.length;
-
-    const totalPayments = await WalletTransaction.aggregate([
-      {
-        $match: { type: "escrow_payment" }
-      },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: "$amount" }
-        }
-      }
-    ]);
+    const totalRevenue = commissionRevenue + registrationRevenue;
+    const walletBalance = totalRevenue - withdrawals;
 
     res.json({
       totalRevenue,
-      totalTasks,
-      totalPayments: totalPayments[0]?.total || 0
+      commissionRevenue,
+      registrationRevenue,
+      withdrawals,
+      walletBalance
     });
 
   } catch (err) {
 
+    console.error(err);
     res.status(500).json({
       message: "Failed to fetch revenue summary"
     });
@@ -62,7 +67,9 @@ router.get("/monthly", protect, async (req, res) => {
     const revenue = await WalletTransaction.aggregate([
 
       {
-        $match: { type: "commission" }
+        $match: {
+          type: { $in: ["commission", "registration_fee"] } // ✅ FIX
+        }
       },
 
       {
@@ -102,7 +109,7 @@ router.get("/transactions", protect, async (req, res) => {
   try {
 
     const txns = await WalletTransaction.find({
-      type: "commission"
+     type: { $in: ["commission", "registration_fee", "admin_withdrawal"] }
     })
       .populate("task", "title")
       .populate("user", "name")
@@ -116,6 +123,51 @@ router.get("/transactions", protect, async (req, res) => {
     res.status(500).json({
       message: "Failed to fetch transactions"
     });
+
+  }
+
+});
+router.post("/withdraw", protect, async (req, res) => {
+
+  try {
+
+    const { amount } = req.body;
+
+    const transactions = await WalletTransaction.find();
+
+    let commission = 0;
+    let registration = 0;
+    let withdrawals = 0;
+
+    transactions.forEach(txn => {
+
+      if (txn.type === "commission") commission += txn.amount;
+      if (txn.type === "registration_fee") registration += txn.amount;
+
+if (txn.type === "admin_withdrawal") {
+  withdrawals += txn.amount;
+}
+
+    });
+
+    const balance = commission + registration - withdrawals;
+
+    if (amount > balance) {
+      return res.status(400).json({ message: "Insufficient balance" });
+    }
+
+await WalletTransaction.create({
+  user: req.user.userId, 
+  type: "admin_withdrawal",
+  amount,
+  description: "Admin withdrawal"
+});
+
+    res.json({ message: "Withdraw successful" });
+
+  } catch (err) {
+
+    res.status(500).json({ message: "Withdraw failed" });
 
   }
 

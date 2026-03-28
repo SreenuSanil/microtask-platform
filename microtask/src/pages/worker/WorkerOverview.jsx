@@ -1,23 +1,48 @@
+import { useEffect, useState } from "react";
 import "./WorkerOverview.css";
 
-const WorkerOverview = ({
-  userData,
-  availability,
-  toggleAvailability,
-  taskStats
-}) => {
+const WorkerOverview = ({ availability, toggleAvailability }) => {
 
-const taskSummary = [
-  { label: "Waiting Payment", value: taskStats.waitingPayment },
-  { label: "Ongoing Work", value: taskStats.ongoing },
-  { label: "Pending Approval", value: taskStats.pendingApproval },
-  { label: "Completed", value: taskStats.completed }
-];
+  const token = localStorage.getItem("token");
+
+  const [data, setData] = useState({
+    walletBalance: 0,
+    totalEarnings: 0,
+    completed: 0,
+    ongoing: 0,
+    pendingApproval: 0,
+    waitingPayment: 0,
+    disputes: 0
+  });
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const res = await fetch(
+          "http://localhost:5000/api/tasks/worker-dashboard",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+
+        const result = await res.json();
+
+        if (res.ok) setData(result);
+
+      } catch (err) {
+        console.log("Dashboard fetch failed");
+      }
+    };
+
+    fetchDashboard();
+  }, [token]);
 
   return (
     <div className="overview-container">
 
-      {/* Top Section */}
+      {/* ================= TOP ================= */}
       <div className="overview-top">
 
         {/* Availability */}
@@ -38,51 +63,61 @@ const taskSummary = [
           </p>
         </div>
 
-        {/* Stats Cards */}
+        {/* Stats */}
         <div className="overview-stats-grid">
 
           <div className="overview-stat-card">
             <h4>Wallet Balance</h4>
-            <p>₹{userData.walletBalance || 0}</p>
+            <p>₹{Number(data.walletBalance).toFixed(2)}</p>
           </div>
 
           <div className="overview-stat-card">
             <h4>Total Earnings</h4>
-            <p>₹{userData.totalEarnings}</p>
-          </div>
-
-          <div className="overview-stat-card">
-            <h4>Completed Tasks</h4>
-            <p>{userData.completedTasks}</p>
-          </div>
-
-          <div className="overview-stat-card">
-            <h4>Ongoing Tasks</h4>
-            <p>{userData.ongoingTasks || 0}</p>
-          </div>
-
-          <div className="overview-stat-card">
-            <h4>Rating</h4>
-            <p>{userData.rating} ⭐</p>
+            <p>₹{Number(data.totalEarnings).toFixed(2)}</p>
           </div>
 
         </div>
 
       </div>
 
-      {/* Task Summary */}
+      {/* ================= TASK STATUS ================= */}
       <div className="task-summary">
 
-        <h3>Task Status Summary</h3>
+        <h3>Task Status Overview</h3>
 
-        <div className="summary-grid">
-          {taskSummary.map((t, i) => (
-            <div key={i} className="overview-summary-card">
-              <span className="summary-value">{t.value}</span>
-              <span className="summary-label">{t.label}</span>
-            </div>
-          ))}
-        </div>
+<div className="summary-grid">
+
+  <div className="overview-summary-card waiting">
+    <span className="summary-icon">💰</span>
+    <span className="summary-value">{data.waitingPayment}</span>
+    <span className="summary-label">Waiting Payment</span>
+  </div>
+
+  <div className="overview-summary-card ongoing">
+    <span className="summary-icon">⚙️</span>
+    <span className="summary-value">{data.ongoing}</span>
+    <span className="summary-label">Ongoing Work</span>
+  </div>
+
+  <div className="overview-summary-card pending">
+    <span className="summary-icon">⏳</span>
+    <span className="summary-value">{data.pendingApproval}</span>
+    <span className="summary-label">Pending Approval</span>
+  </div>
+
+  <div className="overview-summary-card completed">
+    <span className="summary-icon">✅</span>
+    <span className="summary-value">{data.completed}</span>
+    <span className="summary-label">Completed</span>
+  </div>
+
+  <div className="overview-summary-card dispute">
+    <span className="summary-icon">⚠️</span>
+    <span className="summary-value">{data.disputes}</span>
+    <span className="summary-label">Disputes</span>
+  </div>
+
+</div>
 
       </div>
 

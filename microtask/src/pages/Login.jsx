@@ -77,8 +77,16 @@ localStorage.setItem("token", data.token);
 localStorage.setItem("user", JSON.stringify(data.user));
 
 // ROLE + APPROVAL BASED REDIRECT
+// 🔥 WORKER FLOW WITH PAYMENT CHECK
 if (data.user.role === "worker") {
 
+  // 🚫 NOT PAID → GO TO PAYMENT
+  if (!data.user.payment || data.user.payment.status !== "paid") {
+    navigate("/payment");
+    return;
+  }
+
+  // ✅ PAID → CONTINUE NORMAL FLOW
   if (data.user.approvalStatus === "approved") {
     navigate("/worker-dashboard");
 
@@ -89,7 +97,6 @@ if (data.user.role === "worker") {
     alert("Your profile was rejected. Please contact admin.");
     return;
   }
-
 }
  
 else if (data.user.role === "provider") {

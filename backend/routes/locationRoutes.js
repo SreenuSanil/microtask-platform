@@ -40,4 +40,36 @@ router.get("/search", async (req, res) => {
   }
 });
 
+// 📍 REVERSE GEOCODING (ADD THIS)
+router.get("/reverse", async (req, res) => {
+  try {
+    const { lat, lon } = req.query;
+
+    if (!lat || !lon) {
+      return res.status(400).json({ error: "Missing lat/lon" });
+    }
+
+    const response = await axios.get(
+      "https://nominatim.openstreetmap.org/reverse",
+      {
+        params: {
+          lat,
+          lon,
+          format: "json",
+          addressdetails: 1
+        },
+        headers: {
+          "User-Agent": "tasknest-app"
+        }
+      }
+    );
+
+    res.json(response.data);
+
+  } catch (error) {
+    console.error("Reverse error:", error.message);
+    res.status(500).json({ error: "Reverse location failed" });
+  }
+});
+
 module.exports = router;

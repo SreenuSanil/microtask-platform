@@ -5,7 +5,7 @@ const Message = require("../models/Message");
 const Connection = require("../models/Connection");
 const multer = require("multer");
 const path = require("path");
-
+const Task = require("../models/Task");
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/chat/");
@@ -67,17 +67,48 @@ if (result.modifiedCount > 0) {
     .populate("sender", "_id name")
       .sort({ createdAt: 1 })   
      
-      
+let isWorkerBusy = false;
+
+try {
+  if (
+    connection.worker &&
+    connection.task &&
+    connection.task.taskDate
+  ) {
+    const sameDate = new Date(connection.task.taskDate).toDateString();
+
+const activeTasks = await Task.find({
+  assignedWorker: connection.worker,
+  status: { $in: ["assigned", "in_progress", "pending_verification"] }
+});
+
+for (let task of activeTasks) {
+  if (!task.taskDate) continue;
+
+  const activeDate = new Date(task.taskDate).toDateString();
+
+  if (activeDate === sameDate) {
+    isWorkerBusy = true;
+    break;
+  }
+}
+  }
+} catch (err) {
+  console.log("Worker busy check error:", err.message);
+}
+
 res.json({
   messages,
   status: connection.status,
   budgetConfirmed: connection.budgetConfirmed,
-   isProvider: connection.provider.toString() === req.user.userId.toString(),
+  isProvider: connection.provider.toString() === req.user.userId.toString(),
 
   taskId: connection.task._id,
   taskStatus: connection.task.status,
   paymentStatus: connection.task.paymentStatus,
-  budget: connection.finalBudget || connection.task.budget
+  budget: connection.finalBudget || connection.task.budget,
+
+  isWorkerBusy 
 });
 
 
