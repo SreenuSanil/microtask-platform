@@ -37,8 +37,6 @@ router.post("/create-order", async (req, res) => {
 // ================= VERIFY PAYMENT (REGISTRATION) =================
 router.post("/verify-payment", auth, async (req, res) => {
   try {
-    console.log("BODY RECEIVED:", req.body);
-
     const {
       razorpay_order_id,
       razorpay_payment_id,

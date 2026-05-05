@@ -126,14 +126,18 @@ router.post(
   upload.single("image"),
   async (req, res) => {
     try {
-      const connection = await Connection.findById(
-        req.params.connectionId
-      );
+const connection = await Connection.findById(
+  req.params.connectionId
+).populate("task");
 
       if (!connection) {
         return res.status(404).json({ message: "Connection not found" });
       }
-
+if (connection.task.status === "completed") {
+  return res.status(403).json({
+    message: "Chat is read-only",
+  });
+}
       const newMessage = await Message.create({
         connection: req.params.connectionId,
         sender: req.user.userId,
@@ -159,12 +163,26 @@ router.post(
   upload.single("voice"),
   async (req, res) => {
     try {
+      const connection = await Connection.findById(
+        req.params.connectionId
+      ).populate("task");
+
+      if (!connection) {
+        return res.status(404).json({ message: "Connection not found" });
+      }
+
+      // 🔒 BLOCK AFTER COMPLETION
+      if (connection.task.status === "completed") {
+        return res.status(403).json({
+          message: "Chat is read-only",
+        });
+      }
+
       const newMessage = await Message.create({
         connection: req.params.connectionId,
         sender: req.user.userId,
         type: "voice",
         voiceUrl: req.file.path.replace(/\\/g, "/"),
-
       });
 
       res.json(newMessage);

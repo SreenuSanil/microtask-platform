@@ -95,17 +95,18 @@ const AdminRevenue = () => {
 };
 
   // ✅ LABEL FIX
-  const getTitle = (txn) => {
-    if (txn.type === "registration_fee") {
-      return "Worker Registration";
-    }
-    return txn.task?.title || "-";
-  };
+const getTitle = (txn) => {
+  if (txn.type === "registration_fee") return "Worker Registration";
+  if (txn.type === "commission") return "Commission";
+  if (txn.type === "withdrawal" || txn.type === "admin_withdrawal") return "Withdrawal"; // ✅ ADD THIS
+
+  return txn.task?.title || "-";
+};
 
   const getType = (txn) => {
     if (txn.type === "registration_fee") return "Registration Fee";
     if (txn.type === "commission") return "Commission";
-    if (txn.type === "withdrawal") return "Withdrawal";
+    if (txn.type === "withdrawal" || txn.type === "admin_withdrawal") return "Withdrawal";
     return txn.type;
   };
 
@@ -197,16 +198,21 @@ const AdminRevenue = () => {
 
             <div>{getTitle(txn)}</div>
 
-            <div>{txn.user?.name || "-"}</div>
+<div>
+  {txn.type === "withdrawal" || txn.type === "admin_withdrawal" ? "-" : txn.user?.name || "-"}
+</div>
 
-            <div>{txn.relatedUser?.name || "-"}</div>
-
+<div>
+  {txn.type === "withdrawal" || txn.type === "admin_withdrawal" ? "-" : txn.relatedUser?.name || "-"}
+</div>
             <div className={
-              txn.type === "withdrawal"
+              txn.type === "withdrawal" || txn.type === "admin_withdrawal"
                 ? "amount debit"
                 : "amount credit"
             }>
-              {txn.type === "withdrawal" ? "-" : "+"}₹{txn.amount}
+             {txn.type === "withdrawal" || txn.type === "admin_withdrawal"
+  ? `-₹${txn.amount}`
+  : `+₹${txn.amount}`}
             </div>
 
             <div>

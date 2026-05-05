@@ -1,11 +1,13 @@
 .chat-container {
-  height: 100vh;
+  height: 75vh;
   display: flex;
   flex-direction: column;
-  background: #ece5dd;
+  background: #f8fafc;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
-
-
 
 /* MESSAGES AREA */
 .chat-messages {
@@ -16,12 +18,12 @@
   flex-direction: column;
   gap: 12px;
   scroll-behavior: smooth;
+  min-height: 0; /* critical — prevents flex child from overflowing */
 }
 
 /* MESSAGE BUBBLE */
 .chat-message {
   max-width: 70%;
-  padding: 10px 14px;
   border-radius: 12px;
   font-size: 14px;
   position: relative;
@@ -42,6 +44,7 @@
   border-radius: 12px;
   border: 1px solid #eee;
 }
+
 .chat-message.sent {
   align-self: flex-end;
 }
@@ -82,6 +85,72 @@
   opacity: 0.6;
 }
 
+/* ===== CONFIRM JOB BOX — COMPACT BOTTOM PANEL ===== */
+.confirm-job-box {
+  /* Never grow beyond a fixed height — scrolls internally if needed */
+  max-height: 200px;
+  overflow-y: auto;
+  flex-shrink: 0; /* don't let it squish, but it won't push messages away */
+
+  padding: 10px 14px;
+  margin: 0;
+  border-radius: 0;
+  text-align: center;
+  font-size: 13px;
+}
+
+.confirm-job-box p {
+  margin: 4px 0;
+  line-height: 1.4;
+}
+
+.confirm-job-box input[type="number"],
+.confirm-job-box input[type="date"] {
+  width: calc(50% - 8px);
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  margin: 4px 4px;
+  box-sizing: border-box;
+}
+
+.confirm-job-box button {
+  margin: 6px 4px 0;
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #10b981;
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.confirm-job-box button:hover {
+  background: #059669;
+}
+
+/* PROVIDER BOX — orange tint */
+.provider-box {
+  background: #fff7ed;
+  border-top: 1px solid #fdba74;
+}
+
+/* WORKER BOX — green tint */
+.worker-box {
+  background: #ecfdf5;
+  border-top: 1px solid #34d399;
+}
+
+/* Worker busy / available status line */
+.confirm-job-box .status-line {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
 /* INPUT AREA */
 .chat-input-area {
   display: flex;
@@ -89,6 +158,8 @@
   padding: 10px;
   background: #f0f0f0;
   gap: 8px;
+  flex-shrink: 0;
+  border-top: 1px solid #ddd;
 }
 
 /* TEXT INPUT */
@@ -111,6 +182,7 @@
   cursor: pointer;
   font-size: 16px;
   transition: 0.2s ease;
+  background: #ffffff;
 }
 
 /* SEND BUTTON */
@@ -123,11 +195,7 @@
   background: #0e6f63;
 }
 
-/* MIC BUTTON */
-.voice-btn {
-  background: #ffffff;
-}
-
+/* STOP RECORDING */
 .stop-btn {
   background: red;
   color: white;
@@ -135,7 +203,6 @@
 
 /* IMAGE BUTTON */
 .image-btn {
-  background: #ffffff;
   padding: 6px 10px;
   font-size: 18px;
 }
@@ -143,6 +210,17 @@
 /* HIDDEN FILE INPUT */
 .chat-input-area input[type="file"] {
   display: none;
+}
+
+/* READONLY CLOSED MSG */
+.readonly-msg {
+  text-align: center;
+  padding: 10px;
+  font-size: 13px;
+  color: #888;
+  background: #f0f0f0;
+  border-top: 1px solid #ddd;
+  flex-shrink: 0;
 }
 
 /* SCROLLBAR CLEAN LOOK */
@@ -155,47 +233,15 @@
   border-radius: 10px;
 }
 
-/* LOADING STATE */
-.chat-loading {
-  padding: 20px;
-  text-align: center;
+.confirm-job-box::-webkit-scrollbar {
+  width: 4px;
 }
 
-.confirm-job-box {
-  padding: 12px;
-  background: #fff3cd;
-  border-top: 1px solid #ddd;
-  text-align: center;
+.confirm-job-box::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
 }
 
-.confirm-job-box button {
-  background: #128c7e;
-  color: white;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: 0.2s;
-}
-
-.confirm-job-box button:hover {
-  background: #0e6f63;
-}
-.chat-container {
-  height: 75vh;   /* not full screen */
-  display: flex;
-  flex-direction: column;
-  background: #f8fafc;
-  border-radius: 12px;
-  overflow: hidden;
-}
-.chat-container {
-  margin-top: 15px;
-}
-.chat-container {
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-}
 /* FULL SCREEN IMAGE PREVIEW */
 .image-preview-overlay {
   position: fixed;
@@ -203,7 +249,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.85);
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -216,37 +262,8 @@
   max-height: 90%;
   border-radius: 10px;
 }
-.confirm-job-box {
-  padding: 15px;
-  margin: 10px;
-  border-radius: 12px;
-  text-align: center;
-  font-weight: 500;
-}
 
-.provider-box {
-  background: #fff7ed;
-  border: 1px solid #fdba74;
-}
-
-.worker-box {
-  background: #ecfdf5;
-  border: 1px solid #34d399;
-}
-
-.confirm-job-box button {
-  margin-top: 10px;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  background: #10b981;
-  color: white;
-  cursor: pointer;
-}
-
-.confirm-job-box button:hover {
-  background: #059669;
-}
+/* POPUP NOTIFICATION */
 .popup-notification {
   position: fixed;
   top: 20px;
@@ -257,7 +274,7 @@
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 9999;
   animation: slideIn 0.3s ease;
 }

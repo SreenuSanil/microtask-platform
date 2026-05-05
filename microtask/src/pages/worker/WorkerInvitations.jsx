@@ -76,8 +76,9 @@ const handleReject = async (id) => {
 
       {invitations.length === 0 ? (
         <p>No invitations</p>
-      ) : (
-        invitations.map((inv) => {
+) : (
+  <div className="inv-grid">
+    {invitations.map((inv) => {
           const task = inv.task;
           const provider = inv.provider;
 
@@ -171,8 +172,9 @@ const handleReject = async (id) => {
               )}
             </div>
           );
-        })
-      )}
+              })}
+  </div>
+)}
 
       {/* Image Preview Modal */}
       {previewImage && (
@@ -182,9 +184,11 @@ const handleReject = async (id) => {
         >
           <img src={previewImage} alt="preview" />
         </div>
-      )}
+      )
+      }
     </div>
   );
+  
 };
 
 export default WorkerInvitations;

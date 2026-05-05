@@ -101,6 +101,7 @@ const ChangeMapView = ({ center }) => {
   return null;
 };
 
+
 const LocationPicker = ({ setForm, markerPosition, setMarkerPosition }) => {
   useMapEvents({
     async click(e) {
@@ -115,9 +116,9 @@ const LocationPicker = ({ setForm, markerPosition, setMarkerPosition }) => {
       }));
 
       try {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-        );
+const res = await fetch(
+  `http://localhost:5000/api/location/reverse?lat=${lat}&lon=${lng}`
+);
         const data = await res.json();
 
         if (data.display_name) {
@@ -161,8 +162,6 @@ instructions: "",
   budget: "",
   urgency: "normal",
 });
-
-
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [markerPosition, setMarkerPosition] = useState(null);
@@ -174,6 +173,23 @@ instructions: "",
   const editId = queryParams.get("edit");
 
 const skillRef = useRef(null);
+
+const selectLocation = (place) => {
+  const lat = parseFloat(place.lat);
+  const lon = parseFloat(place.lon);
+
+  setMarkerPosition([lat, lon]);
+
+  setForm(prev => ({
+    ...prev,
+    addressSearch: place.display_name,
+    latitude: lat,
+    longitude: lon,
+  }));
+
+  setSuggestions([]);
+};
+
 
 useEffect(() => {
   if (editId) {
@@ -241,44 +257,34 @@ useEffect(() => {
 }, []);
 
 
-  /* =========================
-     LOCATION SEARCH
-  ========================= */
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-  const searchLocation = async (query) => {
-    if (!query) {
+useEffect(() => {
+  const delay = setTimeout(async () => {
+
+    if (searchQuery.length < 3) {
       setSuggestions([]);
       return;
     }
 
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${query}&countrycodes=in&viewbox=74.85,12.79,77.42,8.17&bounded=1`
-    );
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/location/search?q=${searchQuery}`
+      );
 
-    const data = await res.json();
-    setSuggestions(data);
-  };
+      const data = await res.json();
+      setSuggestions(data);
 
-  const selectLocation = (place) => {
-    const lat = parseFloat(place.lat);
-    const lon = parseFloat(place.lon);
+    } catch (err) {
+      console.log("Search error");
+    }
 
-    setMarkerPosition([lat, lon]);
+  }, 500);
 
-    setForm(prev => ({
-      ...prev,
-      addressSearch: place.display_name,
-      latitude: lat,
-      longitude: lon,
-    }));
-
-    setSearchQuery(place.display_name);
-    setSuggestions([]);
-  };
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  return () => clearTimeout(delay);
+}, [searchQuery]);
 
   /* =========================
      SUBMIT
@@ -503,10 +509,7 @@ const res = await fetch(url, {
               type="text"
               value={searchQuery}
               placeholder="Search city, area, landmark..."
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                searchLocation(e.target.value);
-              }}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
 
             {suggestions.length > 0 && (
@@ -614,6 +617,7 @@ const res = await fetch(url, {
                name="taskDate"
                value={form.taskDate}
                 onChange={handleChange} 
+                min={new Date().toISOString().split("T")[0]}
                 required
                  />
             </div>

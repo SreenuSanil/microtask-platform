@@ -118,3 +118,12 @@
 .withdraw-btn:hover {
   background-color: #166c2c;
 }
+.amount.credit {
+  color: green;
+  font-weight: 600;
+}
+
+.amount.debit {
+  color: red;   /* 🔥 THIS IS IMPORTANT */
+  font-weight: 600;
+}

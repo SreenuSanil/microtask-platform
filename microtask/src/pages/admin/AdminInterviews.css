@@ -196,3 +196,12 @@
   font-size: 14px;
   color: #475569;
 }
+.schedule-box {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+}

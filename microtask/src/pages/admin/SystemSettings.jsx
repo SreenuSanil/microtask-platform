@@ -93,15 +93,6 @@ const SystemSettings = () => {
           />
         </div>
 
-        <div className="input-group">
-          <label>Minimum Withdrawal (₹)</label>
-          <input
-            type="number"
-            name="minWithdrawal"
-            value={settings.minWithdrawal}
-            onChange={handleChange}
-          />
-        </div>
       </div>
 
       {/* CONTROLS */}

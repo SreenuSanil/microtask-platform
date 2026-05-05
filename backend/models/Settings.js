@@ -14,7 +14,9 @@ const settingsSchema = new mongoose.Schema({
   maintenanceMessage: String,
 
   commissionPercent: Number,
-  minWithdrawal: Number
+  minWithdrawal: Number,
+  logo: String
 });
+
 
 module.exports = mongoose.model("Settings", settingsSchema);

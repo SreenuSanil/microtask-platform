@@ -103,7 +103,48 @@ const handleVerify = async (autoOtp) => {
 
         localStorage.removeItem("verifyEmail");
 
-        setTimeout(() => navigate("/payment"), 1500);
+        setTimeout(async () => {
+
+  try {
+    const password = localStorage.getItem("tempPassword");
+
+    // 🔐 LOGIN AFTER VERIFY
+    const loginRes = await fetch("http://localhost:5000/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const loginData = await loginRes.json();
+
+    if (!loginRes.ok) {
+      navigate("/login");
+      return;
+    }
+
+    // ✅ SAVE LOGIN
+    localStorage.setItem("token", loginData.token);
+    localStorage.setItem("user", JSON.stringify(loginData.user));
+
+    // 🧹 CLEAN TEMP DATA
+    localStorage.removeItem("verifyEmail");
+    localStorage.removeItem("tempPassword");
+
+    // 🚀 REDIRECT
+    if (loginData.user.role === "worker") {
+      navigate("/payment");   // 🔥 DIRECT PAYMENT
+    } else {
+      navigate("/provider-dashboard");
+    }
+
+  } catch (err) {
+    navigate("/login");
+  }
+
+}, 1500);
+
       } else {
 setMessage(data.error || "Verification failed");
 setMessageType("error");

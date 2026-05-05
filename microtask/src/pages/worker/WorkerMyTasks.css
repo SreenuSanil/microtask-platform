@@ -1,194 +1,486 @@
+/* ==============================
+   RESET
+============================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ==============================
+   PAGE WRAPPER
+============================== */
 .workermy-page {
-  background: #f3f4f6;
-  min-height: 100vh;
-  padding-bottom: 40px;
-}
-
-/* HEADER */
-.workermy-header {
-  background: white;
-  padding: 16px 28px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.workermy-header-left {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: #f8fafc;
 }
 
-.workermy-back-btn {
-  background: transparent;
-  border: none;
-  font-size: 22px;
-  cursor: pointer;
-}
-
-.workermy-logo {
-  height: 34px;
-}
-
+/* ==============================
+   TITLE
+============================== */
 .workermy-title {
-  margin: 25px 30px;
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.3px;
+  padding: 16px 28px 0 28px;   /* tight — same as provider */
+  flex-shrink: 0;
 }
 
-/* TABS */
+/* ==============================
+   TABS
+============================== */
 .workermy-tabs {
-  margin: 0 30px 25px;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 0 28px 12px 28px;
+  scrollbar-width: none;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
 }
+.workermy-tabs::-webkit-scrollbar { display: none; }
 
 .workermy-tabs button {
-  padding: 8px 18px;
-  margin-right: 10px;
-  border: none;
-  background: #e5e7eb;
-  border-radius: 6px;
+  flex: 0 0 auto;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  font-size: 12.5px;
+  font-weight: 500;
   cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+  margin-right: 0;
 }
-
+.workermy-tabs button:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
 .workermy-tabs button.active {
-  background: #2563eb;
-  color: white;
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.35);
 }
 
-/* GRID */
+/* ==============================
+   SCROLLABLE GRID AREA
+============================== */
 .workermy-grid {
-  padding: 0 30px;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  padding: 20px 28px 32px 28px;
+  overflow-y: auto;
+  flex: 1;
+  align-items: start;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+.workermy-grid::-webkit-scrollbar { width: 4px; }
+.workermy-grid::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+/* ==============================
+   CARD
+============================== */
+@keyframes fadeUp {
+  from { transform: translateY(14px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
 
 .workermy-card {
-  background: white;
-  padding: 20px;
+  position: relative;
+  background: #fff;
   border-radius: 14px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  padding: 16px;
+  box-shadow:
+    0 1px 3px rgba(0,0,0,0.07),
+    0 4px 14px rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.04);
+  transition: box-shadow 0.22s ease, transform 0.22s ease;
+  animation: fadeUp 0.38s ease both;
+  opacity: 0;
+}
+.workermy-card:hover {
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.08),
+    0 8px 28px rgba(0,0,0,0.1);
+  transform: translateY(-3px);
 }
 
+/* stagger */
+.workermy-card:nth-child(1) { animation-delay: 0.03s; }
+.workermy-card:nth-child(2) { animation-delay: 0.07s; }
+.workermy-card:nth-child(3) { animation-delay: 0.11s; }
+.workermy-card:nth-child(4) { animation-delay: 0.15s; }
+.workermy-card:nth-child(5) { animation-delay: 0.19s; }
+.workermy-card:nth-child(6) { animation-delay: 0.23s; }
+
+/* ==============================
+   PROVIDER SECTION
+   — badge LEFT | avatar + name RIGHT
+============================== */
 .provider-section {
   display: flex;
   align-items: center;
   gap: 10px;
   margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
 }
 
+/* avatar — grows nicely */
 .provider-section img {
-  width: 40px;
-  height: 40px;
+  width: 44px;          /* bigger as requested */
+  height: 44px;
   border-radius: 50%;
+  object-fit: cover;
+  border: 2.5px solid #e0f2fe;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px #f0f9ff;
+  transition: transform 0.2s;
+}
+.provider-section img:hover { transform: scale(1.06); }
+
+/* provider name */
+.provider-section span:last-child {
+  font-weight: 700;
+  font-size: 13px;
+  color: #0f172a;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.empty-text {
-  text-align: center;
-  margin-top: 40px;
-  color: #6b7280;
+/* ==============================
+   STATUS BADGE  (.task-status)
+   — sits naturally in the flex row
+     on the LEFT before the avatar
+============================== */
+@keyframes pop {
+  0%   { transform: scale(0.6); opacity: 0; }
+  70%  { transform: scale(1.1); }
+  100% { transform: scale(1);   opacity: 1; }
 }
 
-@media (max-width: 900px) {
-  .workermy-grid {
-    grid-template-columns: 1fr;
-  }
-}
-.complete-btn {
-  margin-top: 10px;
-  width: 100%;
-  padding: 10px;
-  background: #16a34a;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.complete-btn:hover {
-  background: #15803d;
-}
 .task-status {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #fff;
+  animation: pop 0.3s ease forwards;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.task-status.assigned              { background: #3b82f6; }
+.task-status.in_progress           { background: #f59e0b; }
+.task-status.pending_verification  { background: #0ea5e9; }
+.task-status.completed             { background: #8b5cf6; }
+.task-status.cancelled             { background: #ef4444; }
+.task-status.dispute               { background: #dc2626; }
+
+/* ==============================
+   CARD TITLE & DESC
+============================== */
+.workermy-card h3 {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+}
+.workermy-card > p {
+  font-size: 12.5px;
+  color: #64748b;
+  margin: 0 0 10px 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ==============================
+   TASK DETAILS BOX
+============================== */
+.task-details {
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 8px;
+  padding: 9px 11px;
+  margin-bottom: 10px;
+}
+.task-details p {
+  margin: 3px 0;
   font-size: 12px;
-  margin-top: 6px;
+  color: #475569;
+  line-height: 1.5;
+}
+.task-details p strong {
+  color: #0f172a;
   font-weight: 600;
 }
-
-.task-status.in_progress {
-  background: #dbeafe;
-  color: #2563eb;
-}
-
-.task-status.pending_verification {
-  background: #fef3c7;
-  color: #d97706;
-}
-
-.task-status.completed {
-  background: #dcfce7;
-  color: #15803d;
-}
 .task-budget {
-  font-size: 18px;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  color: #059669 !important;
+  margin: 4px 0 !important;
+}
+
+/* ==============================
+   TASK IMAGES (small thumbnails)
+============================== */
+.task-images {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.task-images img {
+  width: 68px;
+  height: 68px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  cursor: zoom-in;
+  transition: transform 0.2s, opacity 0.2s;
+}
+.task-images img:hover { transform: scale(1.07); opacity: 0.88; }
+
+/* ==============================
+   STATUS / INFO BOXES
+============================== */
+.dispute-box {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  padding: 9px 11px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: #92400e;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.cancel-box {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  padding: 9px 11px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.cancel-title {
+  color: #be123c;
   font-weight: 700;
-  color: #16a34a;
+  font-size: 12.5px;
+  margin-bottom: 3px;
+  display: block;
 }
-.task-actions {
-  margin-top: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.verification-msg {
-  font-size: 13px;
-  color: #d97706;
-  font-weight: 500;
-}
-.workermy-card {
-  background: white;
-  border-radius: 14px;
-  padding: 18px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
-  transition: transform 0.2s ease;
+.cancel-box p {
+  font-size: 12px;
+  color: #64748b;
+  margin: 2px 0;
 }
 
-.workermy-card:hover {
-  transform: translateY(-4px);
-}
-
-.provider-section {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.provider-section img {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-}
-.task-proof {
-  margin-top: 10px;
-}
 .cancel-msg {
-  background: #ffecec;
-  color: #d8000c;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 6px;
-  font-weight: 500;
-}
-.cancel-box{
-  background:#ffe9e9;
-  border:1px solid #ffb3b3;
-  padding:10px;
-  border-radius:6px;
-  margin-top:10px;
+  background: #fff1f2;
+  color: #be123c;
+  padding: 9px 11px;
+  margin-top: 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 12.5px;
 }
 
-.cancel-title{
-  color:#d8000c;
-  font-weight:600;
+.reject-box {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  padding: 9px 11px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.reject-box p {
+  font-size: 12px;
+  color: #64748b;
+  margin: 2px 0;
+}
+.reject-box p[style] {
+  color: #be123c !important;
+  font-weight: 700;
+  font-size: 12.5px;
+  margin-bottom: 3px;
+}
+
+/* ==============================
+   FILE INPUT
+============================== */
+.workermy-card input[type="file"] {
+  display: block;
+  width: 100%;
+  margin: 10px 0 6px 0;
+  font-size: 12px;
+  color: #475569;
+  background: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: border-color 0.17s, background 0.17s;
+}
+.workermy-card input[type="file"]:hover {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+}
+
+/* ==============================
+   TASK ACTIONS
+============================== */
+.task-actions {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+/* ==============================
+   BUTTONS
+============================== */
+.cancel-btn {
+  background: #f59e0b;
+  color: #fff;
+  border: none;
+  width: 100%;
+  height: 38px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12.5px;
+  transition: background 0.17s, box-shadow 0.17s, transform 0.15s;
+  margin-top: 8px;
+  display: block;
+}
+.cancel-btn:hover {
+  background: #d97706;
+  box-shadow: 0 3px 10px rgba(245,158,11,0.35);
+}
+.cancel-btn:active { transform: scale(0.97); }
+
+.complete-btn {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  border: none;
+  width: 100%;
+  height: 42px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  transition: all 0.17s ease;
+  box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+  margin-top: 4px;
+}
+.complete-btn:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  box-shadow: 0 4px 14px rgba(16,185,129,0.4);
+  transform: translateY(-1px);
+}
+.complete-btn:active { transform: scale(0.97); }
+
+.dispute-btn {
+  background: #f59e0b;
+  color: #fff;
+  border: none;
+  width: 100%;
+  height: 38px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12.5px;
+  transition: background 0.17s, box-shadow 0.17s, transform 0.15s;
+  margin-top: 8px;
+  display: block;
+}
+.dispute-btn:hover {
+  background: #d97706;
+  box-shadow: 0 3px 10px rgba(245,158,11,0.35);
+}
+.dispute-btn:active { transform: scale(0.97); }
+
+/* ==============================
+   VERIFICATION MESSAGE
+============================== */
+.verification-msg {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 10px 14px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* ==============================
+   PROOF BOX
+============================== */
+.task-proof { margin-top: 10px; }
+.task-proof img {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+/* ==============================
+   EMPTY STATE
+============================== */
+.empty-text {
+  color: #94a3b8;
+  font-size: 14px;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+/* ==============================
+   RESPONSIVE — 2 cols tablet
+============================== */
+@media (max-width: 1100px) {
+  .workermy-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 16px 20px 28px 20px;
+  }
+  .workermy-title { padding: 14px 20px 0 20px; }
+  .workermy-tabs  { padding: 0 20px 12px 20px; }
+}
+
+/* ==============================
+   RESPONSIVE — 1 col mobile
+============================== */
+@media (max-width: 680px) {
+  .workermy-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 14px 14px 24px 14px;
+  }
+  .workermy-title { padding: 12px 14px 0 14px; font-size: 18px; }
+  .workermy-tabs  { padding: 0 14px 12px 14px; }
 }

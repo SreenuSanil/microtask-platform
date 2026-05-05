@@ -7,6 +7,7 @@ const WorkerMyTasks = () => {
   const [tasks, setTasks] = useState([]);
   const [activeTab, setActiveTab] = useState("waiting");
   const [completionImages, setCompletionImages] = useState({});
+  const [previewImage, setPreviewImage] = useState(null)
   useEffect(() => {
     fetchTasks();
   }, []);
@@ -326,6 +327,7 @@ return (
           key={i}
           src={`http://localhost:5000/${img}`}
           alt="task"
+          onClick={() => setPreviewImage(`http://localhost:5000/${img}`)}
         />
       ))}
     </div>

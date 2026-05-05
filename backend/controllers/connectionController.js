@@ -496,6 +496,12 @@ for (const conn of otherConnections) {
 exports.updateBudget = async (req, res) => {
   try {
     const { newAmount, newDate } = req.body;
+    
+    if (newDate && new Date(newDate) < new Date().setHours(0,0,0,0)) {
+  return res.status(400).json({
+    message: "Past date not allowed"
+  });
+}
 
     const connection = await Connection.findById(req.params.id)
       .populate("task");

@@ -9,7 +9,7 @@ const Settings = require("../models/Settings");
 const WalletTransaction = require("../models/WalletTransaction");
 const Notification = require("../models/Notification");
 const sendEmail = require("../utils/sendEmail");
-
+const Connection = require("../models/Connection");
 const {
   workerCancelledTaskTemplate,
   providerCancelledTaskTemplate,
@@ -57,6 +57,11 @@ router.post("/", auth, upload.array("images", 3), async (req, res) => {
       instructions,
 
     } = req.body;
+
+   
+if (new Date(taskDate) < new Date().setHours(0,0,0,0)) {
+  return res.status(400).json({ message: "Past date not allowed" });
+}
 
     const imagePaths = req.files
   ? req.files.map((file) => file.path)
@@ -271,6 +276,11 @@ router.put("/:id", auth, upload.array("images", 3), async (req, res) => {
       landmark,
       instructions,
     } = req.body;
+
+  
+if (new Date(taskDate) < new Date().setHours(0,0,0,0)) {
+  return res.status(400).json({ message: "Past date not allowed" });
+}
 
     // Update fields
     task.title = title;
@@ -514,7 +524,11 @@ if (isProvider && worker) {
     await task.save();
 
     // optional: delete chat
-    await Message.deleteMany({ task: task._id });
+  const connections = await Connection.find({ task: task._id });
+
+for (let conn of connections) {
+  await Message.deleteMany({ connection: conn._id });
+}
 
     res.json({ message: "Task cancelled successfully" });
 
@@ -530,7 +544,7 @@ router.patch("/reset/:taskId", auth, async (req, res) => {
 
     if (!task) return res.status(404).json({ message: "Task not found" });
 
-    if (task.provider.toString() !== req.user.userId) {
+   if (task.provider.toString() !== req.user.userId.toString()) {
       return res.status(403).json({ message: "Not allowed" });
     }
 
@@ -542,11 +556,14 @@ router.patch("/reset/:taskId", auth, async (req, res) => {
     await task.save();
 
     // 🔥 CLOSE ALL CONNECTIONS
-    await Connection.updateMany(
-      { task: task._id },
-      { status: "closed", chatEnabled: false }
-    );
+// 🔥 DELETE CONNECTIONS COMPLETELY
+await Connection.deleteMany({ task: task._id });
+// 🔥 DELETE CHAT MESSAGES
+const connections = await Connection.find({ task: task._id });
 
+for (let conn of connections) {
+  await Message.deleteMany({ connection: conn._id });
+}
     res.json({ message: "Task reset to open" });
 
   } catch (err) {

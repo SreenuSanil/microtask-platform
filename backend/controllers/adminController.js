@@ -42,7 +42,7 @@ exports.getInterviewCandidates = async (req, res) => {
 // schedule interview
 
 exports.scheduleInterview = async (req, res) => {
- const { workerIds, interviewDate, interviewTime } = req.body;
+ const { workerIds, interviewDate, interviewTime, interviewLocation } = req.body;
 
   try {
     // Get workers first
@@ -55,25 +55,18 @@ exports.scheduleInterview = async (req, res) => {
         $set: {
           "interview.interviewStatus": "scheduled",
           "interview.scheduledDate": interviewDate,
-           "interview.scheduledTime": interviewTime,
+           "interview.location": interviewLocation,
         },
       }
     );
-
-    // ✅ SEND EMAIL TO EACH WORKER
-    for (const worker of workers) {
-const { subject, html } = interviewScheduledTemplate(
-  worker.name,
-  interviewDate,
-  interviewTime
-);
 
 for (const worker of workers) {
   try {
     const { subject, html } = interviewScheduledTemplate(
       worker.name,
       interviewDate,
-      interviewTime
+      interviewTime,
+      interviewLocation 
     );
 
     await sendEmail({
@@ -82,10 +75,10 @@ for (const worker of workers) {
       html,
     });
   } catch (err) {
-    console.error("Email failed for:", worker.email);
+    console.error("Email failed:", worker.email);
   }
 }
-    }
+    
 
     res.json({ message: "Interview scheduled & emails sent" });
 

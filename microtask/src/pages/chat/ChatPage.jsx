@@ -8,7 +8,7 @@ const ChatPage = ({ connectionId: propConnectionId }) => {
    const connectionId = propConnectionId || params.connectionId;
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const userId = storedUser?._id || storedUser?.id;
-
+const [loading, setLoading] = useState(true);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [connectionStatus, setConnectionStatus] = useState(null);
@@ -68,6 +68,7 @@ return () => {
   useEffect(() => {
    const fetchHistory = async () => {
   try {
+    setLoading(true);
     const res = await fetch(
       `http://localhost:5000/api/messages/${connectionId}`,
       {
@@ -364,6 +365,7 @@ if (isWorkerBusy) {
     console.error("Payment error:", err);
   }
 };
+
   return (
   <>
     {popupMessage && (
@@ -375,6 +377,7 @@ if (isWorkerBusy) {
     <div className="chat-container">
       
       <div className="chat-messages">
+        
         {messages.map((msg) => (
           <div
             key={msg._id}
@@ -453,6 +456,7 @@ className={`chat-message ${
     <input
       type="date"
       value={taskDate}
+      min={new Date().toISOString().split("T")[0]}
       onChange={(e) => setTaskDate(e.target.value)}
     />
 
@@ -496,15 +500,23 @@ className={`chat-message ${
   </div>
 )}
 
-  {paymentStatus === "paid" && (
+  {paymentStatus === "paid" && taskStatus !== "completed" && (
+    
   <div className="confirm-job-box worker-box">
     <p>✅ Escrow locked.</p>
     <p>Escrow Amount: ₹{budget}</p>
     <p>Work started.</p>
   </div>
 )}
+{taskStatus === "completed" && (
+  <div className="confirm-job-box worker-box">
+    <p>✅ Work Completed</p>
+    <p>Final Amount: ₹{budget}</p>
+    <p>Chat will be deleted after 30 days</p>
+  </div>
+)}
      
-{connectionStatus !== "closed" && (
+{connectionStatus !== "closed" && taskStatus !== "completed" && (
   <div className="chat-input-area">
     <input
       value={text}

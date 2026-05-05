@@ -1,7 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Payment.css";
 
+
 const Payment = () => {
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    // 🚫 If no user → go login
+    if (!user) {
+      window.location.href = "/login";
+      return;
+    }
+
+    // 🚫 If NOT worker → block payment page
+    if (user.role !== "worker") {
+      window.location.href = "/";
+      return;
+    }
+
+  }, []);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 

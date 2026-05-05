@@ -15,7 +15,7 @@ router.get("/search", async (req, res) => {
       "https://nominatim.openstreetmap.org/search",
       {
         params: {
-          q: query,
+          q: query + ", Kerala, India",
           format: "json",
           addressdetails: 1,
           limit: 5
@@ -26,7 +26,12 @@ router.get("/search", async (req, res) => {
       }
     );
 
-    res.json(response.data);
+    const filtered = response.data.filter(
+  (place) =>
+    place.display_name.toLowerCase().includes("kerala")
+);
+
+res.json(filtered);
 
   } catch (error) {
 
@@ -64,7 +69,16 @@ router.get("/reverse", async (req, res) => {
       }
     );
 
-    res.json(response.data);
+if (
+  response.data.display_name &&
+  response.data.display_name.toLowerCase().includes("kerala")
+) {
+  res.json(response.data);
+} else {
+  res.json({}); // outside Kerala → return empty
+}
+
+res.json(filtered);
 
   } catch (error) {
     console.error("Reverse error:", error.message);

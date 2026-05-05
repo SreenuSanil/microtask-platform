@@ -1,128 +1,193 @@
-/* ===============================
-   PROVIDER INVITES PAGE
-================================= */
-
-.provider-invites-page {
-  padding: 25px;
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Sora:wght@600;700&display=swap');
+ 
+/* ===== PAGE ===== */
+.messages-page {
+  padding: 28px 22px;
+  max-width: 660px;
+  margin: 0 auto;
+  font-family: 'DM Sans', sans-serif;
 }
-
-.provider-invites-page h2 {
-  margin-bottom: 20px;
-  font-size: 22px;
-  font-weight: 600;
-  color: #222;
+ 
+.messages-page h2 {
+  font-family: 'Sora', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f1c1a;
+  margin: 0 0 22px 0;
+  letter-spacing: -0.4px;
 }
-
-
-/* ===============================
-   INVITE CARD
-================================= */
-
+ 
+.messages-page > p {
+  font-size: 14px;
+  color: #9ca3af;
+  text-align: center;
+  padding: 40px 0;
+}
+ 
+/* ===== INVITE CARD ===== */
 .invite-card {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
   background: #ffffff;
-  padding: 18px;
-  margin-bottom: 18px;
-  border-radius: 14px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-  transition: all 0.2s ease;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  border-radius: 16px;
+  border: 1px solid #eef0f2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 0 0 0 transparent;
+  transition: box-shadow 0.22s ease, transform 0.22s ease, border-color 0.22s ease;
+  position: relative;
+  overflow: hidden;
 }
-
+ 
+.invite-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #075e54, #10b981);
+  border-radius: 16px 0 0 16px;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+ 
 .invite-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  border-color: #d1fae5;
+  box-shadow: 0 8px 24px rgba(7, 94, 84, 0.1);
 }
-
-
-/* ===============================
-   PROFILE IMAGE
-================================= */
-
-.invite-card img {
-  width: 65px;
-  height: 65px;
+ 
+.invite-card:hover::before {
+  opacity: 1;
+}
+ 
+/* ===== PROFILE IMAGE ===== */
+.invite-card > img {
+  width: 62px;
+  height: 62px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #f0f0f0;
+  border: 2.5px solid #e6faf5;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(7, 94, 84, 0.12);
 }
-
-
-/* ===============================
-   INFO SECTION
-================================= */
-
+ 
+/* ===== INFO SECTION ===== */
 .invite-info {
   flex: 1;
+  min-width: 0;
 }
-
+ 
 .invite-info h4 {
-  margin: 0;
-  font-size: 17px;
+  margin: 0 0 5px 0;
+  font-family: 'Sora', sans-serif;
+  font-size: 15px;
   font-weight: 600;
-  color: #111;
+  color: #0f1c1a;
+  letter-spacing: -0.2px;
 }
-
+ 
 .invite-info p {
-  margin: 6px 0;
-  font-size: 14px;
-  color: #555;
+  margin: 3px 0;
+  font-size: 13px;
+  color: #4b5563;
+  font-weight: 400;
+  line-height: 1.5;
 }
-
-
-/* ===============================
-   SKILL + RATING STYLE
-================================= */
-
+ 
+/* skill line */
 .invite-info p:first-of-type {
   color: #075e54;
-  font-weight: 500;
-}
-
-.invite-info p:nth-of-type(2) {
-  color: #f5a623;
-  font-weight: 500;
-}
-
-
-/* ===============================
-   STATUS BADGE
-================================= */
-
-.status {
-  margin-top: 4px;
   font-weight: 600;
   font-size: 13px;
 }
-
+ 
+/* rating line */
+.invite-info p:nth-of-type(2) {
+  color: #b45309;
+  font-weight: 500;
+  font-size: 13px;
+}
+ 
+/* ===== STATUS BADGE ===== */
+.status {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+ 
 .status.pending {
-  color: #e67e22;
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
 }
-
+ 
 .status.accepted {
-  color: #27ae60;
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
 }
-
-
-/* ===============================
-   OPEN CHAT BUTTON
-================================= */
-
+ 
+/* ===== OPEN CHAT BUTTON ===== */
 .invite-info button {
   margin-top: 10px;
-  padding: 7px 15px;
+  padding: 8px 18px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   background: #075e54;
-  color: white;
+  color: #ffffff;
+  font-family: 'DM Sans', sans-serif;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, transform 0.15s ease;
+  letter-spacing: 0.1px;
 }
-
+ 
 .invite-info button:hover {
-  background: #0a7f70;
+  background: #054f47;
   transform: scale(1.03);
+}
+ 
+.invite-info button:active {
+  transform: scale(0.98);
+}
+ 
+/* ===== FULL CHAT WRAPPER ===== */
+.full-chat-wrapper {
+  height: 82vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.09);
+}
+ 
+/* ===== BACK BUTTON ===== */
+.chat-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 18px;
+  background: #075e54;
+  color: #ffffff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  letter-spacing: 0.1px;
+  transition: background 0.2s ease;
+  user-select: none;
+}
+ 
+.chat-back-btn:hover {
+  background: #054f47;
 }

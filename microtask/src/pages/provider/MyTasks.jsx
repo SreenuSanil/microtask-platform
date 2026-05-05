@@ -397,17 +397,16 @@ const handleTaskPayment = async (taskId) => {
 };
 return (
   <div className="mytasks-container">
+    <div className="mytasks-header">
       <h2 className="page-title">My Tasks</h2>
+   <div className="task-tabs">
 
-      {/* Tabs */}
-<div className="task-tabs">
-
-  <button
+    <button
     className={activeTab === "open" ? "active" : ""}
     onClick={() => setActiveTab("open")}
-  >
+   >
     Open ({openTasks.length})
-  </button>
+   </button>
 
 <button
   className={activeTab === "waiting" ? "active" : ""}
@@ -452,52 +451,59 @@ return (
 </button>
 
 </div>
+</div>
 
       {/* Task List */}
       {displayTasks.length === 0 ? (
         <p className="empty-text">No tasks found</p>
       ) : (
+        <div className="mytasks-body">
         <div className="task-grid">
           {displayTasks.map(task => (
             <div key={task._id} className="task-card">
 
 {/* Worker Section */}
 {task.assignedWorker && task.status !== "open" && (
-  <div className="worker-section">
+<div className="worker-section">
 
-    <img
-      src={
-        task.assignedWorker?.profileImage
-          ? `http://localhost:5000/${task.assignedWorker.profileImage}`
-          : "/default-user.png"
-      }
-      alt="worker"
-      className="worker-img"
-    />
+  <img
+    src={
+      task.assignedWorker?.profileImage
+        ? `http://localhost:5000/${task.assignedWorker.profileImage}`
+        : "/default-user.png"
+    }
+    alt="worker"
+    className="worker-img large"
+  />
 
-    <div className="worker-info">
-      <span className="worker-name">
-        {task.assignedWorker.name}
-      </span>
-      <span className="worker-label">
-        Assigned Worker
-      </span>
+  <div className="worker-info">
+    <div className="worker-name">
+      {task.assignedWorker.name}
     </div>
-
   </div>
+
+  <span className="status-badge assigned">
+    ASSIGNED
+  </span>
+
+</div>
 )}
                 
               
 
-              <div className="task-top">
-                <h3>{task.title}</h3>
-                <span className={`status-badge ${task.status}`}>
-                  {task.status.replace("_", " ").toUpperCase()}
-                </span>
+<div className="task-top">
 
-              </div>
+  <div className="task-title-box">
+    <h3 className="task-title">
+      📌 {task.title || "No Title"}
+    </h3>
 
-              <p className="task-desc">{task.description}</p>
+    <p className="task-desc">
+      {task.description || "No description provided"}
+    </p>
+  </div>
+
+</div>
 
 {task.status === "cancelled" && (
   <div className="cancel-box">
@@ -556,22 +562,24 @@ return (
 </div>
 
 {/* Task Images */}
-{task.images?.length > 0 && (
-  <div className="task-images">
-{task.images.map((img, index) => (
-  <img
-    key={index}
-    src={`http://localhost:5000/${img}`}
-    alt="task"
-    style={{ cursor: "pointer" }}
-    onClick={() =>
-      setPreviewImage(`http://localhost:5000/${img}`)
-    }
-  />
-))}
-  </div>
-)}
+<div className="task-image-box">
 
+  {task.images?.length > 0 ? (
+    <img
+      src={`http://localhost:5000/${task.images[0]}`}
+      alt="task"
+      onClick={() =>
+        setPreviewImage(`http://localhost:5000/${task.images[0]}`)
+      }
+    />
+  ) : (
+    <div className="no-image">
+      No Image Available
+    </div>
+  )}
+
+</div>
+<div className="task-actions">
 {task.status === "in_progress" && (
   <button
     className="cancel-btn"
@@ -580,6 +588,7 @@ return (
     Cancel Task
   </button>
 )}
+</div>
 
 
 {/* Worker Completion Proof */}
@@ -603,38 +612,37 @@ return (
 <div className="task-actions">
 
   {/* OPEN TASK */}
-  {task.status === "open" && (
-    
-    <>
-
+  
+{task.status === "open" && (
+  <>
+    <div className="btn-row">
       <button
-        className="find-btn"
-       onClick={() => setSelectedTaskId(task._id)}
+        className="delete-btn"
+        onClick={() => openDeleteModal(task._id)}
       >
-        Find Workers
+        Delete
       </button>
 
-     <button
-  className="edit-btn"
-  onClick={() =>navigate(`/provider/post-task?edit=${task._id}`)
-}
->
-  Edit
-</button>
+      <button
+        className="edit-btn"
+        onClick={() => navigate(`/provider/post-task?edit=${task._id}`)}
+      >
+        Edit
+      </button>
+    </div>
 
-
-     <button
-  className="cancel-btn"
-  onClick={() => openDeleteModal(task._id)}
->
-  Delete
-</button>
-
-    </>
-  )}
+    <button
+      className="find-btn full-btn"
+      onClick={() => setSelectedTaskId(task._id)}
+    >
+      Find Workers
+    </button>
+  </>
+)}
 
 {task.status === "assigned" && task.paymentStatus !== "paid" && (
-  <>
+  
+  <div className="payment-actions">
     <button
       className="pay-btn"
       onClick={() => handleTaskPayment(task._id)}
@@ -644,30 +652,49 @@ return (
 
     <button
       className="cancel-btn"
-      onClick={async () => {
+    onClick={async () => {
 
-        const confirmCancel = window.confirm(
-          "Cancel this and go back to open?"
-        );
+  const confirmCancel = window.confirm(
+    "Cancel this and go back to open?"
+  );
 
-        if (!confirmCancel) return;
+  if (!confirmCancel) return;
 
-        await fetch(
-          `http://localhost:5000/api/tasks/reset/${task._id}`,
-          {
-            method: "PATCH",
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/tasks/reset/${task._id}`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
 
-        window.location.reload();
-      }}
+    const data = await res.json();
+
+    if (res.ok) {
+      setTasks(prev =>
+        prev.map(t =>
+          t._id === task._id
+            ? { ...t, status: "open", assignedWorker: null }
+            : t
+        )
+      );
+    } else {
+      alert(data.message);
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong");
+  }
+}}
     >
       Cancel
     </button>
-  </>
+    </div>
+  
 )}
 
 {task.paymentStatus === "paid" && (
@@ -677,7 +704,7 @@ return (
 {/* PENDING VERIFICATION */}
 {task.status === "pending_verification" && (
  
-  <>
+<div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
     <button
       className="accept-btn"
       onClick={() => approveTask(task._id)}
@@ -696,7 +723,7 @@ return (
     >
       Raise Dispute
     </button>
-  </>
+  </div>
 )}
 
 {/* COMPLETED TASK - RATE WORKER */}
@@ -728,7 +755,8 @@ return (
 </div>  
 ))}
 
-</div>  
+</div> 
+ </div>
 )}
 {/* DELETE MODAL */}
 {showModal && (

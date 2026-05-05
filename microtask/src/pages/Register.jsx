@@ -266,6 +266,7 @@ const handleSubmit = async (e) => {
 
 if (response.ok) {
   localStorage.setItem("verifyEmail", formData.email);
+  localStorage.setItem("tempPassword", formData.password);
   navigate("/verify-email", {
     state: { email: formData.email },
   });

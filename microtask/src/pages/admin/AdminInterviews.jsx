@@ -10,6 +10,9 @@ const AdminInterviews = () => {
   const [skillSearch, setSkillSearch] = useState("");
   const [interviewDate, setInterviewDate] = useState("");
   const [interviewTime, setInterviewTime] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [interviewLocation, setInterviewLocation] = useState("");
+  const [currentWorker, setCurrentWorker] = useState(null);
   const getProfileImage = (user) => {
     if (user.profileImage) {
       return `http://localhost:5000/${user.profileImage}`;
@@ -65,8 +68,17 @@ const AdminInterviews = () => {
 
   /* ================= ACTIONS ================= */
 const scheduleInterviewBulk = async () => {
-if (!interviewDate || !interviewTime) {
-  alert("Please select date and time");
+if (!interviewDate || !interviewTime || !interviewLocation) {
+  alert("Please fill all fields");
+  return;
+}
+
+// ❌ PAST DATE/TIME BLOCK
+const selected = new Date(`${interviewDate}T${interviewTime}`);
+const now = new Date();
+
+if (selected < now) {
+  alert("Cannot select past date/time");
   return;
 }
 
@@ -93,6 +105,7 @@ if (!interviewDate || !interviewTime) {
       workerIds: eligible,
       interviewDate,
        interviewTime,
+       interviewLocation,
     }),
   });
 
@@ -102,10 +115,19 @@ if (!interviewDate || !interviewTime) {
 };
 
 const scheduleSingleInterview = async (id) => {
-  if (!interviewDate || !interviewTime) {
-    alert("Please select date and time");
-    return;
-  }
+if (!interviewDate || !interviewTime || !interviewLocation) {
+  alert("Please fill all fields");
+  return;
+}
+
+// ❌ PAST DATE/TIME BLOCK
+const selected = new Date(`${interviewDate}T${interviewTime}`);
+const now = new Date();
+
+if (selected < now) {
+  alert("Cannot select past date/time");
+  return;
+}
 
   await fetch("http://localhost:5000/api/admin/interviews/schedule", {
     method: "POST",
@@ -116,7 +138,8 @@ const scheduleSingleInterview = async (id) => {
     body: JSON.stringify({
       workerIds: [id],
       interviewDate,
-      interviewTime, // ✅ ADD
+      interviewTime,
+      interviewLocation,
     }),
   });
 
@@ -163,25 +186,19 @@ const scheduleSingleInterview = async (id) => {
     className="skill-search"
   />
 
-<input
-  type="date"
-  value={interviewDate}
-  onChange={(e) => setInterviewDate(e.target.value)}
-  className="date-input"
-/>
-<input
-  type="time"
-  value={interviewTime}
-  onChange={(e) => setInterviewTime(e.target.value)}
-  className="time-input"
-/>
   <button className="bulk-btn" onClick={toggleSelectAll}>
     Select All
   </button>
 
-  <button className="bulk-primary" onClick={scheduleInterviewBulk}>
-    Send Interview Invite
-  </button>
+<button
+  className="bulk-primary"
+  onClick={() => {
+    setCurrentWorker(null);
+    setShowModal(true);
+  }}
+>
+  Send Interview Invite
+</button>
 
   <button className="bulk-danger" onClick={markInterviewCompleted}>
     Mark as Interviewed
@@ -224,7 +241,10 @@ const scheduleSingleInterview = async (id) => {
 
             <button
               disabled={worker.interview?.interviewStatus !== "not_scheduled"}
-              onClick={() => scheduleSingleInterview(worker._id)}
+              onClick={() => {
+  setCurrentWorker(worker._id);
+  setShowModal(true);
+}}
             >
               Schedule
             </button>
@@ -232,6 +252,52 @@ const scheduleSingleInterview = async (id) => {
           </div>
         ))}
       </div>
+
+
+{showModal && (
+  <div className="modal-overlay">
+    <div className="modal-box">
+      <h3>Schedule Interview</h3>
+
+      <input
+        type="date"
+        value={interviewDate}
+        onChange={(e) => setInterviewDate(e.target.value)}
+      />
+
+      <input
+        type="time"
+        value={interviewTime}
+        onChange={(e) => setInterviewTime(e.target.value)}
+      />
+
+      <input
+        type="text"
+        placeholder="Enter interview location"
+        value={interviewLocation}
+        onChange={(e) => setInterviewLocation(e.target.value)}
+      />
+
+      <div className="modal-actions">
+        <button onClick={() => setShowModal(false)}>Cancel</button>
+
+        <button
+          onClick={() => {
+            if (currentWorker) {
+              scheduleSingleInterview(currentWorker);
+            } else {
+              scheduleInterviewBulk();
+            }
+            setShowModal(false);
+          }}
+        >
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </>
   );
 };

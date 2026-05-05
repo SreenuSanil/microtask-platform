@@ -18,14 +18,17 @@ exports.emailVerificationTemplate = (otp) => ({
   `,
 });
 
-exports.interviewScheduledTemplate = (name, date, time) => ({
+exports.interviewScheduledTemplate = (name, date, time, location) => ({
   subject: "Interview Scheduled",
   html: `
     <h2>Interview Invitation</h2>
     <p>Hello ${name},</p>
     <p>Your interview has been scheduled.</p>
+
     <p><strong>Date:</strong> ${date}</p>
     <p><strong>Time:</strong> ${time}</p>
+    <p><strong>Location:</strong> ${location}</p>
+
     <p>Please be available on time.</p>
   `,
 });

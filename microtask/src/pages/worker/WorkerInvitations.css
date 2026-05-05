@@ -1,112 +1,300 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Sora:wght@600;700&display=swap');
+ 
+/* ===== PAGE ===== */
 .worker-inv-page {
-  padding: 20px;
+  padding: 28px 22px;
+  width: 100%;
 }
-
+.inv-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+ 
+.worker-inv-page h2 {
+  font-family: 'Sora', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f1c1a;
+  margin: 0 0 22px 0;
+  letter-spacing: -0.4px;
+}
+ 
+.worker-inv-page > p {
+  font-size: 14px;
+  color: #9ca3af;
+  text-align: center;
+  padding: 40px 0;
+}
+ 
+/* ===== INVITATION CARD ===== */
 .inv-card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #eef0f2;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  margin-bottom: 18px;
+  padding: 20px 20px 18px;
+  transition: box-shadow 0.22s ease, transform 0.22s ease;
+  position: relative;
+  overflow: hidden;
 }
-
+ 
+.inv-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #075e54, #10b981, #34d399);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+ 
+.inv-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(7, 94, 84, 0.08);
+}
+ 
+.inv-card:hover::after {
+  opacity: 1;
+}
+ 
+/* ===== PROVIDER SECTION ===== */
 .inv-provider {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 14px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f3f4f6;
 }
-
+ 
 .inv-provider img {
-  width: 60px;
-  height: 60px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2.5px solid #e6faf5;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(7, 94, 84, 0.1);
 }
-
+ 
+.inv-provider > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+ 
+.inv-provider h3 {
+  margin: 0;
+  font-family: 'Sora', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f1c1a;
+  letter-spacing: -0.2px;
+}
+ 
+/* ===== STATUS TAG ===== */
 .status-tag {
-  padding: 4px 10px;
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  padding: 3px 10px;
   border-radius: 20px;
-  font-size: 12px;
-  margin-left: 10px;
+  width: fit-content;
 }
-
+ 
 .status-tag.pending {
-  background: #facc15;
-  color: black;
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
 }
-
+ 
 .status-tag.accepted {
-  background: #22c55e;
-  color: white;
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
 }
-
+ 
+.status-tag.rejected {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+ 
+/* ===== TASK TITLE & DESCRIPTION ===== */
 .task-title {
-  margin-top: 15px;
+  font-family: 'Sora', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f1c1a;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.3px;
+  line-height: 1.3;
 }
-
+ 
 .task-desc {
-  margin-bottom: 10px;
+  font-size: 13.5px;
+  color: #6b7280;
+  margin: 0 0 14px 0;
+  line-height: 1.6;
 }
-
+ 
+/* ===== TASK DETAILS GRID ===== */
+.task-details {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+ 
 .task-details p {
-  margin: 4px 0;
+  margin: 5px 0;
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.5;
 }
-
+ 
+.task-details p strong {
+  color: #075e54;
+  font-weight: 600;
+  margin-right: 4px;
+}
+ 
+/* ===== TASK IMAGES ===== */
 .task-images {
   display: flex;
   gap: 10px;
-  margin-top: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
 }
-
+ 
 .task-images img {
-  width: 100px;
-  height: 100px;
+  width: 88px;
+  height: 88px;
   object-fit: cover;
+  border-radius: 10px;
   cursor: pointer;
-  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-
+ 
+.task-images img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+ 
+/* ===== ACTION BUTTONS ===== */
 .inv-actions {
-  margin-top: 15px;
   display: flex;
   gap: 10px;
+  margin-top: 6px;
 }
-
-.accept-btn {
-  background: #22c55e;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
+ 
+.accept-btn,
 .reject-btn {
-  background: #ef4444;
-  color: white;
+  padding: 9px 22px;
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.accepted-msg {
-  margin-top: 15px;
-  color: #16a34a;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
   font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  letter-spacing: 0.1px;
 }
-
+ 
+.accept-btn {
+  background: #075e54;
+  color: #ffffff;
+  flex: 1;
+}
+ 
+.accept-btn:hover {
+  background: #054f47;
+  box-shadow: 0 4px 12px rgba(7, 94, 84, 0.25);
+  transform: translateY(-1px);
+}
+ 
+.accept-btn:active {
+  transform: scale(0.98);
+}
+ 
+.reject-btn {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  flex: 1;
+}
+ 
+.reject-btn:hover {
+  background: #fee2e2;
+  box-shadow: 0 4px 12px rgba(185, 28, 28, 0.12);
+  transform: translateY(-1px);
+}
+ 
+.reject-btn:active {
+  transform: scale(0.98);
+}
+ 
+/* ===== ACCEPTED MESSAGE ===== */
+.accepted-msg {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #065f46;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 8px 14px;
+  border-radius: 10px;
+}
+ 
+.accepted-msg::before {
+  content: "✓";
+  font-weight: 700;
+  font-size: 13px;
+}
+ 
+/* ===== IMAGE MODAL ===== */
 .image-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1000;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  animation: fadeModal 0.2s ease;
+}
+ 
+@keyframes fadeModal {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+ 
+.image-modal img {
+  max-width: 88%;
+  max-height: 88%;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+@media (max-width: 1024px) {
+  .inv-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-.image-modal img {
-  max-width: 80%;
-  max-height: 80%;
-  border-radius: 10px;
+@media (max-width: 600px) {
+  .inv-grid {
+    grid-template-columns: 1fr;
+  }
 }
