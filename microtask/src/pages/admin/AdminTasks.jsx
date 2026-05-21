@@ -156,16 +156,14 @@ const AdminTasks = () => {
            TASK DETAILS
         =============================== */
 
-        <div className="task-details">
+<div className="task-details">
 
-          <button
-            className="back-btn"
-            onClick={() => setSelectedTask(null)}
-          >
-            ← Back
-          </button>
-
-          <h3>{selectedTask.title}</h3>
+          <div className="detail-header">
+            <button className="back-btn" onClick={() => setSelectedTask(null)}>
+              ← Back
+            </button>
+            <h3 className="detail-title">{selectedTask.title}</h3>
+          </div>
 
           <p>{selectedTask.description}</p>
 

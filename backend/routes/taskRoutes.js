@@ -225,7 +225,6 @@ router.get("/worker-tasks", auth, async (req, res) => {
 
     const tasks = await Task.find({
       assignedWorker: req.user.userId,
-      status: { $ne: "cancelled" }
     })
       .populate("provider", "name profileImage")
       .sort({ createdAt: -1 });

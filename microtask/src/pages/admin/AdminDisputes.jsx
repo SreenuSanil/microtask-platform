@@ -198,24 +198,21 @@ if (selectedTask) {
 
       {selectedTask ? (
 
-        <div className="dispute-details">
-        <button
-            className="back-btn"
-            onClick={() => setSelectedTask(null)}
-          >
-            ← Back
-          </button>
+<div className="dispute-details">
 
-          <h2 className="page-title">
-  Disputed Tasks ({disputes.length})
-</h2>
-{selectedTask.escrowStatus === "split" && (
-  <div className="split-result">
-    <p>💰 Worker Received:₹{selectedTask.splitDetails?.workerAmount}</p>
-    <p>💰 Provider Refunded: ₹{selectedTask.splitDetails?.providerAmount}</p>
+  <div className="detail-header">
+    <button className="back-btn" onClick={() => setSelectedTask(null)}>
+      ← Back
+    </button>
+    <h3 className="detail-title">{selectedTask.title}</h3>
   </div>
-)}
-          <h3>{selectedTask.title}</h3>
+
+  {selectedTask.escrowStatus === "split" && (
+    <div className="split-result">
+      <p>💰 Worker Received:₹{selectedTask.splitDetails?.workerAmount}</p>
+      <p>💰 Provider Refunded: ₹{selectedTask.splitDetails?.providerAmount}</p>
+    </div>
+  )}
 
           <p>
             <strong>Budget:</strong> ₹{selectedTask.budget}

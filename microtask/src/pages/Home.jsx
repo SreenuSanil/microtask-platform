@@ -8,6 +8,7 @@ const Home = () => {
 
 const [stats, setStats] = useState({ workers: 0, providers: 0 });
 const [supportEmail, setSupportEmail] = useState("");
+const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 useEffect(() => {
   fetch("http://localhost:5000/api/stats/counts")
     .then(res => res.json())
@@ -49,13 +50,19 @@ useEffect(() => {
           <img src={logo} alt="TaskNest Logo" />
         </div>
 
-        <nav className="nav-links">
-          <a href="#about">About</a>
-          <a href="#features">Features</a>
-          <a href="#workflow">How It Works</a>
+        <button className={`hamburger ${mobileMenuOpen ? "active" : ""}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
 
-          <a href="/login" className="login-btn">Login</a>
-          <a href="/register" className="signup-btn">Sign Up</a>
+        <nav className={`nav-links ${mobileMenuOpen ? "open" : ""}`}>
+          <a href="#about" onClick={() => setMobileMenuOpen(false)}>About</a>
+          <a href="#features" onClick={() => setMobileMenuOpen(false)}>Features</a>
+          <a href="#workflow" onClick={() => setMobileMenuOpen(false)}>How It Works</a>
+
+          <a href="/login" className="login-btn" onClick={() => setMobileMenuOpen(false)}>Login</a>
+          <a href="/register" className="signup-btn" onClick={() => setMobileMenuOpen(false)}>Sign Up</a>
         </nav>
       </header>
 

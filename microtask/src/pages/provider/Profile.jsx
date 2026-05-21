@@ -5,7 +5,9 @@ const ProviderProfile = () => {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});
   const [image, setImage] = useState(null);
-
+  const [newEmail, setNewEmail] = useState("");
+ const [otp, setOtp] = useState("");
+ const [otpSent, setOtpSent] = useState(false);
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -63,6 +65,41 @@ const ProviderProfile = () => {
       alert("Update failed");
     }
   };
+
+  const sendEmailOtp = async () => {
+  if (!newEmail) return alert("Enter new email");
+  const res = await fetch("http://localhost:5000/api/auth/send-email-otp", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`
+    },
+    body: JSON.stringify({ newEmail })
+  });
+  const data = await res.json();
+  if (res.ok) { alert("OTP sent to new email"); setOtpSent(true); }
+  else alert(data.message);
+};
+
+const verifyEmailOtp = async () => {
+  if (!otp) return alert("Enter OTP");
+  const res = await fetch("http://localhost:5000/api/auth/verify-email-otp", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`
+    },
+    body: JSON.stringify({ otp })
+  });
+  const data = await res.json();
+  if (res.ok) {
+    alert("Email changed successfully");
+    setOtpSent(false);
+    setNewEmail("");
+    setOtp("");
+    fetchProfile();
+  } else alert(data.message);
+};
 
   if (!userData) return <p>Loading...</p>;
 
@@ -145,12 +182,40 @@ return (
           onChange={handleChange}
         />
 
-        <label>Email</label>
-        <input
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-        />
+<div style={{ background: "#f8fafc", padding: "14px", borderRadius: "10px" }}>
+  <label>Change Email</label>
+  <input
+    type="email"
+    placeholder="Enter new email"
+    value={newEmail}
+    onChange={(e) => setNewEmail(e.target.value)}
+    disabled={otpSent}
+    style={{ marginBottom: "10px" }}
+  />
+  {!otpSent ? (
+    <button className="save-profile-btn" onClick={sendEmailOtp}>
+      Send OTP
+    </button>
+  ) : (
+    <>
+      <input
+        type="text"
+        placeholder="Enter OTP"
+        value={otp}
+        onChange={(e) => setOtp(e.target.value)}
+        style={{ marginBottom: "10px" }}
+      />
+      <div style={{ display: "flex", gap: "10px" }}>
+        <button className="save-profile-btn" onClick={verifyEmailOtp}>
+          Verify & Change
+        </button>
+        <button className="cancel-profile-btn" onClick={() => { setOtpSent(false); setOtp(""); }}>
+          Cancel
+        </button>
+      </div>
+    </>
+  )}
+</div>
 
         <label>Organization</label>
         <input

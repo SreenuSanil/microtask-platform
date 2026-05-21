@@ -888,7 +888,7 @@ exports.adminCancelTask = async (req, res) => {
         message: "Completed tasks cannot be cancelled"
       });
 
-    task.status = "cancelled";
+task.status = "cancelled";
     
     task.cancelledBy = "admin";
 
@@ -910,6 +910,73 @@ if (task.assignedWorker) {
     message: `Admin cancelled the task "${task.title}".`,
     taskId: task._id,
   });
+}
+// ✅ Track provider cancellation % and alert admin + warn provider
+const provider = await User.findById(task.provider);
+
+if (provider) {
+  provider.cancelCount = (provider.cancelCount || 0) + 1;
+  await provider.save();
+
+  const totalProviderTasks = await Task.countDocuments({
+    provider: provider._id,
+  });
+
+  const providerCancelPercent = (provider.cancelCount / totalProviderTasks) * 100;
+
+  // warn provider at 50%
+  if (providerCancelPercent >= 50 && provider.cancelCount >= 3) {
+    await Notification.create({
+      userId: task.provider,
+      title: "Cancellation Warning",
+      message: `You have cancelled ${Math.round(providerCancelPercent)}% of your tasks. If this continues, admin may review your account and you could be blocked or removed.`,
+    });
+  }
+
+  // alert admin at 70%
+  if (providerCancelPercent >= 70 && provider.cancelCount >= 3) {
+    await Notification.create({
+      userId: req.user._id,
+      title: "High Cancellation Alert",
+      message: `Provider ${provider.name} has cancelled ${Math.round(providerCancelPercent)}% of their tasks (${provider.cancelCount} out of ${totalProviderTasks}).`,
+      userRole: "provider",
+    });
+  }
+}
+
+// ✅ Track worker cancellation % and alert admin + warn worker
+if (task.assignedWorker) {
+  const worker = await User.findById(task.assignedWorker);
+
+  if (worker) {
+    worker.cancelCount = (worker.cancelCount || 0) + 1;
+    await worker.save();
+
+    const totalWorkerTasks = await Task.countDocuments({
+      assignedWorker: worker._id,
+    });
+
+    const workerCancelPercent = (worker.cancelCount / totalWorkerTasks) * 100;
+
+    // warn worker at 50%
+    if (workerCancelPercent >= 50 && worker.cancelCount >= 3) {
+      await Notification.create({
+        userId: task.assignedWorker,
+        title: "Cancellation Warning",
+        message: `You have cancelled ${Math.round(workerCancelPercent)}% of your tasks. If this continues, admin may review your account and you could be blocked or removed.`,
+      });
+    }
+
+    // alert admin at 70%
+    if (workerCancelPercent >= 70 && worker.cancelCount >= 3) {
+      await Notification.create({
+        userId: req.user._id,
+        title: "High Cancellation Alert",
+        message: `Worker ${worker.name} has cancelled ${Math.round(workerCancelPercent)}% of their tasks (${worker.cancelCount} out of ${totalWorkerTasks}).`,
+        userRole: "worker",
+      });
+    }
+  }
 }
 
     res.json({

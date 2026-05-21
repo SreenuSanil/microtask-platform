@@ -29,7 +29,14 @@ const connectionSchema = new mongoose.Schema(
       ],
       default: "pending",
     },
-
+providerSeen: {
+  type: Boolean,
+  default: false,
+},
+workerSeenAccepted: {
+  type: Boolean,
+  default: false,
+},
     chatEnabled: {
       type: Boolean,
       default: false,
@@ -44,6 +51,8 @@ dateConfirmed: {
 },
 
     finalBudget: Number,
+
+    
 
     budgetConfirmed: {
       type: Boolean,

@@ -2,7 +2,8 @@ const cron = require("node-cron");
 const Task = require("../models/Task");
 const WalletTransaction = require("../models/WalletTransaction");
 const User = require("../models/User");
-
+const Message = require("../models/Message");       
+const Connection = require("../models/Connection");
 /* =========================
    AUTO ESCROW RELEASE
 ========================= */
@@ -94,4 +95,29 @@ cron.schedule("0 * * * *", async () => {
 
   }
 
+});
+
+/* =========================
+   AUTO DELETE CHATS AFTER 30 DAYS 
+========================= */
+cron.schedule("0 0 * * *", async () => {
+  try {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+    const oldTasks = await Task.find({
+      status: "completed",
+      completedAt: { $lte: thirtyDaysAgo },
+    });
+
+    for (const task of oldTasks) {
+      const connection = await Connection.findOne({ task: task._id });
+      if (!connection) continue;
+
+      const deleted = await Message.deleteMany({ connection: connection._id });
+      console.log(`✅ Deleted ${deleted.deletedCount} messages for task ${task._id}`);
+    }
+
+  } catch (err) {
+    console.error("❌ Chat cleanup error:", err);
+  }
 });

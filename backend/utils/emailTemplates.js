@@ -215,3 +215,16 @@ exports.disputeResolvedProviderTemplate = (providerName, taskTitle) => ({
     <p>💰 Refund has been credited to your wallet.</p>
   `,
 });
+
+exports.emailChangeOtpTemplate = (otp) => ({
+  subject: "Email Change OTP",
+  html: `
+    <h2>Email Change Request</h2>
+    <p>Your OTP to change email is:</p>
+    <h1>${otp}</h1>
+    <p>Valid for 10 minutes.</p>
+    <p>If you did not request this, ignore this email.</p>
+    <br/>
+    <p>Regards,<br/>TaskNest-MicroTask Platform</p>
+  `,
+});

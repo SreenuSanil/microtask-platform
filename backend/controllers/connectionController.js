@@ -491,6 +491,34 @@ for (const conn of otherConnections) {
 };
 
 /* =========================
+   MARK PROVIDER SEEN
+========================= */
+exports.markProviderSeen = async (req, res) => {
+  try {
+    await Connection.findByIdAndUpdate(req.params.id, {
+      providerSeen: true,
+    });
+    res.json({ message: "Marked as seen" });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/* =========================
+   MARK WORKER SEEN
+========================= */
+exports.markWorkerSeen = async (req, res) => {
+  try {
+    await Connection.findByIdAndUpdate(req.params.id, {
+      workerSeenAccepted: true,
+    });
+    res.json({ message: "Marked as seen" });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/* =========================
    UPDATE BUDGET
 ========================= */
 exports.updateBudget = async (req, res) => {

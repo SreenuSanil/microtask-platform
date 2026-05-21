@@ -113,11 +113,11 @@ useEffect(() => {
       const data = await res.json();
 
       if (res.ok) {
-const inviteCount = data.filter(
-  inv => inv.status === "accepted"
+const newlyAcceptedCount = data.filter(
+  inv => inv.status === "accepted" && !inv.providerSeen
 ).length;
 
-setInviteCount(inviteCount);
+setInviteCount(newlyAcceptedCount);
       }
     } catch (err) {
       console.error("Failed to fetch invites");
@@ -322,12 +322,12 @@ case "invitations":
   )}
 </div>
 
-  <div
+<div
     className="header-icon"
-   onClick={() => {
-  setInviteCount(0);
-  setActiveSection("invitations");
-}}
+    onClick={() => {
+      setInviteCount(0);
+      setActiveSection("invitations");
+    }}
   >
     📩
     {inviteCount > 0 && (

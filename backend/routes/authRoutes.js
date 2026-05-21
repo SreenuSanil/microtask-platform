@@ -14,6 +14,7 @@ const WalletTransaction = require("../models/WalletTransaction");
 const {
   resetPasswordTemplate,
   emailVerificationTemplate,
+  emailChangeOtpTemplate,
 } = require("../utils/emailTemplates");
 const getSettings = async () => {
   let settings = await Settings.findOne();
@@ -527,6 +528,56 @@ router.put(
     }
   }
 );
+//email changing otp
+// SEND OTP
+router.post("/send-email-otp", verifyToken, async (req, res) => {
+  try {
+    const { newEmail } = req.body;
 
+    const existing = await User.findOne({ email: newEmail });
+    if (existing) return res.status(400).json({ message: "Email already in use" });
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiry = new Date(Date.now() + 10 * 60 * 1000);
+
+    await User.findByIdAndUpdate(req.user.userId, {
+      emailChangeOtp: otp,
+      emailChangeOtpExpiry: expiry,
+      pendingEmail: newEmail
+    });
+
+    const { subject, html } = emailChangeOtpTemplate(otp);
+    await sendEmail({ to: newEmail, subject, html });
+
+    res.json({ message: "OTP sent" });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// VERIFY OTP
+router.post("/verify-email-otp", verifyToken, async (req, res) => {
+  try {
+    const { otp } = req.body;
+
+    const user = await User.findById(req.user.userId);
+
+    if (!user.emailChangeOtp || user.emailChangeOtp !== otp)
+      return res.status(400).json({ message: "Invalid OTP" });
+
+    if (new Date() > user.emailChangeOtpExpiry)
+      return res.status(400).json({ message: "OTP expired" });
+
+    user.email = user.pendingEmail;
+    user.emailChangeOtp = null;
+    user.emailChangeOtpExpiry = null;
+    user.pendingEmail = null;
+    await user.save();
+
+    res.json({ message: "Email updated successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 module.exports = router;

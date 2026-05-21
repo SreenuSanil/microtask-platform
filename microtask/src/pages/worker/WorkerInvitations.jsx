@@ -25,6 +25,25 @@ const WorkerInvitations = ({ setInvitationCount }) => {
       if (res.ok) {
         setInvitations(data);
 
+// mark as seen after 4 seconds so user sees the message first
+const acceptedInvites = data.filter(i => i.status === "accepted" && !i.workerSeenAccepted);
+
+if (acceptedInvites.length > 0) {
+  setTimeout(async () => {
+    for (const inv of acceptedInvites) {
+      await fetch(
+        `http://localhost:5000/api/connections/${inv._id}/worker-seen`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+    }
+  }, 4000); // 4 seconds delay
+}
+
         const pending = data.filter(
           (inv) => inv.status === "pending"
         ).length;
@@ -78,7 +97,7 @@ const handleReject = async (id) => {
         <p>No invitations</p>
 ) : (
   <div className="inv-grid">
-    {invitations.map((inv) => {
+    {invitations.filter(inv => !(inv.status === "accepted" && inv.workerSeenAccepted)).map((inv) => {
           const task = inv.task;
           const provider = inv.provider;
 
@@ -165,11 +184,11 @@ const handleReject = async (id) => {
                 </div>
               )}
 
-              {inv.status === "accepted" && (
-                <div className="accepted-msg">
-                  You can message the provider now.
-                </div>
-              )}
+{inv.status === "accepted" && (
+  <div className="accepted-msg">
+    ✅ You can message the provider now. Go to Messages tab.
+  </div>
+)}
             </div>
           );
               })}

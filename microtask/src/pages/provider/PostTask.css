@@ -133,7 +133,60 @@ textarea {
   .form-row {
     flex-direction: column;
   }
+
+  .post-task-card h2 {
+    font-size: 22px;
+  }
+
+  .section-heading {
+    font-size: 16px;
+  }
+
+  .map-box {
+    height: 250px;
+  }
 }
+
+@media (max-width: 480px) {
+  .post-task-wrapper {
+    padding: 20px 10px;
+  }
+
+  .post-task-card {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .post-task-card h2 {
+    font-size: 20px;
+  }
+
+  .section-heading {
+    font-size: 15px;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .submit-btn {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .back-btn {
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+
+  .map-box {
+    height: 200px;
+  }
+}
+
 .skill-dropdown {
   background: white;
   border: 1px solid #e5e7eb;

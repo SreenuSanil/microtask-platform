@@ -146,3 +146,191 @@ color:#e74c3c;
 font-size:14px;
 color:#2c3e50;
 }
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1024px) {
+  .adminDashOverviewContainer {
+    padding: 20px;
+  }
+
+  .adminDashStatsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .adminDashSummaryGrid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+  }
+
+  .adminDashAlertGrid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .adminDashOverviewContainer {
+    padding: 16px;
+  }
+
+  .adminDashOverviewTitle {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+
+  .adminDashStatsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .adminDashStatsCard {
+    padding: 20px;
+  }
+
+  .adminDashStatsCardValue {
+    font-size: 20px;
+  }
+
+  .adminDashSectionBox {
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+
+  .adminDashSectionTitle {
+    font-size: 16px;
+    margin-bottom: 14px;
+  }
+
+  .adminDashSummaryGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .adminDashSummaryCard {
+    padding: 14px;
+  }
+
+  .adminDashSummaryValue {
+    font-size: 18px;
+  }
+
+  .adminDashAlertGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .adminDashAlertCard {
+    padding: 14px;
+  }
+
+  .adminDashAlertValue {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .adminDashOverviewContainer {
+    padding: 12px;
+  }
+
+  .adminDashOverviewTitle {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+
+  .adminDashStatsGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .adminDashStatsCard {
+    padding: 16px;
+  }
+
+  .adminDashStatsCardTitle {
+    font-size: 13px;
+  }
+
+  .adminDashStatsCardValue {
+    font-size: 18px;
+  }
+
+  .adminDashSectionBox {
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+
+  .adminDashSectionTitle {
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+
+  .adminDashSummaryGrid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .adminDashSummaryCard {
+    padding: 12px;
+  }
+
+  .adminDashSummaryValue {
+    font-size: 16px;
+  }
+
+  .adminDashSummaryLabel {
+    font-size: 13px;
+  }
+
+  .adminDashAlertGrid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .adminDashAlertCard {
+    padding: 12px;
+  }
+
+  .adminDashAlertValue {
+    font-size: 16px;
+  }
+
+  .adminDashAlertLabel {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+  .adminDashOverviewContainer {
+    padding: 10px;
+  }
+
+  .adminDashOverviewTitle {
+    font-size: 14px;
+  }
+
+  .adminDashStatsCard {
+    padding: 14px;
+  }
+
+  .adminDashStatsCardValue {
+    font-size: 16px;
+  }
+
+  .adminDashSectionBox {
+    padding: 12px;
+  }
+
+  .adminDashSummaryValue {
+    font-size: 15px;
+  }
+
+  .adminDashAlertValue {
+    font-size: 15px;
+  }
+}

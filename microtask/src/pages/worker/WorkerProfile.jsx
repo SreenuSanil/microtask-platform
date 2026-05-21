@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
 import "./WorkerProfile.css";
-
+const provider = new OpenStreetMapProvider();
 const WorkerProfile = () => {
   const [form, setForm] = useState({
     name: "",
@@ -26,8 +26,9 @@ const [certificationImages, setCertificationImages] = useState([]);
 const [certPreview, setCertPreview] = useState([]);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-
-  const provider = new OpenStreetMapProvider();
+const [newEmail, setNewEmail] = useState("");
+const [emailOtp, setEmailOtp] = useState("");
+const [emailOtpSent, setEmailOtpSent] = useState(false);
 const [searchText, setSearchText] = useState("");
 const [suggestions, setSuggestions] = useState([]);
 
@@ -37,23 +38,37 @@ const [workPreview, setWorkPreview] = useState([]);
     fetchProfile();
   }, []);
 
-  const fetchProfile = async () => {
-    const res = await fetch("http://localhost:5000/api/auth/me", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      }
-    });
-
-    const data = await res.json();
-    setForm(data);
-
-    if (data.location?.coordinates) {
-      setPosition([
-        data.location.coordinates[1],
-        data.location.coordinates[0]
-      ]);
+const fetchProfile = async () => {
+  const res = await fetch("http://localhost:5000/api/auth/me", {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`
     }
-  };
+  });
+
+  const data = await res.json();
+
+  setForm({
+    ...data,
+    name: data.name || "",
+    email: data.email || "",
+    phone: data.phone || "",
+    address: data.address || "",
+    bio: data.bio || "",
+    experienceYears: data.experienceYears || 0,
+    pastWorkDescription: data.pastWorkDescription || "",
+    certifications: data.certifications || "",
+    skills: data.skills || [],
+  });
+
+  setSearchText(data.address || "");
+
+  if (data.location?.coordinates) {
+    setPosition([
+      data.location.coordinates[1],
+      data.location.coordinates[0]
+    ]);
+  }
+};
 
   const handleCertificationImages = (e) => {
   const files = Array.from(e.target.files);
@@ -123,9 +138,10 @@ const handleSearch = async (value) => {
     setSuggestions([]);
     return;
   }
+  console.log("Searching:", value);
 
   const results = await provider.search({ query: value });
-
+console.log("Results:", results);
   setSuggestions(results.slice(0, 5));
 };
 
@@ -233,7 +249,40 @@ allowedFields.forEach((key) => {
       alert(data.error);
     }
   };
+const sendEmailOtp = async () => {
+  if (!newEmail) return alert("Enter new email");
+  const res = await fetch("http://localhost:5000/api/auth/send-email-otp", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`
+    },
+    body: JSON.stringify({ newEmail })
+  });
+  const data = await res.json();
+  if (res.ok) { alert("OTP sent to new email"); setEmailOtpSent(true); }
+  else alert(data.message);
+};
 
+const verifyEmailOtp = async () => {
+  if (!emailOtp) return alert("Enter OTP");
+  const res = await fetch("http://localhost:5000/api/auth/verify-email-otp", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`
+    },
+    body: JSON.stringify({ otp: emailOtp })
+  });
+  const data = await res.json();
+  if (res.ok) {
+    alert("Email changed successfully");
+    setEmailOtpSent(false);
+    setNewEmail("");
+    setEmailOtp("");
+    fetchProfile();
+  } else alert(data.message);
+};
   return (
     <div className="worker-profile-container">
       <h2>Worker Profile</h2>
@@ -470,7 +519,40 @@ allowedFields.forEach((key) => {
         <button onClick={changePassword}>Update Password</button>
       </div>
       
+{/* CHANGE EMAIL */}
+<div className="profile-card">
+  <h3>Change Email</h3>
 
+  <input
+    type="email"
+    placeholder="Enter new email"
+    value={newEmail}
+    onChange={(e) => setNewEmail(e.target.value)}
+    disabled={emailOtpSent}
+  />
+
+  {!emailOtpSent ? (
+    <button onClick={sendEmailOtp}>Send OTP</button>
+  ) : (
+    <>
+      <input
+        type="text"
+        placeholder="Enter OTP"
+        value={emailOtp}
+        onChange={(e) => setEmailOtp(e.target.value)}
+      />
+      <div style={{ display: "flex", gap: "10px" }}>
+        <button onClick={verifyEmailOtp}>Verify & Change</button>
+        <button
+          style={{ background: "#ef4444" }}
+          onClick={() => { setEmailOtpSent(false); setEmailOtp(""); }}
+        >
+          Cancel
+        </button>
+      </div>
+    </>
+  )}
+</div>
       <button className="save-btn" onClick={saveProfile}>
         
         Save Changes

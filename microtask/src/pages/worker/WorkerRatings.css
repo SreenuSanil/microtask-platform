@@ -150,6 +150,8 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 margin-bottom:8px;
+gap: 12px;
+justify-content: flex-start;
 }
 
 .review-stars{
@@ -159,6 +161,7 @@ letter-spacing:1px;
 }
 
 .review-skill{
+margin-left: auto;
 font-size:12px;
 background:#f3f4f6;
 padding:4px 10px;
@@ -177,24 +180,42 @@ line-height:1.5;
 margin-top:2px;
 }
 
-/* REVIEW IMAGE */
-
-.review-image-box{
-margin-top:12px;
-overflow:hidden;
-border-radius:10px;
-max-width:260px;
+.review-image-box {
+  margin-top: 10px;
+  width: 60px;
+  height: 60px;
 }
 
-.review-image{
-width:100%;
-border-radius:10px;
-cursor:pointer;
-transition:transform 0.35s ease;
+.review-image {
+  width: 42px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
 }
 
-.review-image:hover{
-transform:scale(1.08);
+.review-image:hover {
+  transform: scale(1.1);
+}
+
+.image-preview-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: pointer;
+}
+
+.image-preview-large {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 10px;
 }
 
 /* EMPTY */
@@ -228,4 +249,119 @@ grid-template-columns:repeat(2,1fr);
 max-width:100%;
 }
 
+}
+
+@media (max-width: 480px) {
+  .ratings-container {
+    padding: 18px;
+  }
+
+  .ratings-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .skill-filter {
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .skill-filter button {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .skill-summary {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .skill-box {
+    padding: 14px;
+  }
+
+  .skill-name {
+    font-size: 12px;
+  }
+
+  .skill-rating {
+    font-size: 16px;
+  }
+
+  .rating-value {
+    font-size: 13px;
+  }
+
+  .review-card {
+    padding: 14px;
+  }
+
+  .review-top {
+    flex-wrap: wrap;
+  }
+
+  .review-stars {
+    font-size: 16px;
+  }
+
+  .review-skill {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  .review-comment {
+    font-size: 13px;
+  }
+
+  .review-image {
+    width: 38px;
+    height: 38px;
+  }
+
+  .image-preview-large {
+    max-width: 95%;
+    max-height: 95%;
+  }
+}
+
+@media (max-width: 360px) {
+  .ratings-container {
+    padding: 15px;
+  }
+
+  .ratings-title {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .skill-filter button {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .skill-box {
+    padding: 12px;
+  }
+
+  .skill-rating {
+    font-size: 14px;
+  }
+
+  .review-card {
+    padding: 12px;
+  }
+
+  .review-stars {
+    font-size: 14px;
+  }
+
+  .review-comment {
+    font-size: 12px;
+  }
+
+  .review-image {
+    width: 35px;
+    height: 35px;
+  }
 }

@@ -61,12 +61,37 @@
 }
 
 .back-btn {
-  margin-bottom: 15px;
-  background: #ccc;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #2c7be5;
+  color: white;
   border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
   cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.back-btn:hover {
+  background: #1a68d1;
+}
+
+.detail-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
 }
 
 /* PEOPLE */
@@ -134,4 +159,168 @@
   padding: 10px 16px;
   border-radius: 6px;
   cursor: pointer;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1024px) {
+  .admin-tasks {
+    padding: 25px;
+  }
+
+  .task-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .task-card {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-tasks {
+    padding: 20px;
+  }
+
+  .page-title {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .task-filters {
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .task-filters button {
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+
+  .task-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .task-card {
+    padding: 16px;
+  }
+
+  .task-details {
+    padding: 20px;
+  }
+
+  .detail-title {
+    font-size: 18px;
+  }
+
+  .people-section {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .person-box img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .image-grid img {
+    width: 100px;
+  }
+
+  .completion-img {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-tasks {
+    padding: 15px;
+  }
+
+  .page-title {
+    font-size: 16px;
+    margin-bottom: 14px;
+  }
+
+  .task-filters button {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .task-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .task-card {
+    padding: 14px;
+  }
+
+  .view-btn {
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+
+  .task-details {
+    padding: 16px;
+  }
+
+  .detail-title {
+    font-size: 16px;
+  }
+
+  .back-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .person-box img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .image-grid img {
+    width: 80px;
+  }
+
+  .cancel-btn {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+  .admin-tasks {
+    padding: 12px;
+  }
+
+  .page-title {
+    font-size: 15px;
+  }
+
+  .task-card {
+    padding: 12px;
+  }
+
+  .task-details {
+    padding: 14px;
+  }
+
+  .detail-title {
+    font-size: 15px;
+  }
+
+  .person-box img {
+    width: 45px;
+    height: 45px;
+  }
+
+  .image-grid img {
+    width: 70px;
+  }
 }

@@ -223,7 +223,10 @@ reviews: [
    createdAt: {
      type: Date,
      default: Date.now
-   }
+   },
+   image: {
+     type: String
+     }
  }
 ],
 
@@ -257,6 +260,10 @@ emailVerified: {
 emailVerifiedAt: {
   type: Date,
 },
+
+emailChangeOtp: { type: String },
+emailChangeOtpExpiry: { type: Date },
+pendingEmail: { type: String },
 
 payment: {
   orderId: String,

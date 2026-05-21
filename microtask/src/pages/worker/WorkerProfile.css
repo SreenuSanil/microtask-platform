@@ -232,3 +232,107 @@
 .add-more:hover {
   background: #ecfdf5;
 }
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+  .worker-profile-container {
+    margin: 20px auto;
+    padding: 20px;
+  }
+
+  .worker-profile-container h2 {
+    font-size: 24px;
+  }
+
+  .profile-image-section img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .profile-card {
+    padding: 16px;
+  }
+
+  .profile-card h3 {
+    font-size: 16px;
+  }
+
+  .leaflet-container {
+    height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .worker-profile-container {
+    margin: 10px;
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .worker-profile-container h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .profile-image-section img {
+    width: 90px;
+    height: 90px;
+  }
+
+  .profile-card {
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+
+  .profile-card h3 {
+    font-size: 15px;
+  }
+
+  .profile-card input,
+  .profile-card textarea {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .profile-card textarea {
+    min-height: 80px;
+  }
+
+  .save-btn {
+    padding: 12px;
+    font-size: 15px;
+  }
+
+  .leaflet-container {
+    height: 200px;
+  }
+
+  .work-preview img {
+    width: 70px;
+    height: 70px;
+  }
+
+  .img-box img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .add-more {
+    width: 80px;
+    height: 80px;
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 360px) {
+  .worker-profile-container h2 {
+    font-size: 18px;
+  }
+
+  .profile-card h3 {
+    font-size: 14px;
+  }
+}

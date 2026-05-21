@@ -81,3 +81,138 @@
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
 }
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1024px) {
+  .provider-overview-container {
+    padding: 20px;
+  }
+
+  .provider-stats {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .financial-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .provider-overview-container {
+    padding: 16px;
+  }
+
+  .provider-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 30px;
+  }
+
+  .provider-card {
+    padding: 18px;
+  }
+
+  .provider-card h3 {
+    font-size: 22px;
+  }
+
+  .provider-financial {
+    margin-bottom: 30px;
+  }
+
+  .provider-financial h2 {
+    font-size: 16px;
+  }
+
+  .financial-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .financial-box {
+    padding: 14px;
+  }
+
+  .financial-box h4 {
+    font-size: 18px;
+  }
+
+  .provider-activity h2 {
+    font-size: 16px;
+  }
+
+  .activity-box {
+    padding: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .provider-overview-container {
+    padding: 12px;
+  }
+
+  .provider-stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .provider-card {
+    padding: 16px;
+  }
+
+  .provider-card span {
+    font-size: 13px;
+  }
+
+  .provider-card h3 {
+    font-size: 20px;
+  }
+
+  .provider-financial h2 {
+    font-size: 15px;
+    margin-bottom: 14px;
+  }
+
+  .financial-box {
+    padding: 12px;
+  }
+
+  .financial-box span {
+    font-size: 12px;
+  }
+
+  .financial-box h4 {
+    font-size: 16px;
+  }
+
+  .provider-activity h2 {
+    font-size: 15px;
+  }
+
+  .activity-box {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .provider-overview-container {
+    padding: 10px;
+  }
+
+  .provider-card {
+    padding: 14px;
+  }
+
+  .provider-card h3 {
+    font-size: 18px;
+  }
+
+  .financial-box h4 {
+    font-size: 15px;
+  }
+}

@@ -49,10 +49,9 @@ const AdminNotifications = () => {
       ) : (
         notifications.map((n) => {
           // ✅ detect high risk notifications
-          const isHighRisk =
-            n.title?.toLowerCase().includes("cancellation") ||
-            n.message?.toLowerCase().includes("cancellation");
-
+const isHighRisk =
+  n.title?.toLowerCase().includes("high cancellation") ||
+  n.title?.toLowerCase().includes("cancellation alert");
           return (
             <div
               key={n._id}

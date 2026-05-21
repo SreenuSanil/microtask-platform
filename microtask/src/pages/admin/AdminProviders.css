@@ -34,3 +34,29 @@
   background: #fff3f3;
   box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
 }
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+  .search-box input {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  .cancel-count {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-box input {
+    padding: 7px;
+    font-size: 12px;
+  }
+
+  .cancel-count {
+    font-size: 10px;
+  }
+}

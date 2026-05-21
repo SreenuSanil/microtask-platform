@@ -55,6 +55,42 @@ body {
   height: 34px;
 }
 
+.hamburger {
+  display: none;
+  flex-direction: column;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  z-index: 101;
+}
+
+.hamburger span {
+  width: 25px;
+  height: 3px;
+  background: #334155;
+  margin: 3px 0;
+  transition: 0.3s;
+  border-radius: 3px;
+}
+
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+}
+
 .nav-links a {
   margin-left: 20px;
   text-decoration: none;
@@ -312,6 +348,53 @@ body {
    RESPONSIVE
 ========================= */
 
+@media (max-width: 768px) {
+  .navbar {
+    padding: 16px 20px;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 70%;
+    max-width: 300px;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 80px 30px 30px;
+    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s ease;
+    gap: 20px;
+  }
+
+  .nav-links.open {
+    right: 0;
+  }
+
+  .nav-links a {
+    margin: 0;
+    padding: 12px 0;
+    font-size: 16px;
+    width: 100%;
+  }
+
+  .login-btn,
+  .signup-btn {
+    text-align: center;
+    margin: 0;
+  }
+
+  .signup-btn {
+    margin-top: 10px;
+  }
+}
+
 @media (max-width: 900px) {
   .feature-grid,
   .workflow {
@@ -339,12 +422,16 @@ body {
   .hero-content h1 {
     font-size: 28px;
   }
+
+  .section-box {
+    padding: 40px 25px;
+  }
+
+  .section-box h2 {
+    font-size: 28px;
+  }
 }
-.support-email {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #94a3b8;
-}
+
 .support-email {
   margin-top: 10px;
   font-size: 15px;

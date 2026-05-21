@@ -232,28 +232,41 @@ const checkExistingRequest = async () => {
   </div>
 </div>
 
-      {/* REVIEWS */}
-      <div className="profile-section">
-        <h3>Reviews</h3>
+{/* REVIEWS */}
+<div className="profile-section">
+  <h3>Reviews</h3>
 
-        {worker.reviews &&
-        worker.reviews.length > 0 ? (
-          worker.reviews.map((review, index) => (
-            <div key={index} className="review-card">
-              <h4>{review.user}</h4>
-<div className="review-rating">
-  {"★".repeat(review.rating)}
-  {"☆".repeat(5 - review.rating)}
-</div>
-              <div className="review-text">
-                {review.comment}
-              </div>
-            </div>
-          ))
-        ) : (
-          <p>No reviews yet.</p>
-        )}
+  {worker.reviews && worker.reviews.length > 0 ? (
+    worker.reviews.map((review, index) => (
+      <div key={index} className="review-card">
+
+        <div className="review-top">
+          <div className="review-rating">
+            {"★".repeat(review.rating)}
+            {"☆".repeat(5 - review.rating)}
+          </div>
+
+          {review.image && (
+            <img
+              src={`http://localhost:5000/${review.image}`}
+              alt="review"
+              className="review-image"
+              onClick={() => setSelectedImage(`http://localhost:5000/${review.image}`)}
+            />
+          )}
+
+          <span className="review-skill-badge">{review.skill}</span>
+        </div>
+
+        <div className="review-text">{review.comment}</div>
+
       </div>
+    ))
+  ) : (
+    <p>No reviews yet.</p>
+  )}
+</div>
+
 {selectedImage && (
   <div className="image-modal" onClick={() => setSelectedImage(null)}>
     <span className="close-btn">✕</span>

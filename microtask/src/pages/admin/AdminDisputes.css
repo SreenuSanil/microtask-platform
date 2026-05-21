@@ -63,17 +63,22 @@
   padding: 25px;
   border-radius: 10px;
   box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  /* ADD THIS: */
+  margin-top: 0;
 }
 
-/* BACK BUTTON */
-
 .back-btn {
+  display: inline-flex;
+  align-items: center;
   margin-bottom: 20px;
   background: #e0e0e0;
   border: none;
   padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
+  /* ADD THIS: */
+  position: relative;
+  z-index: 1;
 }
 
 .back-btn:hover {

@@ -14,7 +14,9 @@ const {
   getMyChats,
   confirmConnection,
   workerConfirm,
-  updateBudget
+  updateBudget,
+  markProviderSeen,
+  markWorkerSeen
 } = require("../controllers/connectionController");
 
 /* =========================
@@ -68,5 +70,12 @@ router.patch("/worker-confirm/:id", protect, workerConfirm);
 
 router.patch("/update-budget/:id", protect, updateBudget);
 
+/* =========================
+   SEEN STATUS
+========================= */
+
+router.patch("/:id/provider-seen", protect, markProviderSeen);
+
+router.patch("/:id/worker-seen", protect, markWorkerSeen);
 
 module.exports = router;

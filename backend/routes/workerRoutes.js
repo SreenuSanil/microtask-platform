@@ -253,9 +253,9 @@ router.post("/search", auth, async (req, res) => {
   }
 });
 
-// ============================
-// GET FULL WORKER PROFILE
-// ============================
+
+// FULL WORKER PROFILE
+
 router.get("/:workerId", async (req, res) => {
   try {
     const worker = await User.findById(req.params.workerId)

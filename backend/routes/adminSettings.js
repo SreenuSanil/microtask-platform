@@ -16,8 +16,7 @@ router.get("/", async (req, res) => {
       },
       maintenanceMode: false,
       maintenanceMessage: "",
-      commissionPercent: 10,
-      minWithdrawal: 500
+      commissionPercent: 10
     });
   }
 

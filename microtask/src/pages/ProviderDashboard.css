@@ -198,6 +198,8 @@ body {
     overflow-x: auto;
     border-right: none;
     border-bottom: 1px solid #e5e7eb;
+    max-height: 70px;
+    min-height: 70px;
   }
 
   .menu-item {
@@ -220,6 +222,9 @@ body {
 @media (max-width: 768px) {
   .main-content {
     padding: 18px;
+    overflow-y: auto;
+    min-height: 0;
+    flex: 1;
   }
 }
 
@@ -256,20 +261,84 @@ body {
    VERY SMALL PHONES
 ========================= */
 @media (max-width: 360px) {
+  .dashboard-header {
+    padding: 10px 12px;
+    height: auto;
+    min-height: 60px;
+  }
+
+  .dashboard-logo {
+    height: 24px;
+  }
+
   .welcome-title {
-    font-size: 16px;
+    font-size: 14px;
+  }
+
+  .welcome-sub {
+    font-size: 10px;
   }
 
   .logout-btn {
-    padding: 6px 10px;
-    font-size: 12px;
+    padding: 5px 10px;
+    font-size: 11px;
   }
 
   .menu-item {
-    min-width: 96px;
-    font-size: 12px;
+    min-width: 85px;
+    font-size: 11px;
+    padding: 10px 10px;
+  }
+
+  .menu-icon {
+    font-size: 16px;
+  }
+
+  .main-content {
+    padding: 12px;
+  }
+
+  .stat-card {
+    padding: 14px;
+  }
+
+  .stat-value {
+    font-size: 18px;
+  }
+
+  .stat-card h3 {
+    font-size: 11px;
   }
 }
+
+/* =========================
+   EXTRA SMALL PHONES
+========================= */
+@media (max-width: 320px) {
+  .dashboard-header {
+    padding: 8px 10px;
+  }
+
+  .dashboard-logo {
+    height: 22px;
+  }
+
+  .welcome-title {
+    font-size: 13px;
+  }
+
+  .menu-item {
+    min-width: 75px;
+    font-size: 10px;
+    padding: 8px 8px;
+  }
+
+  .logout-btn {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+}
+
 .header-right {
   display: flex;
   align-items: center;

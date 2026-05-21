@@ -47,7 +47,7 @@ const ProviderInvites = () => {
       {invites.length === 0 ? (
         <p>No worker responses</p>
       ) : (
-       invites.map(inv => {
+       invites.filter(inv => !(inv.status === "accepted" && inv.providerSeen)).map(inv => {
 
   const requiredSkill = inv.task?.requiredSkill?.toLowerCase();
 
@@ -94,11 +94,23 @@ const ProviderInvites = () => {
           {inv.status.toUpperCase()}
         </p>
 
-        {inv.status === "accepted" && (
-          <button onClick={() => setSelectedChat(inv)}>
-            Open Chat
-          </button>
-        )}
+{inv.status === "accepted" && (
+  <button onClick={async () => {
+    // mark providerSeen on backend
+    await fetch(
+      `http://localhost:5000/api/connections/${inv._id}/provider-seen`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    setSelectedChat(inv);
+  }}>
+    Open Chat
+  </button>
+)}
       </div>
 
     </div>

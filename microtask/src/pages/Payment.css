@@ -123,3 +123,67 @@
     opacity: 1;
   }
 }
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 768px) {
+  .payment-card {
+    width: 90%;
+    max-width: 340px;
+    padding: 35px 28px;
+  }
+
+  .payment-icon {
+    font-size: 36px;
+  }
+
+  .payment-card h2 {
+    font-size: 20px;
+  }
+
+  .payment-card p {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .payment-card {
+    width: 95%;
+    max-width: 320px;
+    padding: 30px 24px;
+  }
+
+  .payment-icon {
+    font-size: 32px;
+  }
+
+  .payment-card h2 {
+    font-size: 18px;
+  }
+
+  .payment-card p {
+    font-size: 12px;
+    margin-bottom: 20px;
+  }
+
+  .payment-btn {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .payment-security {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .payment-card {
+    padding: 25px 20px;
+  }
+
+  .payment-card h2 {
+    font-size: 16px;
+  }
+}

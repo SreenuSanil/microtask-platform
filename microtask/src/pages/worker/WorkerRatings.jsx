@@ -6,7 +6,7 @@ const WorkerRatings = () => {
   const [reviews, setReviews] = useState([]);
   const [skills, setSkills] = useState([]);
   const [selectedSkill, setSelectedSkill] = useState("all");
-
+  const [previewImage, setPreviewImage] = useState(null);
 const fetchData = async () => {
 
   const res = await fetch(
@@ -122,38 +122,32 @@ useEffect(() => {
 
             return (
 
-              <div key={i} className="review-card">
+<div key={i} className="review-card">
 
-                <div className="review-top">
+  <div className="review-top">
+    <div className="review-stars">
+      {"★".repeat(safeRating)}
+      {"☆".repeat(5 - safeRating)}
+    </div>
 
-                  <div className="review-stars">
-                    {"★".repeat(safeRating)}
-                    {"☆".repeat(5 - safeRating)}
-                  </div>
+    {/* ← move image here, next to stars */}
+    {r.image && (
+      <img
+        src={`http://localhost:5000/${r.image}`}
+        alt="review"
+        className="review-image"
+        onClick={() => setPreviewImage(`http://localhost:5000/${r.image}`)}
+      />
+    )}
 
-                  <span className="review-skill">
-                    {r.skill}
-                  </span>
+    <span className="review-skill">{r.skill}</span>
+  </div>
 
-                </div>
+  {r.comment && (
+    <div className="review-comment">{r.comment}</div>
+  )}
 
-                {r.comment && (
-                  <div className="review-comment">
-                    {r.comment}
-                  </div>
-                )}
-
-                {r.image && (
-                  <div className="review-image-box">
-                    <img
-                      src={`http://localhost:5000/${r.image}`}
-                      alt="review work"
-                      className="review-image"
-                    />
-                  </div>
-                )}
-
-              </div>
+</div>
 
             );
 
@@ -162,6 +156,12 @@ useEffect(() => {
         )}
 
       </div>
+ {previewImage && (
+    <div className="image-preview-overlay" onClick={() => setPreviewImage(null)}>
+      <img src={previewImage} className="image-preview-large" alt="preview" />
+    </div>
+  )}
+
 
     </div>
 
