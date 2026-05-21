@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import "./AdminWorkers.css";
 import defaultAvatar from "../../assets/default-avatar.png";
 
+const BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
+
 const AdminWorkers = () => {
   const token = localStorage.getItem("token");
 
@@ -17,7 +19,7 @@ const AdminWorkers = () => {
   const [blockDate, setBlockDate] = useState("");
   const getProfileImage = (user) => {
     if (user.profileImage) {
-      return `https://microtask-platform-backend-y3xo.onrender.com/${user.profileImage}`;
+      return `${import.meta.env.VITE_API_URL}/${user.profileImage}`;
     }
     return defaultAvatar;
   };
@@ -25,7 +27,7 @@ const AdminWorkers = () => {
   /* FETCH */
   const fetchPendingWorkers = async () => {
     const res = await fetch(
-      "https://microtask-platform-backend-y3xo.onrender.com/api/admin/workers/pending",
+      `${BASE_URL}/admin/workers/pending`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
     const data = await res.json();
@@ -37,7 +39,7 @@ const AdminWorkers = () => {
       tab === "active" ? "approved" : tab === "blocked" ? "blocked" : "removed";
 
     const res = await fetch(
-      `https://microtask-platform-backend-y3xo.onrender.com/api/admin/workers?status=${status}`,
+      `${BASE_URL}/admin/workers?status=${status}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
 
@@ -64,7 +66,7 @@ const AdminWorkers = () => {
       ),
     }));
 
-    await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/workers/approve", {
+    await fetch(`${BASE_URL}/admin/workers/approve`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -80,7 +82,7 @@ const AdminWorkers = () => {
   const rejectWorker = async (workerId) => {
     if (!rejectReason) return;
 
-    await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/workers/reject", {
+    await fetch(`${BASE_URL}/admin/workers/reject`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -93,101 +95,149 @@ const AdminWorkers = () => {
     fetchPendingWorkers();
   };
 
- const blockWorker = async (id) => {
-  const reason = prompt("Enter reason for blocking:");
-  if (!reason) return;
+  const blockWorker = async (id) => {
+    const reason = prompt("Enter reason for blocking:");
+    if (!reason) return;
 
-  const daysInput = prompt("Block for how many days? (leave empty for permanent)");
+    const daysInput = prompt("Block for how many days? (leave empty for permanent)");
 
-  let days = null;
+    let days = null;
 
-  if (daysInput) {
-    days = Number(daysInput);
-    if (isNaN(days) || days <= 0) {
-      alert("Invalid number of days");
-      return;
+    if (daysInput) {
+      days = Number(daysInput);
+      if (isNaN(days) || days <= 0) {
+        alert("Invalid number of days");
+        return;
+      }
     }
-  }
 
-  await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/workers/block", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      workerId: id,
-      reason,
-      days, // ✅ NEW
-    }),
-  });
+    try {
+      const res = await fetch(`${BASE_URL}/admin/workers/block`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          workerId: id,
+          reason,
+          days,
+        }),
+      });
 
-  fetchWorkersByTab(activeTab);
-};
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Block failed");
+      }
+
+      alert(data.message || "Worker blocked successfully");
+      fetchWorkersByTab(activeTab);
+    } catch (error) {
+      alert("Error blocking worker: " + error.message);
+      console.error("Block error:", error);
+    }
+  };
 
   const unblockWorker = async (id) => {
-  await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/workers/unblock", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ workerId: id }),
-  });
+    try {
+      const res = await fetch(`${BASE_URL}/admin/workers/unblock`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ workerId: id }),
+      });
 
-  fetchWorkersByTab(activeTab);
-};
+      const data = await res.json();
 
-const submitBlock = async () => {
-  if (!blockReason) {
-    alert("Enter reason");
-    return;
-  }
+      if (!res.ok) {
+        throw new Error(data.error || "Unblock failed");
+      }
 
-  let days = null;
+      alert(data.message || "Worker unblocked successfully");
+      fetchWorkersByTab(activeTab);
+    } catch (error) {
+      alert("Error unblocking worker: " + error.message);
+      console.error("Unblock error:", error);
+    }
+  };
 
-  if (blockDate) {
-    const selected = new Date(blockDate);
-    const today = new Date();
+  const submitBlock = async () => {
+    if (!blockReason) {
+      alert("Enter reason");
+      return;
+    }
 
-    const diffTime = selected - today;
-    days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  }
+    let days = null;
 
-  await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/workers/block", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      workerId: selectedWorker,
-      reason: blockReason,
-      days,
-    }),
-  });
+    if (blockDate) {
+      const selected = new Date(blockDate);
+      const today = new Date();
 
-  setShowBlockModal(false);
-  setBlockReason("");
-  setBlockDate("");
+      const diffTime = selected - today;
+      days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
 
-  fetchWorkersByTab(activeTab);
-};
+    try {
+      const res = await fetch(`${BASE_URL}/admin/workers/block`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          workerId: selectedWorker,
+          reason: blockReason,
+          days,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Block failed");
+      }
+
+      alert(data.message || "Worker blocked successfully");
+      setShowBlockModal(false);
+      setBlockReason("");
+      setBlockDate("");
+
+      fetchWorkersByTab(activeTab);
+    } catch (error) {
+      alert("Error blocking worker: " + error.message);
+      console.error("Block error:", error);
+    }
+  };
 
   const removeWorker = async (id) => {
     const reason = prompt("Reason?");
     if (!reason) return;
 
-    await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/workers/remove", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ workerId: id, reason }),
-    });
+    try {
+      const res = await fetch(`${BASE_URL}/admin/workers/remove`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ workerId: id, reason }),
+      });
 
-    fetchWorkersByTab(activeTab);
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Remove failed");
+      }
+
+      alert(data.message || "Worker removed successfully");
+      fetchWorkersByTab(activeTab);
+    } catch (error) {
+      alert("Error removing worker: " + error.message);
+      console.error("Remove error:", error);
+    }
   };
 
   return (

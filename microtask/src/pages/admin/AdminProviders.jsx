@@ -2,19 +2,21 @@ import { useEffect, useState } from "react";
 import defaultAvatar from "../../assets/default-avatar.png";
 import "./AdminProviders.css";
 
+const BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
+
 const AdminProviders = () => {
   const token = localStorage.getItem("token");
 
   const [providers, setProviders] = useState([]);
   const [providerTab, setProviderTab] = useState("active");
   const [search, setSearch] = useState("");
-const [showBlockModal, setShowBlockModal] = useState(false);
-const [selectedProvider, setSelectedProvider] = useState(null);
-const [blockReason, setBlockReason] = useState("");
-const [blockDate, setBlockDate] = useState("");
+  const [showBlockModal, setShowBlockModal] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState(null);
+  const [blockReason, setBlockReason] = useState("");
+  const [blockDate, setBlockDate] = useState("");
   const getProfileImage = (user) => {
     if (user.profileImage) {
-      return `https://microtask-platform-backend-y3xo.onrender.com/${user.profileImage}`;
+      return `${import.meta.env.VITE_API_URL}/${user.profileImage}`;
     }
     return defaultAvatar;
   };
@@ -22,7 +24,7 @@ const [blockDate, setBlockDate] = useState("");
   const fetchProviders = async () => {
     try {
       const res = await fetch(
-        "https://microtask-platform-backend-y3xo.onrender.com/api/admin/providers",
+        `${BASE_URL}/admin/providers`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -38,71 +40,105 @@ const [blockDate, setBlockDate] = useState("");
     fetchProviders();
   }, []);
 
-const submitBlockProvider = async () => {
-  if (!blockReason) {
-    alert("Enter reason");
-    return;
-  }
+  const submitBlockProvider = async () => {
+    if (!blockReason) {
+      alert("Enter reason");
+      return;
+    }
 
-  let days = null;
+    let days = null;
 
-  if (blockDate) {
-    const selected = new Date(blockDate);
-    const today = new Date();
+    if (blockDate) {
+      const selected = new Date(blockDate);
+      const today = new Date();
 
-    const diffTime = selected - today;
-    days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  }
+      const diffTime = selected - today;
+      days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
 
-  await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/providers/block", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      providerId: selectedProvider,
-      reason: blockReason,
-      days,
-    }),
-  });
+    try {
+      const res = await fetch(`${BASE_URL}/admin/providers/block`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          providerId: selectedProvider,
+          reason: blockReason,
+          days,
+        }),
+      });
 
-  setShowBlockModal(false);
-  setBlockReason("");
-  setBlockDate("");
+      const data = await res.json();
 
-  fetchProviders();
-};
+      if (!res.ok) {
+        throw new Error(data.error || "Block failed");
+      }
+
+      alert(data.message || "Provider blocked successfully");
+      setShowBlockModal(false);
+      setBlockReason("");
+      setBlockDate("");
+
+      fetchProviders();
+    } catch (error) {
+      alert("Error blocking provider: " + error.message);
+      console.error("Block error:", error);
+    }
+  };
 
   const unblockProvider = async (id) => {
-    await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/providers/unblock", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ providerId: id }),
-    });
+    try {
+      const res = await fetch(`${BASE_URL}/admin/providers/unblock`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ providerId: id }),
+      });
 
-    alert("Provider unblocked");
-    fetchProviders();
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Unblock failed");
+      }
+
+      alert(data.message || "Provider unblocked successfully");
+      fetchProviders();
+    } catch (error) {
+      alert("Error unblocking provider: " + error.message);
+      console.error("Unblock error:", error);
+    }
   };
 
   const removeProvider = async (id) => {
     const reason = prompt("Reason for removal?");
     if (!reason) return;
 
-    await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/providers/remove", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ providerId: id, reason }),
-    });
+    try {
+      const res = await fetch(`${BASE_URL}/admin/providers/remove`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ providerId: id, reason }),
+      });
 
-    alert("Provider removed");
-    fetchProviders();
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Remove failed");
+      }
+
+      alert(data.message || "Provider removed successfully");
+      fetchProviders();
+    } catch (error) {
+      alert("Error removing provider: " + error.message);
+      console.error("Remove error:", error);
+    }
   };
 
   return (

@@ -22,7 +22,9 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",               // local frontend
-      "https://microtask-platform-1-5hd7.onrender.com"   // deployed frontend
+      "http://localhost:3000",               // alternative local frontend
+      "https://microtask-platform-1-5hd7.onrender.com",   // deployed frontend
+      "https://microtask-platform-backend-y3xo.onrender.com"   // backend itself
     ],
     credentials: true,
   })

@@ -299,11 +299,17 @@ exports.blockWorker = async (req, res) => {
       days
     );
 
-    await sendEmail({
-      to: worker.email,
-      subject,
-      html,
-    });
+    try {
+      await sendEmail({
+        to: worker.email,
+        subject,
+        html,
+      });
+      console.log(`✅ Block email sent to ${worker.email}`);
+    } catch (emailError) {
+      console.error(`❌ Failed to send block email to ${worker.email}:`, emailError.message);
+      // Don't fail the block operation if email fails
+    }
 
     res.json({
       message: days
@@ -341,11 +347,17 @@ exports.unblockWorker = async (req, res) => {
 
     const { subject, html } = workerUnblockedTemplate(worker.name);
 
-    await sendEmail({
-      to: worker.email,
-      subject,
-      html,
-    });
+    try {
+      await sendEmail({
+        to: worker.email,
+        subject,
+        html,
+      });
+      console.log(`✅ Unblock email sent to ${worker.email}`);
+    } catch (emailError) {
+      console.error(`❌ Failed to send unblock email to ${worker.email}:`, emailError.message);
+      // Don't fail the unblock operation if email fails
+    }
 
     res.json({ message: "Worker unblocked" });
 
@@ -444,11 +456,17 @@ exports.blockProvider = async (req, res) => {
       days
     );
 
-    await sendEmail({
-      to: provider.email,
-      subject,
-      html,
-    });
+    try {
+      await sendEmail({
+        to: provider.email,
+        subject,
+        html,
+      });
+      console.log(`✅ Block email sent to ${provider.email}`);
+    } catch (emailError) {
+      console.error(`❌ Failed to send block email to ${provider.email}:`, emailError.message);
+      // Don't fail the block operation if email fails
+    }
 
     res.json({ message: "Provider blocked" });
 
@@ -477,11 +495,17 @@ exports.unblockProvider = async (req, res) => {
 
     const { subject, html } = providerUnblockedTemplate(provider.name);
 
-    await sendEmail({
-      to: provider.email,
-      subject,
-      html,
-    });
+    try {
+      await sendEmail({
+        to: provider.email,
+        subject,
+        html,
+      });
+      console.log(`✅ Unblock email sent to ${provider.email}`);
+    } catch (emailError) {
+      console.error(`❌ Failed to send unblock email to ${provider.email}:`, emailError.message);
+      // Don't fail the unblock operation if email fails
+    }
 
     res.json({ message: "Provider unblocked" });
 
