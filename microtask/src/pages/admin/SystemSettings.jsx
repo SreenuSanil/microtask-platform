@@ -23,7 +23,7 @@ const SystemSettings = () => {
   }, []);
 
   const fetchSettings = async () => {
-    const res = await fetch("http://localhost:5000/api/admin/settings", {
+    const res = await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/settings", {
       headers: { Authorization: `Bearer ${token}` }
     });
 
@@ -51,7 +51,7 @@ const SystemSettings = () => {
   };
 
   const saveSettings = async () => {
-    await fetch("http://localhost:5000/api/admin/settings", {
+    await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/settings", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

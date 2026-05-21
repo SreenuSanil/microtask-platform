@@ -15,7 +15,7 @@ const ProviderTransactions = () => {
     try {
 
       const res = await fetch(
-        "http://localhost:5000/api/wallet/my-transactions",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/wallet/my-transactions",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -124,7 +124,7 @@ const withdrawMoney = async () => {
   if (!amount) return;
 
   const res = await fetch(
-    "http://localhost:5000/api/wallet/withdraw",
+    "https://microtask-platform-backend-y3xo.onrender.com/api/wallet/withdraw",
     {
       method: "POST",
       headers: {
@@ -147,7 +147,7 @@ const withdrawMoney = async () => {
 const fetchSummary = async () => {
 
   const res = await fetch(
-    "http://localhost:5000/api/wallet/provider-summary",
+    "https://microtask-platform-backend-y3xo.onrender.com/api/wallet/provider-summary",
     {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`

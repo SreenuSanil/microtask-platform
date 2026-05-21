@@ -15,7 +15,7 @@ const WorkerMyTasks = () => {
   const fetchTasks = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/tasks/worker-tasks",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/tasks/worker-tasks",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -38,7 +38,7 @@ const cancelTask = async (taskId) => {
   try {
 
     const res = await fetch(
-      `http://localhost:5000/api/tasks/cancel-ongoing/${taskId}`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/tasks/cancel-ongoing/${taskId}`,
       {
         method: "PATCH",
         headers: {
@@ -70,7 +70,7 @@ const raiseDispute = async (taskId) => {
   try {
 
     const res = await fetch(
-      `http://localhost:5000/api/tasks/raise-dispute/${taskId}`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/tasks/raise-dispute/${taskId}`,
       {
         method: "PATCH",
         headers: {
@@ -114,7 +114,7 @@ const markTaskComplete = async (taskId) => {
     }
 
     const res = await fetch(
-      `http://localhost:5000/api/tasks/mark-complete/${taskId}`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/tasks/mark-complete/${taskId}`,
       {
         method: "PATCH",
         headers: {
@@ -238,7 +238,7 @@ return (
     <img
       src={
         task.provider?.profileImage
-          ? `http://localhost:5000/${task.provider.profileImage}`
+          ? `https://microtask-platform-backend-y3xo.onrender.com/${task.provider.profileImage}`
           : "/default-user.png"
       }
       alt="provider"
@@ -325,9 +325,9 @@ return (
       {task.images.map((img, i) => (
         <img
           key={i}
-          src={`http://localhost:5000/${img}`}
+          src={`https://microtask-platform-backend-y3xo.onrender.com/${img}`}
           alt="task"
-          onClick={() => setPreviewImage(`http://localhost:5000/${img}`)}
+          onClick={() => setPreviewImage(`https://microtask-platform-backend-y3xo.onrender.com/${img}`)}
         />
       ))}
     </div>

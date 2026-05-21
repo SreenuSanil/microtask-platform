@@ -52,7 +52,7 @@ useEffect(() => {
   const fetchNotifCount = async () => {
   try {
     const res = await fetch(
-      "http://localhost:5000/api/notifications/unread-count",
+      "https://microtask-platform-backend-y3xo.onrender.com/api/notifications/unread-count",
       {
         headers: {
           Authorization: `Bearer ${token}`,

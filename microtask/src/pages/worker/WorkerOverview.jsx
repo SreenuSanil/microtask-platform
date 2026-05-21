@@ -19,7 +19,7 @@ const WorkerOverview = ({ availability, toggleAvailability }) => {
     const fetchDashboard = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5000/api/tasks/worker-dashboard",
+          "https://microtask-platform-backend-y3xo.onrender.com/api/tasks/worker-dashboard",
           {
             headers: {
               Authorization: `Bearer ${token}`

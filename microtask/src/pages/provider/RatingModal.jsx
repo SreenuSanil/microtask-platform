@@ -28,7 +28,7 @@ const submitReview = async () => {
   }
 
   const res = await fetch(
-    "http://localhost:5000/api/reviews/add",
+    "https://microtask-platform-backend-y3xo.onrender.com/api/reviews/add",
     {
       method: "POST",
       headers: {

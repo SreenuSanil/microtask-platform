@@ -36,7 +36,7 @@ const fetchDashboard = async()=>{
 try{
 
 const res = await fetch(
-"http://localhost:5000/api/admin/dashboard",
+"https://microtask-platform-backend-y3xo.onrender.com/api/admin/dashboard",
 {
 headers:{
 Authorization:`Bearer ${token}`

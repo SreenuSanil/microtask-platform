@@ -25,7 +25,7 @@ const [cancelBreakdown, setCancelBreakdown] = useState(null);
   const fetchTasks = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5000/api/tasks/my-tasks",
+          "https://microtask-platform-backend-y3xo.onrender.com/api/tasks/my-tasks",
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -55,7 +55,7 @@ useEffect(() => {
   const fetchReviewedTasks = async () => {
 
   const res = await fetch(
-    "http://localhost:5000/api/reviews/my-reviews",
+    "https://microtask-platform-backend-y3xo.onrender.com/api/reviews/my-reviews",
     {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -138,7 +138,7 @@ const cancelTask = async (taskId) => {
   return;
 
   const res = await fetch(
-    `http://localhost:5000/api/tasks/${taskId}/cancel`,
+    `https://microtask-platform-backend-y3xo.onrender.com/api/tasks/${taskId}/cancel`,
     {
       method: "PATCH",
       headers: {
@@ -166,7 +166,7 @@ const confirmDelete = async () => {
   if (!taskToDelete) return;
 
   const res = await fetch(
-    `http://localhost:5000/api/tasks/${taskToDelete}`,
+    `https://microtask-platform-backend-y3xo.onrender.com/api/tasks/${taskToDelete}`,
     {
       method: "DELETE",
       headers: {
@@ -221,7 +221,7 @@ const rejectTask = async (taskId) => {
   try {
 
     const res = await fetch(
-      `http://localhost:5000/api/tasks/reject/${taskId}`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/tasks/reject/${taskId}`,
       {
         method: "PATCH",
         headers: {
@@ -269,7 +269,7 @@ const raiseDispute = async (taskId) => {
   try {
 
     const res = await fetch(
-      `http://localhost:5000/api/tasks/raise-dispute/${taskId}`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/tasks/raise-dispute/${taskId}`,
       {
         method: "PATCH",
         headers: {
@@ -306,7 +306,7 @@ const raiseDispute = async (taskId) => {
 const approveTask = async (taskId) => {
   try {
     const res = await fetch(
-      `http://localhost:5000/api/tasks/approve/${taskId}`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/tasks/approve/${taskId}`,
       {
         method: "PATCH",
         headers: {
@@ -346,7 +346,7 @@ if(!reviewedTasks.includes(taskId)){
 const handleTaskPayment = async (taskId) => {
   try {
     const res = await fetch(
-      `http://localhost:5000/api/payment/task/create-order/${taskId}`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/payment/task/create-order/${taskId}`,
       {
         method: "POST",
         headers: {
@@ -373,7 +373,7 @@ const handleTaskPayment = async (taskId) => {
 
       handler: async function (response) {
         await fetch(
-          `http://localhost:5000/api/payment/task/verify-payment/${taskId}`,
+          `https://microtask-platform-backend-y3xo.onrender.com/api/payment/task/verify-payment/${taskId}`,
           {
             method: "POST",
             headers: {
@@ -469,7 +469,7 @@ return (
   <img
     src={
       task.assignedWorker?.profileImage
-        ? `http://localhost:5000/${task.assignedWorker.profileImage}`
+        ? `https://microtask-platform-backend-y3xo.onrender.com/${task.assignedWorker.profileImage}`
         : "/default-user.png"
     }
     alt="worker"
@@ -566,10 +566,10 @@ return (
 
   {task.images?.length > 0 ? (
     <img
-      src={`http://localhost:5000/${task.images[0]}`}
+      src={`https://microtask-platform-backend-y3xo.onrender.com/${task.images[0]}`}
       alt="task"
       onClick={() =>
-        setPreviewImage(`http://localhost:5000/${task.images[0]}`)
+        setPreviewImage(`https://microtask-platform-backend-y3xo.onrender.com/${task.images[0]}`)
       }
     />
   ) : (
@@ -596,12 +596,12 @@ return (
   <div className="completion-proof">
     <p><strong>Worker Completion Proof:</strong></p>
 <img
-  src={`http://localhost:5000/${task.completionImage}`}
+  src={`https://microtask-platform-backend-y3xo.onrender.com/${task.completionImage}`}
   alt="completion proof"
   className="completion-img"
   style={{ cursor: "pointer" }}
   onClick={() =>
-    setPreviewImage(`http://localhost:5000/${task.completionImage}`)
+    setPreviewImage(`https://microtask-platform-backend-y3xo.onrender.com/${task.completionImage}`)
   }
 />
   </div>
@@ -662,7 +662,7 @@ return (
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/tasks/reset/${task._id}`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/tasks/reset/${task._id}`,
       {
         method: "PATCH",
         headers: {
@@ -842,7 +842,7 @@ return (
           className="modal-delete"
           onClick={async () => {
             const res = await fetch(
-              `http://localhost:5000/api/tasks/cancel-ongoing/${cancelTaskId}`,
+              `https://microtask-platform-backend-y3xo.onrender.com/api/tasks/cancel-ongoing/${cancelTaskId}`,
               {
                 method: "PATCH",
                 headers: {

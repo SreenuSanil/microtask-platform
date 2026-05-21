@@ -15,7 +15,7 @@ const AdminInterviews = () => {
   const [currentWorker, setCurrentWorker] = useState(null);
   const getProfileImage = (user) => {
     if (user.profileImage) {
-      return `http://localhost:5000/${user.profileImage}`;
+      return `https://microtask-platform-backend-y3xo.onrender.com/${user.profileImage}`;
     }
     return defaultAvatar;
   };
@@ -23,7 +23,7 @@ const AdminInterviews = () => {
   /* ================= FETCH ================= */
   const fetchInterviewWorkers = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/admin/interviews", {
+      const res = await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/interviews", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -95,7 +95,7 @@ if (selected < now) {
     return;
   }
 
-  await fetch("http://localhost:5000/api/admin/interviews/schedule", {
+  await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/interviews/schedule", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -129,7 +129,7 @@ if (selected < now) {
   return;
 }
 
-  await fetch("http://localhost:5000/api/admin/interviews/schedule", {
+  await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/interviews/schedule", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -161,7 +161,7 @@ if (selected < now) {
       return;
     }
 
-    await fetch("http://localhost:5000/api/admin/interviews/complete", {
+    await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/interviews/complete", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

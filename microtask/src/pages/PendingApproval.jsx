@@ -37,7 +37,7 @@ const PendingApproval = () => {
         const token = localStorage.getItem("token");
 
         const res = await fetch(
-          "http://localhost:5000/api/auth/me",
+          "https://microtask-platform-backend-y3xo.onrender.com/api/auth/me",
           {
             headers: {
               Authorization: `Bearer ${token}`,

@@ -10,7 +10,7 @@ const WorkerRatings = () => {
 const fetchData = async () => {
 
   const res = await fetch(
-    "http://localhost:5000/api/auth/me",
+    "https://microtask-platform-backend-y3xo.onrender.com/api/auth/me",
     {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -133,10 +133,10 @@ useEffect(() => {
     {/* ← move image here, next to stars */}
     {r.image && (
       <img
-        src={`http://localhost:5000/${r.image}`}
+        src={`https://microtask-platform-backend-y3xo.onrender.com/${r.image}`}
         alt="review"
         className="review-image"
-        onClick={() => setPreviewImage(`http://localhost:5000/${r.image}`)}
+        onClick={() => setPreviewImage(`https://microtask-platform-backend-y3xo.onrender.com/${r.image}`)}
       />
     )}
 

@@ -57,7 +57,7 @@ const handleSearch = (value) => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/location/search?q=${search}`
+        `https://microtask-platform-backend-y3xo.onrender.com/api/location/search?q=${search}`
       );
 
       const data = await res.json();

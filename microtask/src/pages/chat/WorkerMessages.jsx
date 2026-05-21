@@ -19,7 +19,7 @@ const WorkerMessages = ({ selectedConnectionId }) => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const userId = storedUser?.id || storedUser?._id;
 
-  socketRef.current = io("http://localhost:5000");
+  socketRef.current = io("https://microtask-platform-backend-y3xo.onrender.com");
 
   socketRef.current.emit("join_user", userId);
 
@@ -49,7 +49,7 @@ useEffect(() => {
   const fetchChats = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/connections/my-chats",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/connections/my-chats",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -138,7 +138,7 @@ useEffect(() => {
                     <img
                       src={
                         chat.provider?.profileImage
-                          ? `http://localhost:5000/${chat.provider.profileImage}`
+                          ? `https://microtask-platform-backend-y3xo.onrender.com/${chat.provider.profileImage}`
                           : "/default-user.png"
                       }
                       alt="provider"
@@ -182,7 +182,7 @@ useEffect(() => {
                     <img
                       src={
                         chat.provider?.profileImage
-                          ? `http://localhost:5000/${chat.provider.profileImage}`
+                          ? `https://microtask-platform-backend-y3xo.onrender.com/${chat.provider.profileImage}`
                           : "/default-user.png"
                       }
                       alt="provider"
@@ -227,7 +227,7 @@ useEffect(() => {
                     <img
                       src={
                         chat.provider?.profileImage
-                          ? `http://localhost:5000/${chat.provider.profileImage}`
+                          ? `https://microtask-platform-backend-y3xo.onrender.com/${chat.provider.profileImage}`
                           : "/default-user.png"
                       }
                       alt="provider"

@@ -14,7 +14,7 @@ const [blockReason, setBlockReason] = useState("");
 const [blockDate, setBlockDate] = useState("");
   const getProfileImage = (user) => {
     if (user.profileImage) {
-      return `http://localhost:5000/${user.profileImage}`;
+      return `https://microtask-platform-backend-y3xo.onrender.com/${user.profileImage}`;
     }
     return defaultAvatar;
   };
@@ -22,7 +22,7 @@ const [blockDate, setBlockDate] = useState("");
   const fetchProviders = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/admin/providers",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/admin/providers",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -54,7 +54,7 @@ const submitBlockProvider = async () => {
     days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 
-  await fetch("http://localhost:5000/api/admin/providers/block", {
+  await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/providers/block", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -75,7 +75,7 @@ const submitBlockProvider = async () => {
 };
 
   const unblockProvider = async (id) => {
-    await fetch("http://localhost:5000/api/admin/providers/unblock", {
+    await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/providers/unblock", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -92,7 +92,7 @@ const submitBlockProvider = async () => {
     const reason = prompt("Reason for removal?");
     if (!reason) return;
 
-    await fetch("http://localhost:5000/api/admin/providers/remove", {
+    await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/providers/remove", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

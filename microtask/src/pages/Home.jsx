@@ -10,14 +10,14 @@ const [stats, setStats] = useState({ workers: 0, providers: 0 });
 const [supportEmail, setSupportEmail] = useState("");
 const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 useEffect(() => {
-  fetch("http://localhost:5000/api/stats/counts")
+  fetch("https://microtask-platform-backend-y3xo.onrender.com/api/stats/counts")
     .then(res => res.json())
     .then(data => setStats(data))
     .catch(err => console.error(err));
 }, []);
 
 useEffect(() => {
-  fetch("http://localhost:5000/api/admin/settings")
+  fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/settings")
     .then(res => res.json())
     .then(data => setSupportEmail(data.supportEmail))
     .catch(err => console.error(err));

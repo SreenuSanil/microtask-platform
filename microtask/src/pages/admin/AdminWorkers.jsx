@@ -17,7 +17,7 @@ const AdminWorkers = () => {
   const [blockDate, setBlockDate] = useState("");
   const getProfileImage = (user) => {
     if (user.profileImage) {
-      return `http://localhost:5000/${user.profileImage}`;
+      return `https://microtask-platform-backend-y3xo.onrender.com/${user.profileImage}`;
     }
     return defaultAvatar;
   };
@@ -25,7 +25,7 @@ const AdminWorkers = () => {
   /* FETCH */
   const fetchPendingWorkers = async () => {
     const res = await fetch(
-      "http://localhost:5000/api/admin/workers/pending",
+      "https://microtask-platform-backend-y3xo.onrender.com/api/admin/workers/pending",
       { headers: { Authorization: `Bearer ${token}` } }
     );
     const data = await res.json();
@@ -37,7 +37,7 @@ const AdminWorkers = () => {
       tab === "active" ? "approved" : tab === "blocked" ? "blocked" : "removed";
 
     const res = await fetch(
-      `http://localhost:5000/api/admin/workers?status=${status}`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/admin/workers?status=${status}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
 
@@ -64,7 +64,7 @@ const AdminWorkers = () => {
       ),
     }));
 
-    await fetch("http://localhost:5000/api/admin/workers/approve", {
+    await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/workers/approve", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -80,7 +80,7 @@ const AdminWorkers = () => {
   const rejectWorker = async (workerId) => {
     if (!rejectReason) return;
 
-    await fetch("http://localhost:5000/api/admin/workers/reject", {
+    await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/workers/reject", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -109,7 +109,7 @@ const AdminWorkers = () => {
     }
   }
 
-  await fetch("http://localhost:5000/api/admin/workers/block", {
+  await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/workers/block", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -126,7 +126,7 @@ const AdminWorkers = () => {
 };
 
   const unblockWorker = async (id) => {
-  await fetch("http://localhost:5000/api/admin/workers/unblock", {
+  await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/workers/unblock", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -154,7 +154,7 @@ const submitBlock = async () => {
     days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 
-  await fetch("http://localhost:5000/api/admin/workers/block", {
+  await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/workers/block", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -178,7 +178,7 @@ const submitBlock = async () => {
     const reason = prompt("Reason?");
     if (!reason) return;
 
-    await fetch("http://localhost:5000/api/admin/workers/remove", {
+    await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/admin/workers/remove", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

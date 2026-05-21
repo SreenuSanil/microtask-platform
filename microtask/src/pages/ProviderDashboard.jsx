@@ -35,7 +35,7 @@ const ProviderDashboard = () => {
 const fetchNotifications = async () => {
 
   const res = await fetch(
-    "http://localhost:5000/api/notifications",
+    "https://microtask-platform-backend-y3xo.onrender.com/api/notifications",
     {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -56,7 +56,7 @@ const fetchNotifications = async () => {
 
   const fetchUnread = async () => {
     const res = await fetch(
-      "http://localhost:5000/api/messages/unread-count",
+      "https://microtask-platform-backend-y3xo.onrender.com/api/messages/unread-count",
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -82,7 +82,7 @@ useEffect(() => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/auth/me", {
+        const res = await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/auth/me", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -102,7 +102,7 @@ useEffect(() => {
   const fetchInvites = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/connections/provider-invites",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/connections/provider-invites",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -164,7 +164,7 @@ useEffect(() => {
     const longitude = userData.location.coordinates[0];
 
     const res = await fetch(
-      `http://localhost:5000/api/users/nearby-workers?latitude=${latitude}&longitude=${longitude}&radius=10`
+      `https://microtask-platform-backend-y3xo.onrender.com/api/users/nearby-workers?latitude=${latitude}&longitude=${longitude}&radius=10`
     );
 
     const data = await res.json();
@@ -175,7 +175,7 @@ useEffect(() => {
 };
 
 useEffect(() => {
-  socketRef.current = io("http://localhost:5000");
+  socketRef.current = io("https://microtask-platform-backend-y3xo.onrender.com");
 
   const storedUser = JSON.parse(localStorage.getItem("user"));
 

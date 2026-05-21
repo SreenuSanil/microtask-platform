@@ -17,7 +17,7 @@ const AdminTasks = () => {
     try {
 
       const res = await fetch(
-        "http://localhost:5000/api/admin/tasks",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/admin/tasks",
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -56,7 +56,7 @@ const AdminTasks = () => {
     try {
 
       const res = await fetch(
-        `http://localhost:5000/api/admin/tasks/cancel/${taskId}`,
+        `https://microtask-platform-backend-y3xo.onrender.com/api/admin/tasks/cancel/${taskId}`,
         {
           method: "PATCH",
           headers: {
@@ -188,7 +188,7 @@ const AdminTasks = () => {
               <img
                 src={
                   selectedTask.provider?.profileImage
-                    ? `http://localhost:5000/${selectedTask.provider.profileImage}`
+                    ? `https://microtask-platform-backend-y3xo.onrender.com/${selectedTask.provider.profileImage}`
                     : "/default-user.png"
                 }
                 alt="provider"
@@ -209,7 +209,7 @@ const AdminTasks = () => {
                 <img
                   src={
                     selectedTask.assignedWorker?.profileImage
-                      ? `http://localhost:5000/${selectedTask.assignedWorker.profileImage}`
+                      ? `https://microtask-platform-backend-y3xo.onrender.com/${selectedTask.assignedWorker.profileImage}`
                       : "/default-user.png"
                   }
                   alt="worker"
@@ -239,7 +239,7 @@ const AdminTasks = () => {
 
                   <img
                     key={i}
-                    src={`http://localhost:5000/${img}`}
+                    src={`https://microtask-platform-backend-y3xo.onrender.com/${img}`}
                     alt="task"
                   />
 
@@ -261,7 +261,7 @@ const AdminTasks = () => {
 
               <img
                 className="completion-img"
-                src={`http://localhost:5000/${selectedTask.completionImage}`}
+                src={`https://microtask-platform-backend-y3xo.onrender.com/${selectedTask.completionImage}`}
                 alt="completion"
               />
 

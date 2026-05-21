@@ -23,7 +23,7 @@ const AdminDisputes = () => {
   const fetchDisputes = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/admin/disputes",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/admin/disputes",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -48,7 +48,7 @@ const AdminDisputes = () => {
   const fetchChat = async (taskId) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/admin/disputes/${taskId}/chat`,
+        `https://microtask-platform-backend-y3xo.onrender.com/api/admin/disputes/${taskId}/chat`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -84,7 +84,7 @@ const AdminDisputes = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/admin/disputes/approve/${taskId}`,
+        `https://microtask-platform-backend-y3xo.onrender.com/api/admin/disputes/approve/${taskId}`,
         {
           method: "PATCH",
           headers: {
@@ -112,7 +112,7 @@ const AdminDisputes = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/admin/disputes/refund/${taskId}`,
+        `https://microtask-platform-backend-y3xo.onrender.com/api/admin/disputes/refund/${taskId}`,
         {
           method: "PATCH",
           headers: {
@@ -154,7 +154,7 @@ if (total !== remaining) {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/admin/disputes/split/${task._id}`,
+        `https://microtask-platform-backend-y3xo.onrender.com/api/admin/disputes/split/${task._id}`,
         {
           method: "PATCH",
           headers: {
@@ -234,7 +234,7 @@ if (selectedTask) {
               <img
                 src={
                   selectedTask.provider?.profileImage
-                    ? `http://localhost:5000/${selectedTask.provider.profileImage}`
+                    ? `https://microtask-platform-backend-y3xo.onrender.com/${selectedTask.provider.profileImage}`
                     : "/default-user.png"
                 }
                 alt="provider"
@@ -250,7 +250,7 @@ if (selectedTask) {
               <img
                 src={
                   selectedTask.assignedWorker?.profileImage
-                    ? `http://localhost:5000/${selectedTask.assignedWorker.profileImage}`
+                    ? `https://microtask-platform-backend-y3xo.onrender.com/${selectedTask.assignedWorker.profileImage}`
                     : "/default-user.png"
                 }
                 alt="worker"
@@ -287,7 +287,7 @@ if (selectedTask) {
                 {selectedTask.images.map((img, i) => (
                   <img
                     key={i}
-                    src={`http://localhost:5000/${img}`}
+                    src={`https://microtask-platform-backend-y3xo.onrender.com/${img}`}
                     alt="task"
                   />
                 ))}
@@ -305,7 +305,7 @@ if (selectedTask) {
 
               <img
                 className="completion-img"
-                src={`http://localhost:5000/${selectedTask.completionImage}`}
+                src={`https://microtask-platform-backend-y3xo.onrender.com/${selectedTask.completionImage}`}
                 alt="completion"
               />
 

@@ -26,7 +26,7 @@ const AdminRevenue = () => {
 
   const fetchSummary = async () => {
     const res = await fetch(
-      "http://localhost:5000/api/admin/revenue/summary",
+      "https://microtask-platform-backend-y3xo.onrender.com/api/admin/revenue/summary",
       {
         headers:{ Authorization:`Bearer ${token}` }
       }
@@ -38,7 +38,7 @@ const AdminRevenue = () => {
 
   const fetchMonthly = async () => {
     const res = await fetch(
-      "http://localhost:5000/api/admin/revenue/monthly",
+      "https://microtask-platform-backend-y3xo.onrender.com/api/admin/revenue/monthly",
       {
         headers:{ Authorization:`Bearer ${token}` }
       }
@@ -56,7 +56,7 @@ const AdminRevenue = () => {
 
   const fetchTransactions = async () => {
     const res = await fetch(
-      "http://localhost:5000/api/admin/revenue/transactions",
+      "https://microtask-platform-backend-y3xo.onrender.com/api/admin/revenue/transactions",
       {
         headers:{ Authorization:`Bearer ${token}` }
       }
@@ -72,7 +72,7 @@ const AdminRevenue = () => {
   if (!amount) return;
 
   const res = await fetch(
-    "http://localhost:5000/api/admin/revenue/withdraw",
+    "https://microtask-platform-backend-y3xo.onrender.com/api/admin/revenue/withdraw",
     {
       method: "POST",
       headers: {

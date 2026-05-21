@@ -12,7 +12,7 @@ const ProviderInvites = () => {
 
   const fetchInvites = async () => {
     const res = await fetch(
-      "http://localhost:5000/api/connections/provider-invites",
+      "https://microtask-platform-backend-y3xo.onrender.com/api/connections/provider-invites",
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -76,7 +76,7 @@ const ProviderInvites = () => {
       <img
         src={
           inv.worker?.profileImage
-            ? `http://localhost:5000/${inv.worker.profileImage}`
+            ? `https://microtask-platform-backend-y3xo.onrender.com/${inv.worker.profileImage}`
             : "/default-user.png"
         }
         alt="worker"
@@ -98,7 +98,7 @@ const ProviderInvites = () => {
   <button onClick={async () => {
     // mark providerSeen on backend
     await fetch(
-      `http://localhost:5000/api/connections/${inv._id}/provider-seen`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/connections/${inv._id}/provider-seen`,
       {
         method: "PATCH",
         headers: {

@@ -11,7 +11,7 @@ const ProviderOverview = () => {
   const fetchOverview = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/provider-stats/overview",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/provider-stats/overview",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

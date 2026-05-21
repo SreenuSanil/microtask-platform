@@ -18,7 +18,7 @@ const WorkerProfile = ({ workerId, goBack, taskId, onReviewSubmitted }) => {
     setConnecting(true);
 
     const res = await fetch(
-      "http://localhost:5000/api/connections/request",
+      "https://microtask-platform-backend-y3xo.onrender.com/api/connections/request",
       {
         method: "POST",
         headers: {
@@ -66,7 +66,7 @@ useEffect(() => {
 const checkExistingRequest = async () => {
   try {
     const res = await fetch(
-      `http://localhost:5000/api/connections/check?taskId=${taskId}&workerId=${workerId}`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/connections/check?taskId=${taskId}&workerId=${workerId}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -93,7 +93,7 @@ const checkExistingRequest = async () => {
   const fetchWorker = async () => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/workers/${workerId}`
+        `https://microtask-platform-backend-y3xo.onrender.com/api/workers/${workerId}`
       );
       const data = await res.json();
       setWorker(data);
@@ -120,7 +120,7 @@ const checkExistingRequest = async () => {
           className="profile-image"
           src={
             worker.profileImage
-              ? `http://localhost:5000/${worker.profileImage}`
+              ? `https://microtask-platform-backend-y3xo.onrender.com/${worker.profileImage}`
               : "/default-user.png"
           }
           alt="worker"
@@ -201,9 +201,9 @@ const checkExistingRequest = async () => {
       {worker.certificationImages.map((img, i) => (
 <img
   key={i}
-  src={`http://localhost:5000/${img}`}
+  src={`https://microtask-platform-backend-y3xo.onrender.com/${img}`}
   alt="cert"
-  onClick={() => setSelectedImage(`http://localhost:5000/${img}`)}
+  onClick={() => setSelectedImage(`https://microtask-platform-backend-y3xo.onrender.com/${img}`)}
   style={{ cursor: "pointer" }}
 />
       ))}
@@ -220,9 +220,9 @@ const checkExistingRequest = async () => {
       worker.workImages.map((img, index) => (
 <img
   key={index}
-  src={`http://localhost:5000/${img}`}
+  src={`https://microtask-platform-backend-y3xo.onrender.com/${img}`}
   alt="work"
-  onClick={() => setSelectedImage(`http://localhost:5000/${img}`)}
+  onClick={() => setSelectedImage(`https://microtask-platform-backend-y3xo.onrender.com/${img}`)}
   style={{ cursor: "pointer" }}
 />
       ))
@@ -248,10 +248,10 @@ const checkExistingRequest = async () => {
 
           {review.image && (
             <img
-              src={`http://localhost:5000/${review.image}`}
+              src={`https://microtask-platform-backend-y3xo.onrender.com/${review.image}`}
               alt="review"
               className="review-image"
-              onClick={() => setSelectedImage(`http://localhost:5000/${review.image}`)}
+              onClick={() => setSelectedImage(`https://microtask-platform-backend-y3xo.onrender.com/${review.image}`)}
             />
           )}
 

@@ -13,7 +13,7 @@ const ProviderProfile = () => {
   }, []);
 
   const fetchProfile = async () => {
-    const res = await fetch("http://localhost:5000/api/auth/me", {
+    const res = await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/auth/me", {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -47,7 +47,7 @@ const ProviderProfile = () => {
     }
 
     const res = await fetch(
-      "http://localhost:5000/api/auth/update-profile",
+      "https://microtask-platform-backend-y3xo.onrender.com/api/auth/update-profile",
       {
         method: "PUT",
         headers: {
@@ -68,7 +68,7 @@ const ProviderProfile = () => {
 
   const sendEmailOtp = async () => {
   if (!newEmail) return alert("Enter new email");
-  const res = await fetch("http://localhost:5000/api/auth/send-email-otp", {
+  const res = await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/auth/send-email-otp", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -83,7 +83,7 @@ const ProviderProfile = () => {
 
 const verifyEmailOtp = async () => {
   if (!otp) return alert("Enter OTP");
-  const res = await fetch("http://localhost:5000/api/auth/verify-email-otp", {
+  const res = await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/auth/verify-email-otp", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -112,7 +112,7 @@ return (
         <img
           src={
             userData.profileImage
-              ? `http://localhost:5000/${userData.profileImage}`
+              ? `https://microtask-platform-backend-y3xo.onrender.com/${userData.profileImage}`
               : "/default-user.png"
           }
           alt="profile"

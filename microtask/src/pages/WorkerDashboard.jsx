@@ -45,7 +45,7 @@ useEffect(() => {
 
   const fetchUser = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/me", {
+      const res = await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/auth/me", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }
@@ -75,7 +75,7 @@ setUserData({
   const fetchInvitations = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/connections/worker-invitations",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/connections/worker-invitations",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -100,7 +100,7 @@ setUserData({
   const fetchNotifications = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/notifications",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/notifications",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -155,7 +155,7 @@ const [availability, setAvailability] = useState({
 
   const fetchUnread = async () => {
     const res = await fetch(
-      "http://localhost:5000/api/messages/unread-count",
+      "https://microtask-platform-backend-y3xo.onrender.com/api/messages/unread-count",
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -171,7 +171,7 @@ const [availability, setAvailability] = useState({
   const fetchAvailability = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/auth/me",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/auth/me",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -200,7 +200,7 @@ useEffect(() => {
 }, []);
 
 useEffect(() => {
-  socketRef.current = io("http://localhost:5000");
+  socketRef.current = io("https://microtask-platform-backend-y3xo.onrender.com");
 
 const storedUser = JSON.parse(localStorage.getItem("user"));
  socketRef.current.emit("join_user", storedUser.id || storedUser._id);
@@ -221,7 +221,7 @@ const storedUser = JSON.parse(localStorage.getItem("user"));
 const toggleAvailability = async () => {
   try {
     const res = await fetch(
-      "http://localhost:5000/api/users/toggle-availability",
+      "https://microtask-platform-backend-y3xo.onrender.com/api/users/toggle-availability",
       {
         method: "PATCH",
         headers: {
@@ -246,7 +246,7 @@ const toggleAvailability = async () => {
 
 const fetchTaskStats = async () => {
   try {
-    const res = await fetch("http://localhost:5000/api/tasks/worker-tasks", {
+    const res = await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/tasks/worker-tasks", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }

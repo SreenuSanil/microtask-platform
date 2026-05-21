@@ -19,7 +19,7 @@ const ProviderMessages = ({ selectedConnectionId }) => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const userId = storedUser?.id || storedUser?._id;
 
-  socketRef.current = io("http://localhost:5000");
+  socketRef.current = io("https://microtask-platform-backend-y3xo.onrender.com");
 
   socketRef.current.emit("join_user", userId);
 
@@ -40,7 +40,7 @@ const ProviderMessages = ({ selectedConnectionId }) => {
 
   const fetchInvites = async () => {
     const res = await fetch(
-      "http://localhost:5000/api/connections/provider-invites",
+      "https://microtask-platform-backend-y3xo.onrender.com/api/connections/provider-invites",
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -53,7 +53,7 @@ const ProviderMessages = ({ selectedConnectionId }) => {
 
 const fetchChats = async () => {
   const res = await fetch(
-    "http://localhost:5000/api/connections/my-chats",
+    "https://microtask-platform-backend-y3xo.onrender.com/api/connections/my-chats",
     {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -106,7 +106,7 @@ const completedList = chats.filter(
           className="profile-pic"
           src={
             item.worker?.profileImage
-              ? `http://localhost:5000/${item.worker.profileImage}`
+              ? `https://microtask-platform-backend-y3xo.onrender.com/${item.worker.profileImage}`
               : "/default-user.png"
           }
           alt="worker"

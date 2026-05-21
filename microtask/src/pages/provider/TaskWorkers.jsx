@@ -25,7 +25,7 @@ const TaskWorkers = ({ taskId, goBack }) => {
   const loadTask = async () => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/tasks/${taskId}`,
+        `https://microtask-platform-backend-y3xo.onrender.com/api/tasks/${taskId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -67,7 +67,7 @@ const TaskWorkers = ({ taskId, goBack }) => {
 const [lng, lat] = taskData.location.coordinates;
 
       const res = await fetch(
-        "http://localhost:5000/api/workers/search",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/workers/search",
         {
           method: "POST",
           headers: {
@@ -266,7 +266,7 @@ return (
       <img
         src={
           worker.profileImage
-            ? `http://localhost:5000/${worker.profileImage}`
+            ? `https://microtask-platform-backend-y3xo.onrender.com/${worker.profileImage}`
             : "/default-user.png"
         }
         alt="worker"

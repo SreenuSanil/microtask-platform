@@ -39,7 +39,7 @@ const [workPreview, setWorkPreview] = useState([]);
   }, []);
 
 const fetchProfile = async () => {
-  const res = await fetch("http://localhost:5000/api/auth/me", {
+  const res = await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/auth/me", {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`
     }
@@ -201,7 +201,7 @@ allowedFields.forEach((key) => {
 );
 
     const res = await fetch(
-      "http://localhost:5000/api/users/worker-profile",
+      "https://microtask-platform-backend-y3xo.onrender.com/api/users/worker-profile",
       {
         method: "PUT",
         headers: {
@@ -228,7 +228,7 @@ allowedFields.forEach((key) => {
 
   const changePassword = async () => {
     const res = await fetch(
-      "http://localhost:5000/api/auth/change-password",
+      "https://microtask-platform-backend-y3xo.onrender.com/api/auth/change-password",
       {
         method: "POST",
         headers: {
@@ -251,7 +251,7 @@ allowedFields.forEach((key) => {
   };
 const sendEmailOtp = async () => {
   if (!newEmail) return alert("Enter new email");
-  const res = await fetch("http://localhost:5000/api/auth/send-email-otp", {
+  const res = await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/auth/send-email-otp", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -266,7 +266,7 @@ const sendEmailOtp = async () => {
 
 const verifyEmailOtp = async () => {
   if (!emailOtp) return alert("Enter OTP");
-  const res = await fetch("http://localhost:5000/api/auth/verify-email-otp", {
+  const res = await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/auth/verify-email-otp", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -383,7 +383,7 @@ const verifyEmailOtp = async () => {
   <div className="work-preview">
     {form.workImages?.map((img, i) => (
       <div className="img-box" key={`old-${i}`}>
-        <img src={`http://localhost:5000/${img}`} alt="work" />
+        <img src={`https://microtask-platform-backend-y3xo.onrender.com/${img}`} alt="work" />
         <button onClick={() => removeImage(i, "old")}>✕</button>
       </div>
     ))}
@@ -422,7 +422,7 @@ const verifyEmailOtp = async () => {
   <div className="work-preview">
     {form.certificationImages?.map((img, i) => (
       <div className="img-box" key={`old-cert-${i}`}>
-        <img src={`http://localhost:5000/${img}`} alt="cert" />
+        <img src={`https://microtask-platform-backend-y3xo.onrender.com/${img}`} alt="cert" />
         <button onClick={() => removeCertImage(i, "old")}>✕</button>
       </div>
     ))}

@@ -35,7 +35,7 @@ useEffect(() => {
 
   /* SOCKET CONNECT */
   useEffect(() => {
-    socketRef.current = io("http://localhost:5000");
+    socketRef.current = io("https://microtask-platform-backend-y3xo.onrender.com");
 
     socketRef.current.emit("join_room", connectionId);
  socketRef.current.emit("join_user", userId);
@@ -70,7 +70,7 @@ return () => {
   try {
     setLoading(true);
     const res = await fetch(
-      `http://localhost:5000/api/messages/${connectionId}`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/messages/${connectionId}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -136,7 +136,7 @@ console.log({
     formData.append("image", file);
 
     const res = await fetch(
-      `http://localhost:5000/api/messages/image/${connectionId}`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/messages/image/${connectionId}`,
       {
         method: "POST",
         headers: {
@@ -174,7 +174,7 @@ console.log({
     formData.append("voice", audioBlob);
 
     const res = await fetch(
-      `http://localhost:5000/api/messages/voice/${connectionId}`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/messages/voice/${connectionId}`,
       {
         method: "POST",
         headers: {
@@ -212,7 +212,7 @@ const confirmJob = async () => {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/connections/confirm/${connectionId}`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/connections/confirm/${connectionId}`,
       {
         method: "PATCH",
         headers: {
@@ -236,7 +236,7 @@ const confirmJob = async () => {
 const workerConfirm = async () => {
   try {
     const res = await fetch(
-      `http://localhost:5000/api/connections/worker-confirm/${connectionId}`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/connections/worker-confirm/${connectionId}`,
       {
         method: "PATCH",
         headers: {
@@ -265,7 +265,7 @@ const workerConfirm = async () => {
 const handleIncreaseBudget = async () => {
   try {
     const res = await fetch(
-      `http://localhost:5000/api/connections/update-budget/${connectionId}`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/connections/update-budget/${connectionId}`,
       {
         method: "PATCH",
         headers: {
@@ -316,7 +316,7 @@ if (isWorkerBusy) {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/payment/task/create-order/${taskId}`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/payment/task/create-order/${taskId}`,
       {
         method: "POST",
         headers: {
@@ -343,7 +343,7 @@ if (isWorkerBusy) {
 
       handler: async function (response) {
         await fetch(
-          `http://localhost:5000/api/payment/task/verify-payment/${taskId}`,
+          `https://microtask-platform-backend-y3xo.onrender.com/api/payment/task/verify-payment/${taskId}`,
           {
             method: "POST",
             headers: {
@@ -400,11 +400,11 @@ className={`chat-message ${
 
             {msg.type === "image" && (
               <img
-                src={`http://localhost:5000/${msg.imageUrl}`}
+                src={`https://microtask-platform-backend-y3xo.onrender.com/${msg.imageUrl}`}
                 alt="chat"
                 className="chat-image"
                  onClick={() =>
-                  setPreviewImage(`http://localhost:5000/${msg.imageUrl}`)
+                  setPreviewImage(`https://microtask-platform-backend-y3xo.onrender.com/${msg.imageUrl}`)
                }
               />
             )}
@@ -412,7 +412,7 @@ className={`chat-message ${
             {msg.type === "voice" && (
   <audio
     controls
-    src={`http://localhost:5000/${msg.voiceUrl}`}
+    src={`https://microtask-platform-backend-y3xo.onrender.com/${msg.voiceUrl}`}
   ></audio>
 )}   
 </div>

@@ -86,7 +86,7 @@ const handleVerify = async (autoOtp) => {
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/auth/verify-email",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/auth/verify-email",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -109,7 +109,7 @@ const handleVerify = async (autoOtp) => {
     const password = localStorage.getItem("tempPassword");
 
     // 🔐 LOGIN AFTER VERIFY
-    const loginRes = await fetch("http://localhost:5000/api/auth/login", {
+    const loginRes = await fetch("https://microtask-platform-backend-y3xo.onrender.com/api/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -170,7 +170,7 @@ setTimeout(() => setShake(false), 500);
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/auth/resend-email-otp",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/auth/resend-email-otp",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

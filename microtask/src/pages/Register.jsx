@@ -255,7 +255,7 @@ const handleSubmit = async (e) => {
     formPayload.append("role", role);
 
     const response = await fetch(
-      "http://localhost:5000/api/auth/register",
+      "https://microtask-platform-backend-y3xo.onrender.com/api/auth/register",
       {
         method: "POST",
         body: formPayload, // ✅ no headers

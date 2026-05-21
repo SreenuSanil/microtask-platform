@@ -16,7 +16,7 @@ const WorkerNotifications = () => {
   const fetchNotifications = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/notifications",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/notifications",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -40,7 +40,7 @@ const WorkerNotifications = () => {
   const markRead = async () => {
     try {
       await fetch(
-        "http://localhost:5000/api/notifications/read",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/notifications/read",
         {
           method: "PATCH",
           headers: {
@@ -84,7 +84,7 @@ const WorkerNotifications = () => {
               <img
                 src={
                   notification?.profileImage
-                    ? `http://localhost:5000/${notification.profileImage}`
+                    ? `https://microtask-platform-backend-y3xo.onrender.com/${notification.profileImage}`
                     : "/default-user.png"
                 }
                 alt="provider"

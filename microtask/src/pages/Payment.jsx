@@ -27,7 +27,7 @@ const Payment = () => {
       setLoading(true);
 
       const res = await fetch(
-        "http://localhost:5000/api/payment/create-order",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/payment/create-order",
         { method: "POST" }
       );
 
@@ -51,7 +51,7 @@ handler: async function (response) {
   }
 
   const verifyRes = await fetch(
-    "http://localhost:5000/api/payment/verify-payment",
+    "https://microtask-platform-backend-y3xo.onrender.com/api/payment/verify-payment",
     {
       method: "POST",
       headers: {

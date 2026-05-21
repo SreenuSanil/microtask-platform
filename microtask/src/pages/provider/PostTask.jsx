@@ -117,7 +117,7 @@ const LocationPicker = ({ setForm, markerPosition, setMarkerPosition }) => {
 
       try {
 const res = await fetch(
-  `http://localhost:5000/api/location/reverse?lat=${lat}&lon=${lng}`
+  `https://microtask-platform-backend-y3xo.onrender.com/api/location/reverse?lat=${lat}&lon=${lng}`
 );
         const data = await res.json();
 
@@ -200,7 +200,7 @@ useEffect(() => {
 const fetchTask = async () => {
   try {
     const res = await fetch(
-      `http://localhost:5000/api/tasks/${editId}`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/tasks/${editId}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -271,7 +271,7 @@ useEffect(() => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/location/search?q=${searchQuery}`
+        `https://microtask-platform-backend-y3xo.onrender.com/api/location/search?q=${searchQuery}`
       );
 
       const data = await res.json();
@@ -322,8 +322,8 @@ if (form.images) {
 }
 
 const url = editId
-  ? `http://localhost:5000/api/tasks/${editId}`
-  : "http://localhost:5000/api/tasks";
+  ? `https://microtask-platform-backend-y3xo.onrender.com/api/tasks/${editId}`
+  : "https://microtask-platform-backend-y3xo.onrender.com/api/tasks";
 
 const method = editId ? "PUT" : "POST";
 
@@ -653,11 +653,11 @@ const res = await fetch(url, {
 {existingImages.map((img, i) => (
   <img
     key={i}
-    src={`http://localhost:5000/${img}`}
+    src={`https://microtask-platform-backend-y3xo.onrender.com/${img}`}
     width="100"
     style={{ cursor: "pointer" }}
     onClick={() =>
-      setPreviewImage(`http://localhost:5000/${img}`)
+      setPreviewImage(`https://microtask-platform-backend-y3xo.onrender.com/${img}`)
     }
   />
 ))}

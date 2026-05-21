@@ -12,7 +12,7 @@ const WorkerInvitations = ({ setInvitationCount }) => {
   const fetchInvitations = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/connections/worker-invitations",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/connections/worker-invitations",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -32,7 +32,7 @@ if (acceptedInvites.length > 0) {
   setTimeout(async () => {
     for (const inv of acceptedInvites) {
       await fetch(
-        `http://localhost:5000/api/connections/${inv._id}/worker-seen`,
+        `https://microtask-platform-backend-y3xo.onrender.com/api/connections/${inv._id}/worker-seen`,
         {
           method: "PATCH",
           headers: {
@@ -57,7 +57,7 @@ if (acceptedInvites.length > 0) {
 
   const handleAccept = async (id) => {
     await fetch(
-      `http://localhost:5000/api/connections/${id}/accept`,
+      `https://microtask-platform-backend-y3xo.onrender.com/api/connections/${id}/accept`,
       {
         method: "PATCH",
         headers: {
@@ -71,7 +71,7 @@ if (acceptedInvites.length > 0) {
 
 const handleReject = async (id) => {
   const res = await fetch(
-    `http://localhost:5000/api/connections/${id}/reject`,
+    `https://microtask-platform-backend-y3xo.onrender.com/api/connections/${id}/reject`,
     {
       method: "PATCH",
       headers: {
@@ -109,7 +109,7 @@ const handleReject = async (id) => {
                 <img
                   src={
                     provider?.profileImage
-                      ? `http://localhost:5000/${provider.profileImage}`
+                      ? `https://microtask-platform-backend-y3xo.onrender.com/${provider.profileImage}`
                       : "/default-user.png"
                   }
                   alt="provider"
@@ -153,11 +153,11 @@ const handleReject = async (id) => {
                   {task.images.map((img, i) => (
                     <img
                       key={i}
-                      src={`http://localhost:5000/${img}`}
+                      src={`https://microtask-platform-backend-y3xo.onrender.com/${img}`}
                       alt="task"
                       onClick={() =>
                         setPreviewImage(
-                          `http://localhost:5000/${img}`
+                          `https://microtask-platform-backend-y3xo.onrender.com/${img}`
                         )
                       }
                     />

@@ -10,7 +10,7 @@ const AdminNotifications = () => {
   const fetchNotifications = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/notifications",
+        "https://microtask-platform-backend-y3xo.onrender.com/api/notifications",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -32,7 +32,7 @@ const AdminNotifications = () => {
     fetchNotifications();
 
     // ✅ mark all as read
-    fetch("http://localhost:5000/api/notifications/read", {
+    fetch("https://microtask-platform-backend-y3xo.onrender.com/api/notifications/read", {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${token}`,
